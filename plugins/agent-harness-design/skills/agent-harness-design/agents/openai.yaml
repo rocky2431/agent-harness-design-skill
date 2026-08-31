@@ -1,6 +1,6 @@
 interface:
   display_name: "Agent Harness Design"
-  short_description: "Design calibrated, evidence-driven agent harnesses"
-  default_prompt: "Use $agent-harness-design to review this agent system, distinguish invariants from defaults, and propose the smallest design that fits its real task and risk."
+  short_description: "Preserve capability with narrow trusted boundaries"
+  default_prompt: "Use $agent-harness-design to review this agent system, preserve authorized model capability, and enforce authority and effects at the narrowest trusted boundary."
 policy:
   allow_implicit_invocation: true

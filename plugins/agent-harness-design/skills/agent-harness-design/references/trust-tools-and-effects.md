@@ -25,6 +25,19 @@ Keep secrets outside model-visible context when possible. Supply scoped credenti
 execution time; prevent one tool's data from being copied into an unrelated sink; and
 log identifiers or hashes rather than secret values.
 
+## Keep enforcement local to the effect
+
+When a proposed operation is outside authority, block that operation at the trusted
+boundary and return a typed result such as `denied`, `approval_required`, `unavailable`,
+or `retryable`. Do not collapse these states, terminate unrelated reasoning, remove
+otherwise authorized tools, or replace the model's whole answer with platform prose.
+
+Preserve useful alternatives. An agent denied permission to send may still inspect
+authorized evidence, draft a message, explain the boundary, request scoped approval,
+or pursue another authorized path. Tool discovery may narrow from authenticated
+authority and concrete capability policy; generic wording or a guessed intent is not
+enough to erase capabilities silently.
+
 ## Untrusted content and prompt injection
 
 Mark provenance and keep control intent separate from data. When an agent reads

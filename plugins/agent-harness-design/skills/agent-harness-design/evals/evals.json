@@ -77,6 +77,48 @@
       "name": "ordinary_task_does_not_activate",
       "prompt": "Translate 'The build completed successfully.' into Chinese.",
       "expected_output": "A direct translation without an agent harness design, architecture review, or invocation of this Skill."
+    },
+    {
+      "id": 13,
+      "name": "denied_effect_does_not_cripple_reasoning",
+      "prompt": "Our research agent may read the approved dataset but is not authorized to email it. A requested email is denied. Should the harness terminate the turn and remove data-analysis tools too?",
+      "expected_output": "Keeps the denial local to email; preserves authorized analysis, drafting, explanation, and scoped-approval options; returns a typed denial without treating it as global task failure."
+    },
+    {
+      "id": 14,
+      "name": "silent_capability_reduction_is_not_a_control",
+      "prompt": "To save money, our router silently swaps the owner's selected frontier model for a small model, drops the last third of retrieved evidence, halves the output cap, and still reports a normal completion. Is this a valid safety or reliability control?",
+      "expected_output": "Rejects silent model, evidence, and output reduction; requires a visible configuration or typed resource boundary, preservation of recoverable evidence, and evaluation of the resulting capability loss."
+    },
+    {
+      "id": 15,
+      "name": "provider_neutral_allows_native_adapters",
+      "prompt": "We support OpenAI and Anthropic models. One is substantially more reliable with patch edits and the other with string replacement. Does provider neutrality require giving both the identical edit tool and prompt?",
+      "expected_output": "Preserves one product-level semantic contract while allowing visible model-native adapters; rejects lowest-common-denominator sameness and hidden model downgrade; requires matched evaluation per model-harness configuration."
+    },
+    {
+      "id": 16,
+      "name": "retire_stale_model_compensation",
+      "prompt": "A context reset was added because an older model ended long jobs prematurely. On the new model, repeated trials show no benefit and more latency and state loss. Must we keep it because it was once a best practice?",
+      "expected_output": "Treats the reset as a removable compensating mechanism, validates the protected outcome on held-out cases, and removes or narrows it when it no longer earns its capability and reliability cost."
+    },
+    {
+      "id": 17,
+      "name": "long_task_pauses_without_fake_completion",
+      "prompt": "A two-day migration reaches its token budget halfway through a verified batch. Should the agent compress away old receipts, guess the remaining state, and mark the migration complete so the workflow can exit?",
+      "expected_output": "Requires a typed pause or resumable state, preserves receipts and recoverable artifacts, records the verified boundary and next action, and refuses to turn budget exhaustion into semantic completion."
+    },
+    {
+      "id": 18,
+      "name": "root_agents_file_is_a_map",
+      "prompt": "Our root AGENTS.md is 500 lines and contains deployment commands, historical incidents, current module counts, dynamic thresholds, and dozens of universal prohibitions. How should we improve it?",
+      "expected_output": "Keeps only stable product purpose, true authority/effect/evidence invariants, essential commands, and links in the always-on file; moves runbooks, inventories, case law, and dynamic facts to maintained sources with progressive disclosure."
+    },
+    {
+      "id": 19,
+      "name": "measure_capability_tax_with_ablation",
+      "prompt": "A prompt-injection filter reduces attack success, but benign task completion falls by 30% because it blocks whole sessions whenever security vocabulary appears. What evidence should decide the redesign?",
+      "expected_output": "Measures safety and benign utility together, includes false blocks and recovery, compares the current filter with no-control and narrower effect-boundary arms where safe, and avoids accepting security through unusability."
     }
   ]
 }

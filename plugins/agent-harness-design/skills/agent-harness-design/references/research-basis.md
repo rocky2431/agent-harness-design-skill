@@ -43,7 +43,29 @@ so verify them again when implementing against a newer host.
   question compensating mechanisms.
 - [OpenAI, Harness engineering](https://openai.com/index/harness-engineering/):
   agent-legible repositories, tools, documentation, tests, and feedback loops can be
-  higher leverage than prompt expansion.
+  higher leverage than prompt expansion; a short root map outperforms a monolithic
+  always-on instruction manual.
+- [OpenAI, Unrolling the Codex agent loop](https://openai.com/index/unrolling-the-codex-agent-loop/):
+  context, tools, sandbox policy, compaction, and stable prompt structure jointly shape
+  the capability and efficiency of the running agent.
+- [OpenAI, Run long horizon tasks with Codex](https://developers.openai.com/blog/run-long-horizon-tasks-with-codex):
+  real feedback, externalized state, steerability, and milestone verification sustain
+  useful work over long runs.
+- [Anthropic, Effective context engineering](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents):
+  context is a finite attention budget; start from a capable model and add instructions
+  against observed failure modes instead of hard-coding brittle behavior.
+- [Cursor, Continually improving our agent harness](https://cursor.com/blog/continually-improving-agent-harness):
+  old static context and guardrails can become harmful as models improve, while
+  model-native prompts and edit tools can preserve more capability.
+- [Cursor, Cloud agent lessons](https://cursor.com/blog/cloud-agent-lessons):
+  full environments, durable execution, and knowing when to remove deterministic
+  harness logic are central to long-running agent quality.
+- [Manus, Context engineering for AI agents](https://manus.im/blog/Context-Engineering-for-AI-Agents-Lessons-from-Building-Manus):
+  stable context, recoverable filesystem artifacts, and deliberate tool exposure can
+  preserve both agent coherence and production efficiency.
+- [Cognition, Multi-agents: what's actually working](https://cognition.com/blog/multi-agents-working):
+  increased model capability changed an earlier broad warning into a narrower pattern:
+  shared intelligence can help while conflicting parallel writes remain costly.
 - [Anthropic Model Context Protocol](https://modelcontextprotocol.io/specification/2025-11-25):
   a standard protocol for exposing resources and tools; it does not replace domain
   authorization or evidence design.
@@ -56,6 +78,12 @@ so verify them again when implementing against a newer host.
   utility failures and prompt-injection risk when untrusted tool data enters context.
 - [CaMeL](https://arxiv.org/abs/2503.18813): separate trusted control/data flow and
   enforce capability policies outside the model; stronger security can trade utility.
+- [Harness-Bench](https://arxiv.org/abs/2605.27922): agent performance varies by
+  model-harness pairing; evaluate execution alignment, evidence, cost, and failure
+  behavior rather than attributing results to the base model alone.
+- [AgentVisor](https://arxiv.org/abs/2604.24118): recent evidence that effect mediation
+  plus recoverable correction can preserve more benign utility than terminal blocking.
+  Treat its reported results as a preprint, not a universal architecture.
 - [OWASP GenAI Security Project](https://genai.owasp.org/): current threat and control
   guidance for LLM and agentic applications, including prompt injection and excessive
   agency.

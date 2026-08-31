@@ -4,14 +4,16 @@ description: "Design, audit, debug, or evaluate provider-neutral AI agent harnes
 license: MIT
 metadata:
   author: rocky2431
-  version: "0.1.0"
+  version: "0.2.0"
 ---
 
 # Agent Harness Design
 
-Treat the harness as the environment around a capable but fallible model. Design it to
-make useful actions legible and feasible while keeping authority, secrets, effects,
-and claims of success grounded in trusted evidence.
+Treat the harness as a capability amplifier and trusted execution frame around a
+capable but fallible model. Preserve the selected model's effective capability
+envelope—authorized evidence, task-sized context and output budget, real tools, and
+environmental feedback—while grounding authority, secrets, resources, effects, and
+claims of success in trusted boundaries.
 
 ## Calibrate every rule
 
@@ -25,6 +27,25 @@ Distinguish these levels; do not silently promote one into another:
 
 Use the labels in a design note when they clarify a disputed constraint. Do not label
 every sentence mechanically.
+
+## Optimize for capability inside the frame
+
+Design for capability and task utility first. This is not permission to run without a
+security boundary: establish the trusted frame before inference, then constrain the
+narrowest external effect before execution instead of weakening reasoning upstream.
+
+```text
+authorized evidence and capabilities
+  -> model-led interpretation, strategy, and repair
+  -> narrow authority and effect enforcement
+  -> typed evidence, denial, and recovery
+```
+
+Call this **capability-preserving determinism**: make authority, effects, state,
+evidence, and recovery predictable without making model behavior easier for the
+platform to predict. Starving context or output, silently changing models, deleting
+unrelated tools, or rewriting model-authored semantics is not a valid way to gain
+determinism.
 
 ## Start from the real task
 
@@ -57,6 +78,12 @@ These are invariants unless a stronger enclosing policy supersedes them:
   environment. Match verification depth to impact and say when the outcome is unknown.
 - Preserve a reachable stop, deny, error, and recovery path for non-terminal work.
   Do not convert a failed or ambiguous operation into silent success.
+- Keep a denial local to the disallowed effect. It must not silently remove unrelated
+  capabilities, terminate useful reasoning, or prevent a safe alternative such as
+  analysis, drafting, or a narrower proposal.
+- Do not silently downgrade the selected model, reasoning mode, authorized evidence
+  coverage, output budget, or tool surface. When a real resource boundary requires a
+  reduction, expose it as a typed, recoverable state and preserve the useful work.
 
 Everything else in this Skill is a default or conditional pattern.
 
@@ -76,9 +103,11 @@ Choose among these shapes by fit:
 | Durable agent loop | Work spans sessions or needs recovery from process/context loss | State consistency |
 | Multiple agents | Work is separable, specialized, independently verifiable, or latency-sensitive | Coordination and merge errors |
 
-Prefer deleting a layer whose consumer or protected property cannot be named. A
-preventive mechanism can still be justified without an incident when its threat model,
-authoritative obligation, and usability cost are concrete.
+Prefer deleting a layer whose consumer or protected property cannot be named. Treat
+each added control as a removable hypothesis: identify its authoritative fact source,
+narrowest enforcement boundary, capability and false-block cost, recovery path, and
+retirement trigger. A preventive mechanism can still be justified without an incident
+when its threat model, authoritative obligation, and usability cost are concrete.
 
 Read [design-decisions.md](references/design-decisions.md) for loop, workflow, tool,
 and provider choices.
@@ -87,6 +116,9 @@ and provider choices.
 
 - Give the model freedom over interpretation, exploration, decomposition, strategy,
   and expression when multiple valid approaches exist.
+- Enforce a protected property at the narrowest boundary that can actually protect it.
+  Do not remove a broad reasoning or tool capability when an ingress check, scoped
+  credential, sandbox, transaction, or pre-effect gate can contain the real risk.
 - Use code for schemas, identities, scopes, quotas, concurrency control, protocol
   transitions, and authoritative business rules that can be represented exactly.
 - A semantic evaluator may advise, block, or route. Its role depends on validated error
@@ -107,6 +139,12 @@ Keep active context relevant and make canonical state externally inspectable whe
 must survive context loss. Persistence is useful for resumability, coordination,
 audit, and recovery; it is unnecessary overhead for bounded work.
 
+For long-running work, preserve liveness as well as safety: provide task-sized budgets
+or a typed pause, retain recoverable artifacts and evidence, keep user corrections
+steerable without discarding valid progress, and derive completion state from the live
+environment rather than the agent's confidence. A denied effect must leave safe next
+actions reachable.
+
 Parallel reads and writes are both valid when operations are independent or protected
 by ownership, isolation, transactions, or conflict detection. Sequentialize work with
 real dependencies or shared mutable state.
@@ -124,14 +162,19 @@ compaction, recovery, concurrency, and topology choices.
 Define the evaluation before polishing the architecture:
 
 1. Use realistic tasks and relevant failure/adversarial cases.
-2. Compare against no-skill, previous-version, or simpler baselines.
+2. Compare against no-skill, previous-version, simpler, and relevant control-ablation
+   baselines.
 3. Repeat stochastic trials; report reliability, not only the best run.
 4. Score the final environment state and required evidence where possible.
-5. Measure utility, safety, false blocks, recovery, latency, token/cost, and operator
-   burden in proportion to the use case.
-6. Inspect traces to locate whether failure came from instructions, context, tools,
+5. Measure utility, safety, false blocks, recovery, latency, token/cost, operator
+   burden, and **capability tax**: the authorized task success lost to the control.
+6. Report results for the model-harness configuration; the same harness can help one
+   model and hinder another.
+7. Inspect traces to locate whether failure came from instructions, context, tools,
    policy, model behavior, execution, or the evaluator.
-7. Change the smallest implicated surface and rerun held-out cases for regressions.
+8. Change the smallest implicated surface and rerun held-out cases for regressions.
+   Re-test model-compensating controls after model or provider upgrades and retire
+   those that no longer earn their cost.
 
 Read [evaluation-and-observability.md](references/evaluation-and-observability.md) for
 eval design, evidence, graders, tracing, and launch decisions. Read

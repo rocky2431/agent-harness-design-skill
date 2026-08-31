@@ -49,6 +49,22 @@ Prefer host-native lifecycle support when it reliably reaches the next model req
 A custom recovery adapter is justified when a real lifecycle gap exists and the
 adapter can remain bounded, inspectable, and non-blocking.
 
+## Long-horizon liveness
+
+A long task must remain able to make honest progress across context, process, and
+provider boundaries:
+
+- use a task-sized budget or pause with a typed reason before work becomes unreliable;
+- preserve full artifacts or truthful recovery references before trimming inline data;
+- keep the objective, authority, decisions, failures, and next action recoverable;
+- apply user steering to the active state without discarding unrelated valid work;
+- treat a denied effect as one state transition, not global task failure;
+- update durable progress from environment evidence, not an actor's self-report.
+
+Never hide model, context, tool, or budget reduction behind a normal completion state.
+If the preferred path is temporarily unavailable, preserve evidence and expose the
+safe actions that remain.
+
 ## Multi-agent decision
 
 Multiple agents are a conditional architecture. They can be the first implementation

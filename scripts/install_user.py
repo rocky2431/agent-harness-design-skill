@@ -15,7 +15,7 @@ import tempfile
 from typing import Any
 
 
-VERSION = "0.1.0"
+VERSION = "0.2.0"
 PACKAGE = "agent-harness-design"
 MARKER_NAME = ".agent-harness-design-managed.json"
 REPO_ROOT = Path(__file__).resolve().parents[1]

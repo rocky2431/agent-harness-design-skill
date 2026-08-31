@@ -28,6 +28,23 @@ Run multiple trials because agent behavior is stochastic. Report per-task outcom
 mean performance, variance or confidence, and reliability across repeated attempts.
 Metrics such as `pass^k` can reveal inconsistency hidden by one successful sample.
 
+## Capability tax and control ablation
+
+Measure the whole model-harness configuration. A control's capability tax includes the
+authorized task success it removes, false denials, extra clarification or approval,
+lost context or tool access, latency, and recovery burden. Efficiency metrics alone do
+not show whether the agent remained useful.
+
+Where safe to test, compare matched arms with the proposed control enabled, disabled,
+and enforced at a narrower boundary. Include ordinary authorized tasks as well as
+adversarial cases; a defense that blocks attacks by making benign work impossible is
+not a successful harness. Report per model and adapter because a compensating rule can
+help one configuration and become dead weight on a more capable one.
+
+Give model- or host-compensating controls a retirement trigger. Re-run held-out cases
+after material upgrades, and delete the control when it no longer improves the
+protected outcome enough to justify its capability tax.
+
 ## Evidence hierarchy
 
 Prefer evidence closest to the requested outcome:

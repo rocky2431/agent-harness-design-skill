@@ -4,7 +4,9 @@ A provider-neutral Agent Skill for designing, auditing, debugging, and evaluatin
 system around an AI agent: instructions, context, tools, permissions, state, recovery,
 orchestration, evidence, and operational feedback loops.
 
-The central idea is calibration. A sound harness distinguishes:
+The central idea is capability-preserving calibration: expose the selected model's
+full authorized capability envelope, then enforce authority and external effects at
+the narrowest trusted boundary. A sound harness distinguishes:
 
 | Level | Meaning | Example |
 |---|---|---|
@@ -15,6 +17,8 @@ The central idea is calibration. A sound harness distinguishes:
 
 This avoids two common failures: under-building the trusted execution boundary, and
 over-building a rigid workflow that prevents a capable model from solving the task.
+It also makes every compensating constraint removable when a stronger model or host
+feature makes that constraint obsolete.
 
 ## What changed from `agents-best-practices`
 
@@ -35,7 +39,9 @@ The hard core is smaller:
 - untrusted content cannot become policy or authorization merely by entering context;
 - secrets and risky effects need enforcement at a trusted runtime boundary;
 - a success claim needs evidence from the relevant environment, proportional to risk;
-- uncertainty remains visible when the system cannot establish the state of the world.
+- uncertainty remains visible when the system cannot establish the state of the world;
+- denial of one effect does not cripple unrelated reasoning or safe alternatives;
+- model, context, output, or tool capability is never reduced silently.
 
 ## Package model
 
@@ -142,7 +148,9 @@ references:
 The bundled eval set targets both activation and calibration. It includes cases that
 the predecessor handled too rigidly: proactive regulated controls, naturally parallel
 multi-agent work, isolated parallel writes, validated semantic gates, broad tools in a
-real sandbox, and pre-authorized low-risk actions.
+real sandbox, and pre-authorized low-risk actions. Capability-preservation cases also
+cover local denial, silent downgrades, provider-native adapters, stale guardrail
+retirement, long-task recovery, concise root instructions, and control ablation.
 
 For behavior evaluation, run every case at least three times in three arms:
 
@@ -182,5 +190,6 @@ CI runs the standard-library test suite on Linux, macOS, and Windows.
 The guidance is grounded in the open Agent Skills specification, current Codex,
 Claude Code, and OpenCode documentation, practitioner reports from OpenAI and
 Anthropic, and agent reliability and security research including tau-bench,
-AgentDojo, and CaMeL. The annotated list and the claims drawn from it live in
+AgentDojo, CaMeL, Harness-Bench, and recent capability-preserving defense work. The
+annotated list and the claims drawn from it live in
 [`references/research-basis.md`](plugins/agent-harness-design/skills/agent-harness-design/references/research-basis.md).

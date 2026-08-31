@@ -48,6 +48,21 @@ from host improvements. Move to another shape when any of these are already evid
 Past failure is strong evidence, but not the only admissible evidence. Record the
 expected benefit and what would cause the added layer to be removed.
 
+## Control admission and retirement
+
+Before turning guidance into a hard control, answer:
+
+1. Which protected property or authoritative obligation requires it?
+2. Which trusted fact source can decide the outcome?
+3. Can the same property be enforced closer to data ingress or the external effect?
+4. Which authorized strategies, tools, context, latency, or reliability will it cost?
+5. What happens after a false block or infrastructure failure?
+6. Which evaluation result, model improvement, or platform capability would retire it?
+
+A control with no protected property is ceremony. A useful compensating mechanism can
+also become harmful when the model or host improves; keep its evidence and exit
+condition reviewable instead of promoting it to permanent doctrine.
+
 ## Loop design
 
 For a custom loop, make the protocol explicit:
@@ -89,8 +104,10 @@ machine constraints. Let actionable error results help the model repair a call.
 
 ## Provider and host choices
 
-Keep domain policy and workflow intent provider-neutral where practical. Put native
-features behind the narrowest useful seam:
+Keep domain policy and workflow intent provider-neutral where practical. Neutrality
+means preserving the product contract, not forcing every model through identical
+prompts, tool formats, or lowest-common-denominator features. Put native features
+behind the narrowest useful seam:
 
 - hosted tools and computer use;
 - prompt caching and compaction;
@@ -99,9 +116,11 @@ features behind the narrowest useful seam:
 - structured output and tool-call protocols.
 
 Do not emulate a strong native feature solely for portability. Document the semantic
-contract and allow host-specific adapters when their lifecycle is materially better.
-Verify behavior on the exact host/version instead of assuming similarly named
-features are equivalent.
+contract and allow model- or host-specific adapters when their prompting, edit format,
+tool protocol, compaction, or lifecycle is materially better. Keep the chosen model and
+adapter visible; never gain apparent portability through a hidden downgrade. Verify
+behavior on the exact model/host/version instead of assuming similarly named features
+are equivalent.
 
 ## Recommendation record
 
@@ -112,6 +131,8 @@ For a material component, capture:
 | Level | Invariant, default, conditional pattern, or example? |
 | Consumer | What task or operator uses it? |
 | Evidence | Incident, eval, threat, regulation, scale, or host constraint? |
+| Boundary | Is this the narrowest authoritative place to enforce it? |
 | Benefit | Which observable measure should improve? |
-| Cost | Latency, tokens, coordination, maintenance, false blocks? |
-| Exit | When should it be removed or replaced? |
+| Capability cost | Authorized success, tools, context, latency, coordination, false blocks? |
+| Recovery | How does the agent or operator continue after denial or failure? |
+| Exit | Which evidence or capability change removes or replaces it? |

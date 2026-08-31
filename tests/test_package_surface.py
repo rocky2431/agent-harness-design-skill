@@ -55,6 +55,10 @@ class PackageSurfaceTests(unittest.TestCase):
         self.assertIn("**Invariant**", skill)
         self.assertIn("**Default**", skill)
         self.assertIn("**Conditional pattern**", skill)
+        self.assertIn("capability-preserving determinism", skill)
+        self.assertIn("Keep a denial local", skill)
+        self.assertIn("Do not silently downgrade", skill)
+        self.assertIn("capability tax", skill)
         self.assertIn("multiple agents", skill)
         self.assertIn("without an incident", skill)
         self.assertNotIn("only after the simpler live path has failed", skill)
@@ -77,6 +81,13 @@ class PackageSurfaceTests(unittest.TestCase):
             "multi_agent_can_be_first_choice",
             "parallel_isolated_writes",
             "validated_model_grader_can_gate",
+            "denied_effect_does_not_cripple_reasoning",
+            "silent_capability_reduction_is_not_a_control",
+            "provider_neutral_allows_native_adapters",
+            "retire_stale_model_compensation",
+            "long_task_pauses_without_fake_completion",
+            "root_agents_file_is_a_map",
+            "measure_capability_tax_with_ablation",
             "ordinary_task_does_not_activate",
         ):
             self.assertIn(required, names)

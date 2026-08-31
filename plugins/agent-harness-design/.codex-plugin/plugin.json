@@ -1,7 +1,7 @@
 {
   "name": "agent-harness-design",
-  "version": "0.1.0",
-  "description": "Design and review provider-neutral agent harnesses with calibrated constraints, explicit authority boundaries, and evidence-driven evaluation.",
+  "version": "0.2.0",
+  "description": "Design and review provider-neutral agent harnesses that preserve authorized model capability while enforcing narrow authority and effect boundaries.",
   "author": {
     "name": "rocky2431",
     "url": "https://github.com/rocky2431"
@@ -10,11 +10,11 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Agent Harness Design",
-    "shortDescription": "Calibrate agent architecture without freezing model agency.",
-    "longDescription": "Adds a provider-neutral Skill for designing, auditing, debugging, and evaluating agent harnesses. It distinguishes hard trust boundaries from defaults and task-dependent patterns so controls stay proportional to evidence, authority, and risk.",
+    "shortDescription": "Preserve agent capability with narrow trusted boundaries.",
+    "longDescription": "Adds a provider-neutral Skill for designing, auditing, debugging, and evaluating agent harnesses. It preserves the selected model's authorized capability envelope, distinguishes hard trust boundaries from defaults and conditional patterns, and measures the utility cost of controls.",
     "developerName": "rocky2431",
     "category": "Developer Tools",
     "capabilities": ["Skills"],
-    "defaultPrompt": "Use $agent-harness-design to design or review this agent system. Separate hard invariants from defaults and conditional patterns, preserve model agency inside the authorized boundary, and define observable evaluation evidence."
+    "defaultPrompt": "Use $agent-harness-design to design or review this agent system. Preserve the selected model's authorized capability envelope, enforce authority and effects at the narrowest trusted boundary, and define observable capability, safety, and recovery evidence."
   }
 }
