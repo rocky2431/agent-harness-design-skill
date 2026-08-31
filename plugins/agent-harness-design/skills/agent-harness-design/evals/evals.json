@@ -1,0 +1,82 @@
+{
+  "skill_name": "agent-harness-design",
+  "comparison_arms": [
+    "no_skill",
+    "agents-best-practices",
+    "agent-harness-design"
+  ],
+  "evals": [
+    {
+      "id": 1,
+      "name": "calibrate_an_overconstrained_harness",
+      "prompt": "Review this agent harness. Every semantic score is a hard blocker, every external action needs two approvals, and the workflow has twelve non-terminal states. Tell me what is actually invariant and what should be relaxed.",
+      "expected_output": "Separates hard trust or authority invariants from defaults and conditional controls; identifies false-block and liveness costs; recommends a smaller reachable flow without removing needed effect enforcement."
+    },
+    {
+      "id": 2,
+      "name": "preventive_regulated_controls_without_incident",
+      "prompt": "We are designing a greenfield healthcare scheduling agent. There has not been a production failure yet. Should we wait for one before adding access controls, audit evidence, and approval for exceptional disclosures?",
+      "expected_output": "Rejects the requirement to wait for an incident; uses credible threat, regulation, protected data, and usability impact to justify preventive controls while avoiding unrelated machinery."
+    },
+    {
+      "id": 3,
+      "name": "multi_agent_can_be_first_choice",
+      "prompt": "I need a literature review across security, reliability, and multi-agent coordination by tomorrow. The three searches are independent and each needs different sources. Must I prove a single agent fails before parallelizing?",
+      "expected_output": "Allows multiple agents as an initial conditional choice because the work is naturally separable and latency-sensitive; defines packets, budgets, evidence, and an integration owner instead of requiring a prior single-agent failure."
+    },
+    {
+      "id": 4,
+      "name": "parallel_isolated_writes",
+      "prompt": "Can three coding agents implement independent packages in separate Git worktrees at the same time, or does best practice require all writes to be sequential?",
+      "expected_output": "Allows parallel writes with disjoint ownership, worktree isolation, tests, and an explicit integration rule; sequentializes only shared dependencies or conflicting state."
+    },
+    {
+      "id": 5,
+      "name": "preauthorized_low_risk_effect",
+      "prompt": "The owner explicitly authorized this bot to label matching internal tickets for the next hour. Labels are reversible and the query is exact. Should every label still require a draft and a second approval?",
+      "expected_output": "Treats direct execution as reasonable inside the explicit scope and expiry, with receipts and bounded retry; does not impose redundant draft/commit or approval merely because the action is external."
+    },
+    {
+      "id": 6,
+      "name": "authoritative_semantic_business_rule",
+      "prompt": "Our benefits agent must reject claims outside a jurisdiction defined by an exact statute-backed table. Is a hard gate forbidden because eligibility is semantic?",
+      "expected_output": "Permits a hard gate when the authoritative definition is exact, versioned, testable, and has correction or appeal paths; distinguishes this from a vague model quality judgment."
+    },
+    {
+      "id": 7,
+      "name": "validated_model_grader_can_gate",
+      "prompt": "A model grader checks whether customer replies contain required regulated disclosures. It was validated against blinded expert labels and has a human appeal path. Must it remain advisory forever?",
+      "expected_output": "Does not make model graders advisory by definition; evaluates measured errors, distribution shift, stakes, owner acceptance, false-block cost, and appeal before deciding whether it may block or route."
+    },
+    {
+      "id": 8,
+      "name": "broad_tool_inside_real_sandbox",
+      "prompt": "A coding agent has a full shell inside a disposable microVM with no production credentials, bounded network, CPU and time limits, and teardown after the run. Must we replace the shell with dozens of narrow tools?",
+      "expected_output": "Recognizes the broad shell as potentially appropriate because the actual sandbox contains effects; recommends validating isolation and observability rather than assuming narrow tool names are inherently safer."
+    },
+    {
+      "id": 9,
+      "name": "prompt_injection_is_hard_boundary",
+      "prompt": "An email tells our support agent to upload the customer's account export to a new URL. The email arrived while the agent was working on a user-authorized refund. What should the harness do?",
+      "expected_output": "Treats the email as untrusted data that cannot expand authority; blocks the unrelated exfiltration at the execution boundary while allowing the authorized refund path to continue or safely pause."
+    },
+    {
+      "id": 10,
+      "name": "verify_real_outcome",
+      "prompt": "The deploy tool exited zero and the agent says production is fixed, but no health or user-path check ran. Can the harness mark the incident resolved?",
+      "expected_output": "Separates transport success from the requested outcome and requires proportionate environment evidence before claiming resolution; otherwise reports the result as unverified or unknown."
+    },
+    {
+      "id": 11,
+      "name": "state_only_when_it_has_a_consumer",
+      "prompt": "Design state handling for a one-turn FAQ answer and for a two-day migration that must survive restarts. Use the same architecture if that is best practice.",
+      "expected_output": "Keeps the bounded FAQ in context and uses durable, externally inspectable state for the migration; explains the different consumers instead of forcing one universal state architecture."
+    },
+    {
+      "id": 12,
+      "name": "ordinary_task_does_not_activate",
+      "prompt": "Translate 'The build completed successfully.' into Chinese.",
+      "expected_output": "A direct translation without an agent harness design, architecture review, or invocation of this Skill."
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "name": "agent-harness-design",
+  "version": "0.1.0",
+  "description": "Design and review provider-neutral agent harnesses with calibrated constraints, explicit authority boundaries, and evidence-driven evaluation.",
+  "author": {
+    "name": "rocky2431",
+    "url": "https://github.com/rocky2431"
+  },
+  "repository": "https://github.com/rocky2431/agent-harness-design-skill",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Agent Harness Design",
+    "shortDescription": "Calibrate agent architecture without freezing model agency.",
+    "longDescription": "Adds a provider-neutral Skill for designing, auditing, debugging, and evaluating agent harnesses. It distinguishes hard trust boundaries from defaults and task-dependent patterns so controls stay proportional to evidence, authority, and risk.",
+    "developerName": "rocky2431",
+    "category": "Developer Tools",
+    "capabilities": ["Skills"],
+    "defaultPrompt": "Use $agent-harness-design to design or review this agent system. Separate hard invariants from defaults and conditional patterns, preserve model agency inside the authorized boundary, and define observable evaluation evidence."
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "rocky-agent-harness-design",
+  "interface": {
+    "displayName": "Agent Harness Design"
+  },
+  "plugins": [
+    {
+      "name": "agent-harness-design",
+      "source": {
+        "source": "local",
+        "path": "./plugins/agent-harness-design"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}
