@@ -92,17 +92,21 @@ class PackageSurfaceTests(unittest.TestCase):
         self.assertIn("arxiv.org/abs/2503.18813", research)
 
     def test_package_has_no_hooks_mcp_or_machine_specific_paths(self) -> None:
-        tracked_files = [path for path in REPO_ROOT.rglob("*") if path.is_file()]
-        relative = {path.relative_to(REPO_ROOT).as_posix() for path in tracked_files}
+        package_files = [
+            path
+            for path in REPO_ROOT.rglob("*")
+            if path.is_file()
+            and ".git" not in path.relative_to(REPO_ROOT).parts
+            and "__pycache__" not in path.relative_to(REPO_ROOT).parts
+        ]
+        relative = {path.relative_to(REPO_ROOT).as_posix() for path in package_files}
         self.assertFalse(any("hooks/" in path for path in relative))
         self.assertFalse(any(path.endswith(".mcp.json") for path in relative))
 
         offenders: list[str] = []
         machine_path = "/Users/" + "rocky243"
         unfinished_marker = "TO" + "DO"
-        for path in tracked_files:
-            if ".git" in path.parts or "__pycache__" in path.parts:
-                continue
+        for path in package_files:
             try:
                 text = path.read_text(encoding="utf-8")
             except UnicodeDecodeError:
