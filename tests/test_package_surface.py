@@ -14,9 +14,14 @@ SKILL_ROOT = PLUGIN_ROOT / "skills" / "agent-harness-design"
 
 def skill_digest() -> str:
     digest = hashlib.sha256()
-    for path in sorted(SKILL_ROOT.rglob("*")):
-        if not path.is_file() or "__pycache__" in path.parts or path.suffix == ".pyc":
-            continue
+    files = [
+        path
+        for path in SKILL_ROOT.rglob("*")
+        if path.is_file() and "__pycache__" not in path.parts and path.suffix != ".pyc"
+    ]
+    for path in sorted(
+        files, key=lambda item: item.relative_to(SKILL_ROOT).as_posix()
+    ):
         digest.update(path.relative_to(SKILL_ROOT).as_posix().encode("utf-8"))
         digest.update(b"\0")
         digest.update(path.read_bytes().replace(b"\r\n", b"\n"))

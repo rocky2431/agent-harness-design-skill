@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import importlib.util
 import json
 from pathlib import Path
@@ -72,6 +73,23 @@ class EvalRunnerTests(unittest.TestCase):
             (lf / "SKILL.md").write_bytes(b"first\nsecond\n")
             (crlf / "SKILL.md").write_bytes(b"first\r\nsecond\r\n")
             self.assertEqual(run_evals._tree_digest(lf), run_evals._tree_digest(crlf))
+
+    def test_tree_digest_uses_case_sensitive_relative_path_order(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / "agents").mkdir()
+            (root / "SKILL.md").write_text("skill\n", encoding="utf-8")
+            (root / "agents" / "openai.yaml").write_text("agent\n", encoding="utf-8")
+            expected = hashlib.sha256()
+            for name, content in (
+                ("SKILL.md", b"skill\n"),
+                ("agents/openai.yaml", b"agent\n"),
+            ):
+                expected.update(name.encode("utf-8"))
+                expected.update(b"\0")
+                expected.update(content)
+                expected.update(b"\0")
+            self.assertEqual(expected.hexdigest(), run_evals._tree_digest(root))
 
     def test_atomic_json_writer_replaces_only_the_target(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

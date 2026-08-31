@@ -53,9 +53,12 @@ def _load_json(path: Path) -> dict[str, Any]:
 
 def _tree_digest(root: Path) -> str:
     digest = hashlib.sha256()
-    for path in sorted(root.rglob("*")):
-        if not path.is_file() or "__pycache__" in path.parts or path.suffix == ".pyc":
-            continue
+    files = [
+        path
+        for path in root.rglob("*")
+        if path.is_file() and "__pycache__" not in path.parts and path.suffix != ".pyc"
+    ]
+    for path in sorted(files, key=lambda item: item.relative_to(root).as_posix()):
         digest.update(path.relative_to(root).as_posix().encode("utf-8"))
         digest.update(b"\0")
         digest.update(path.read_bytes().replace(b"\r\n", b"\n"))
