@@ -1,6 +1,6 @@
 {
   "name": "agent-harness-design",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Design and review provider-neutral agent harnesses that preserve authorized model capability while enforcing narrow authority and effect boundaries.",
   "author": {
     "name": "rocky2431",
@@ -15,6 +15,6 @@
     "developerName": "rocky2431",
     "category": "Developer Tools",
     "capabilities": ["Skills"],
-    "defaultPrompt": "Use $agent-harness-design to design or review this agent system. Preserve the selected model's authorized capability envelope, enforce authority and effects at the narrowest trusted boundary, and define observable capability, safety, and recovery evidence."
+    "defaultPrompt": "Use $agent-harness-design to preserve model capability and enforce effects at narrow trusted boundaries."
   }
 }

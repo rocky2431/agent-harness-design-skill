@@ -4,7 +4,7 @@ description: "Design, audit, debug, or evaluate provider-neutral AI agent harnes
 license: MIT
 metadata:
   author: rocky2431
-  version: "0.2.0"
+  version: "0.2.1"
 ---
 
 # Agent Harness Design

@@ -31,6 +31,7 @@ class PackageSurfaceTests(unittest.TestCase):
         self.assertEqual("./plugins/agent-harness-design", entry["source"]["path"])
         self.assertIn("name: agent-harness-design", skill)
         self.assertEqual(["Skills"], plugin["interface"]["capabilities"])
+        self.assertLessEqual(len(plugin["interface"]["defaultPrompt"]), 128)
 
     def test_version_is_consistent(self) -> None:
         plugin = json.loads(
