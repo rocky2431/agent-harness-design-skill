@@ -1,0 +1,635 @@
+{
+  "completed_at": "2026-08-31T07:21:53.261958+00:00",
+  "configuration": {
+    "cases_sha256": "7b7fecf0fbec2fea7ec891e8d4b99e2e760bd0958c7e9a3c041dd52d7c01091d",
+    "codex_cli": "codex-cli 0.149.0",
+    "model": "gpt-5.4-mini",
+    "probe_skills": [
+      "agent-delegation",
+      "agent-harness-design",
+      "task-state-with-files"
+    ],
+    "reasoning": "low",
+    "selected_cases": [
+      "positive_harness_authority_and_tools",
+      "positive_overconstraint_audit",
+      "positive_long_horizon_recovery_design",
+      "positive_model_native_adapters",
+      "positive_capability_tax_eval",
+      "negative_translation",
+      "negative_ordinary_code_review",
+      "negative_application_state",
+      "ambiguous_ai_feature_not_harness",
+      "coexistence_long_task_state",
+      "coexistence_delegate_mission",
+      "coexistence_delegate_harness_audit"
+    ],
+    "skill_name": "agent-harness-design",
+    "skill_source_sha256": "234fb86507c09ab42d185c6c592158c6f4c061586572522f525d83aba517e202",
+    "timeout_seconds": 300,
+    "trials": 2,
+    "workers": 4
+  },
+  "measurement_notes": [
+    "Selection is measured through marker instructions present only in loaded probe Skills.",
+    "This tests Codex implicit discovery and instruction following together; it is not a keyword simulation.",
+    "Each run uses a fresh temporary HOME, CODEX_HOME, workspace, and ephemeral Codex session."
+  ],
+  "mode": "trigger",
+  "runs": [
+    {
+      "accepted_skill_sets": [
+        [
+          "agent-harness-design"
+        ]
+      ],
+      "case": "positive_harness_authority_and_tools",
+      "case_id": 1,
+      "duration_seconds": 33.477,
+      "final_output": "Design it with a hard separation between judgment and side effects.\n\n**Model loop**\n- Read and classify the ticket.\n- Extract facts: customer identity, order ID, amount requested, reason, prior refunds, policy signals, fraud/risk signals, and missing data.\n- Decide one of three outcomes:\n  - `needs_more_info`\n  - `propose_refund`\n  - `do_not_refund`\n- If `propose_refund`, produce a structured proposal: amount, currency, rationale, policy basis, confidence, and any caveats.\n- The model may recommend but must not directly execute money movement unless the harness has explicitly escalated that specific step.\n\n**Tool schemas**\nKeep tools narrow and typed, with no free-form “do anything” API.\n\nMinimum set:\n- `get_ticket(ticket_id)`  \n  Returns the support case, customer message, attachments, metadata.\n- `get_customer(customer_id)`  \n  Returns account state, tenure, prior refunds, risk flags, payment method context.\n- `get_order(order_id)`  \n  Returns order value, fulfillment state, timestamps, refund eligibility signals.\n- `lookup_policy(policy_code)`  \n  Returns the applicable refund rules.\n- `draft_refund_proposal(ticket_id, amount, reason_code, policy_refs, evidence)`  \n  Stores a proposal object for review or audit.\n- `issue_refund(refund_proposal_id)`  \n  Performs the actual refund. This should be the only effectful payment tool.\n- `add_internal_note(ticket_id, note)`  \n  Writes an audit note or handoff summary.\n- `reply_to_customer(ticket_id, message)`  \n  Sends the customer-facing response.\n\nImportant schema rules:\n- Require IDs, enums, and bounded numeric amounts.\n- Make the refund tool consume a previously created proposal, not raw model text.\n- Include an idempotency key on `issue_refund`.\n- Return machine-readable status and reconciliation fields.\n- Separate “draft” from “issue” so the model can prepare work without spending money.\n\n**Permissions**\nUse least privilege and staged authority:\n- Read-only access by default for ticket, customer, order, and policy tools.\n- Write access to notes and draft proposals is allowed in the normal loop.\n- Refund execution permission is not always available. It should require a higher authority token or an approval gate.\n- Put the payment tool behind a capability that is only minted when the case meets policy and risk thresholds.\n- Scope permissions per tenant, per case, and per amount ceiling.\n\nA practical policy:\n- Under a small threshold and with clear policy match, the system may auto-issue if the risk score is low.\n- Above that threshold, or if any fraud, chargeback, identity, or policy ambiguity is present, the agent may only propose and must wait for approval.\n- If the case touches excluded categories, deny execution entirely and route to human review.\n\n**Approval boundary**\nThe approval boundary should sit immediately before `issue_refund`, not earlier.\n\nApprovals should be required when:\n- Refund amount exceeds a configured limit.\n- The model confidence is low or evidence is incomplete.\n- Policy fit is ambiguous.\n- Customer has prior refund abuse signals.\n- The refund is outside normal policy, partial-but-exceptional, or goodwill-based.\n- Any non-reversible side effect would occur.\n\nApprovals should verify:\n- Proposed amount and currency.\n- Policy citations.\n- Evidence summary from the ticket and order.\n- Risk flags.\n- Idempotency key and intended side effect.\n\nGood pattern:\n1. Model reads data and drafts a proposal.\n2. System validates proposal against policy and thresholds.\n3. If allowed, either auto-executes or routes to human approval.\n4. Only the approved proposal can be passed to `issue_refund`.\n\n**What must stay out of the model loop**\n- Final authority to move money.\n- Direct construction of payment payloads from raw text.\n- Hidden policy exceptions.\n- Silent retries that could duplicate refunds.\n- Any ability to bypass the approval gate by “reasoning” its way around controls.\n\n**Operational guardrails**\n- Log every read, proposal, approval, and execution event.\n- Use deterministic policy checks outside the model for eligibility and thresholds.\n- Enforce idempotency and replay protection on payment actions.\n- Keep the model from seeing secrets it does not need.\n- Make all effectful actions auditable and attributable to a proposal ID and approver ID.\n\n**A clean split**\n- Model: interpret, summarize, propose.\n- Policy engine: decide eligibility.\n- Human or higher-trust service: approve exceptions or high-risk refunds.\n- Executor: perform only the approved refund.\n\nIf you want, I can turn this into a concrete architecture diagram or a JSON tool contract next.\n\n<probe:agent-harness-design>",
+      "kind": "positive",
+      "observed_skills": [
+        "agent-harness-design"
+      ],
+      "passed": true,
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 15872,
+        "input_tokens": 18823,
+        "output_tokens": 1228,
+        "reasoning_output_tokens": 97
+      }
+    },
+    {
+      "accepted_skill_sets": [
+        [
+          "agent-harness-design"
+        ]
+      ],
+      "case": "positive_harness_authority_and_tools",
+      "case_id": 1,
+      "duration_seconds": 34.602,
+      "final_output": "Use a two-tier execution model:\n\n- The model plans and decides.\n- The harness validates, authorizes, and executes side effects.\n\n**Model Loop**\n- Input: ticket text, customer/account snapshot, refund policy facts, prior actions, and a compact tool result history.\n- Output: structured intent only, not direct execution.\n- The model should:\n  - classify the issue\n  - determine eligibility\n  - estimate refund amount\n  - draft a customer-facing explanation\n  - decide whether the case is low-risk, high-risk, or blocked\n  - request an action like `propose_refund`, `issue_refund`, or `escalate`\n- The model should not:\n  - call payment APIs directly\n  - invent policy exceptions\n  - override approval rules\n  - mutate state outside declared tools\n\n**Tool Schemas**\nKeep tools narrow and typed. Prefer a few immutable, auditable tools over one generic “do anything” tool.\n\n- `read_ticket(ticket_id)`\n  - returns ticket text, customer metadata, order IDs, timestamps, conversation history\n- `lookup_policy(order_id | product_id | region)`\n  - returns applicable policy facts and eligibility rules\n- `calculate_refund(order_id, reason_code, policy_version)`\n  - returns maximum allowed amount and rationale\n- `propose_refund(ticket_id, amount, currency, reason_code, rationale, confidence)`\n  - creates an internal proposal, no money movement\n- `issue_refund(refund_proposal_id)`\n  - performs the actual refund\n- `escalate(ticket_id, reason, summary)`\n  - hands off to a human\n- `add_note(ticket_id, note)`\n  - writes an audit note, if needed\n\nSchema rules:\n- IDs are required, not free text where an object exists.\n- Amounts must be numeric and bounded.\n- Reason codes must come from an enum.\n- Every mutating action must include a stable `policy_version` or `proposal_id`.\n- Tool outputs should include immutable audit fields: actor, timestamp, decision basis, and correlation IDs.\n\n**Permissions**\nUse capability-based permissions, not ambient access.\n\n- Read-only capabilities:\n  - ticket content\n  - customer/order metadata\n  - policy lookup\n- Proposal capability:\n  - can create refund proposals up to a limit\n- Execution capability:\n  - can issue refunds only if the harness grants a specific per-action token\n- Scope limits:\n  - per-ticket\n  - per-account\n  - per-day\n  - per-amount\n  - per-region\n\nPractical rule:\n- The model may request a refund.\n- The harness decides whether that request can become a real refund.\n\n**Approval Boundary**\nPlace the approval boundary on money movement and policy exceptions.\n\nAuto-approve if all of these are true:\n- amount is under a low-risk threshold\n- policy lookup says eligible\n- no fraud or chargeback signals\n- customer/account is in good standing\n- refund is within computed maximum\n- action is standard and reversible\n\nRequire human approval if any of these are true:\n- amount exceeds threshold\n- policy is ambiguous or missing\n- exception is needed\n- account is high risk\n- repeated refunds on same account/order\n- the model confidence is low\n- the refund would violate a rate limit or exception cap\n\nRecommended split:\n- Model can auto-propose.\n- Harness can auto-issue only for fully eligible, low-risk, below-threshold refunds.\n- Human approval required for exceptions, large amounts, or anything outside policy.\n\n**Execution Flow**\n1. Read ticket and policy.\n2. Model extracts facts and drafts decision.\n3. Harness validates against policy and permissions.\n4. If eligible and low-risk, harness may issue refund.\n5. Otherwise, create a proposal or escalate.\n6. Write an audit trail for every decision and tool call.\n\n**What stays in the model**\n- classification\n- summarization\n- recommendation\n- explanation draft\n- confidence estimate\n- branching suggestion\n\n**What stays outside the model**\n- final authorization\n- policy enforcement\n- amount ceilings\n- refund issuance\n- idempotency\n- audit logging\n- fraud/risk checks\n\n**Hard rule**\nIf the action changes money or external state, the model can recommend it, but the harness must own the final gate.\n\n<probe:agent-harness-design>",
+      "kind": "positive",
+      "observed_skills": [
+        "agent-harness-design"
+      ],
+      "passed": true,
+      "status": "ok",
+      "trial": 2,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 26880,
+        "input_tokens": 32056,
+        "output_tokens": 1246,
+        "reasoning_output_tokens": 76
+      }
+    },
+    {
+      "accepted_skill_sets": [
+        [
+          "agent-harness-design"
+        ]
+      ],
+      "case": "positive_overconstraint_audit",
+      "case_id": 2,
+      "duration_seconds": 28.934,
+      "final_output": "The two problems are coupled but separable:\n\n1. The router is turning a capability decision into a silent quality downgrade.\n2. The policy layer is turning a single denied action into a run-level failure.\n\nThat combination creates hidden behavior changes and unnecessary capability loss while still not improving the real security boundary.\n\n**Findings**\n\n- **High: Silent model downgrade is an implicit policy change**\n  - If the router swaps to a weaker model without surfacing it, you lose predictability, reproducibility, and the ability to reason about safety or quality.\n  - This is a capability tax, not a security boundary. Security should be enforced by an explicit gate, not by silently changing the model.\n  - If the downgrade happens after a quota, availability, or policy condition, the caller should know the run state changed.\n\n- **High: Blocking the whole run after any denied tool call is overbroad**\n  - A denied tool call is not the same as a compromised session.\n  - Treating every denial as fatal creates a brittle system where benign attempts, recoverable mistakes, or exploratory reasoning terminate the agent unnecessarily.\n  - This reduces useful work and can incentivize the model to avoid asking for needed tools rather than fail safely.\n\n- **Medium: The current design conflates authorization, execution, and recovery**\n  - Authorization should decide whether a specific effect is allowed.\n  - Execution should carry out allowed effects.\n  - Recovery should decide whether the agent can continue after a denial, based on the denial type and the current trust state.\n  - When these are merged, the system either becomes too permissive or too fragile.\n\n**What to change**\n\n- Make model routing explicit.\n  - Emit the actual model used in run metadata.\n  - If a downgrade occurs, surface it as a first-class state change, not a silent fallback.\n  - Preserve the original requested tier as intent, and the served tier as reality.\n\n- Separate security boundaries from quality fallbacks.\n  - Use policy to block only the denied action, not the whole session, unless the denial indicates a true trust escalation or session compromise.\n  - Keep the run alive after ordinary denials with a structured error the model can observe.\n\n- Classify denials.\n  - `hard_denied`: irreversible or unsafe, continue may be allowed but effect stays blocked.\n  - `soft_denied`: missing permission, rate limit, or policy constraint that can be handled with alternative reasoning.\n  - `session_invalid`: genuine compromise or invariant violation, terminate the run.\n\n- Feed denials back into the agent loop as data.\n  - Return a structured denial object with reason, scope, and retryability.\n  - Let the model revise its plan instead of forcing a global abort.\n\n- Make fallback routing policy-aware.\n  - If you must downgrade, do it only when the lower model still satisfies the minimum capability requirements for the task.\n  - If the downgrade changes tool-use quality or reasoning depth materially, expose that to the orchestrator and, if relevant, the user.\n\n**A safer pattern**\n\n- Request comes in.\n- Router selects best available model.\n- Policy gate evaluates each tool call independently.\n- If a tool call is denied, return a structured denial and keep the session alive unless the denial is session-critical.\n- If the router must downgrade, record and surface that as an explicit execution state, not a hidden substitution.\n\n**Design principle**\n\n- Security boundary: “What effects are allowed?”\n- Capability management: “Which model is serving the request?”\n- Recovery policy: “Can the run continue after a denial?”\n\nThose should be distinct, or you will keep paying the capability tax without getting stronger security.\n\nIf you want, I can turn this into a concrete policy spec or an acceptance checklist for the router and tool gate.  \n\n<probe:agent-harness-design>",
+      "kind": "positive",
+      "observed_skills": [
+        "agent-harness-design"
+      ],
+      "passed": true,
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 15872,
+        "input_tokens": 18903,
+        "output_tokens": 1137,
+        "reasoning_output_tokens": 161
+      }
+    },
+    {
+      "accepted_skill_sets": [
+        [
+          "agent-harness-design"
+        ]
+      ],
+      "case": "positive_overconstraint_audit",
+      "case_id": 2,
+      "duration_seconds": 27.659,
+      "final_output": "The design has two coupled problems:\n\n1. The router silently downgrades models.\n2. The policy turns any single denied tool call into a full-run failure.\n\nThat combination breaks both capability integrity and availability. You get hidden loss of quality from the router, and you turn a normal security denial into a denial-of-service for the whole task.\n\nWhat to change:\n\n- Make routing explicit, not silent.\n  - If the requested model is unavailable, return an explicit routing event.\n  - Preserve the user/task contract by exposing the downgrade as a first-class state.\n  - If the downgrade changes expected capability materially, require a policy decision or user-visible acknowledgment.\n\n- Keep policy enforcement local to the attempted action.\n  - A denied tool call should fail that call, not necessarily the whole run.\n  - The agent should be able to continue with non-privileged reasoning, alternate tools, or a revised plan.\n  - Only escalate to run termination on repeated violations, attempted bypass, or a state where continued execution would be unsafe or meaningless.\n\n- Separate “security boundary” from “execution control.”\n  - The security boundary decides whether an action is allowed.\n  - The execution controller decides what to do after denial: retry, replan, continue without the tool, or stop.\n  - Do not let the boundary implicitly terminate the session unless that is the actual safety requirement.\n\nA safer pattern:\n\n- Router:\n  - Input: requested capability, context, availability.\n  - Output: selected model plus an explicit reason code if downgraded.\n\n- Policy engine:\n  - Input: single tool request.\n  - Output: `allow`, `deny`, or `allow-with-constraints`.\n\n- Loop controller:\n  - On `deny`: record denial, notify the agent, and continue if the task still has a viable path.\n  - On `allow-with-constraints`: execute with those constraints.\n  - On repeated denial patterns or high-risk signals: stop the run.\n\nPractical guardrails:\n\n- Log every downgrade and denial with machine-readable reason codes.\n- Make the agent aware of capability changes so it can adjust strategy.\n- Add a per-task budget for denied attempts so one bad branch does not kill the whole workflow.\n- Treat tool denial as a recoverable event unless the policy explicitly marks it terminal.\n\nNet result: you preserve the real security boundary, avoid silent capability erosion, and remove the accidental coupling that makes the system brittle.\n\n<probe:agent-harness-design>",
+      "kind": "positive",
+      "observed_skills": [
+        "agent-harness-design"
+      ],
+      "passed": true,
+      "status": "ok",
+      "trial": 2,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 13824,
+        "input_tokens": 19340,
+        "output_tokens": 1049,
+        "reasoning_output_tokens": 321
+      }
+    },
+    {
+      "accepted_skill_sets": [
+        [
+          "agent-harness-design"
+        ]
+      ],
+      "case": "positive_long_horizon_recovery_design",
+      "case_id": 3,
+      "duration_seconds": 35.146,
+      "final_output": "A week-long coding-agent harness should treat the model as **ephemeral** and the harness as **durable**. The core rule is: never rely on the live context window as the source of truth.\n\nUse this design:\n\n1. **Separate transient context from durable state**\n   - Transient: the current prompt, scratchpad, recent tool outputs, and compacted summaries.\n   - Durable: task goal, constraints, decisions, file diffs, test results, TODOs, open risks, and checkpoint history.\n\n2. **Maintain a compacted working set**\n   - Keep only the most recent, execution-critical context in the prompt.\n   - Periodically replace older thread history with a structured summary.\n   - The summary should be machine-readable and stable, not prose-only.\n   - Include:\n     - objective\n     - current plan\n     - completed steps\n     - pending steps\n     - verified facts\n     - assumptions\n     - unresolved questions\n     - file/state pointers\n\n3. **Write checkpoints to durable storage after every meaningful milestone**\n   - A checkpoint should be created after:\n     - each completed subtask\n     - each successful test or verification step\n     - each tool-heavy phase\n     - every context compaction\n     - any user-visible decision\n   - A checkpoint should contain:\n     - canonical task state\n     - last verified repo state or artifact hash\n     - exact command/test evidence\n     - next action\n     - recovery instructions\n\n4. **Track verified progress, not just claimed progress**\n   - Mark a step complete only when it is backed by evidence.\n   - Evidence should be one of:\n     - test output\n     - lint/build success\n     - file diff inspection\n     - command exit status\n     - explicit user confirmation\n   - Distinguish:\n     - `planned`\n     - `in_progress`\n     - `blocked`\n     - `verified`\n   - The harness should never compact away the evidence required to justify `verified`.\n\n5. **Make compaction lossless for decisions, selective for detail**\n   - Preserve all irreversible decisions.\n   - Preserve any detail needed to safely resume work.\n   - Drop redundant reasoning, old intermediate exploration, and stale alternatives.\n   - If a decision was rejected, keep the rejection reason briefly so the agent does not rediscover it.\n\n6. **Persist a task state record outside the model context**\n   - Store it in a file or database record the harness owns.\n   - Prefer a single canonical state document plus append-only event log.\n   - The state document should be enough to reconstruct the next action without the prior chat transcript.\n   - Use append-only events for auditability and rollback.\n\n7. **Support pause and resume as first-class operations**\n   - `pause` should flush:\n     - current state snapshot\n     - in-flight tool results\n     - outstanding TODOs\n     - any partial artifact references\n   - `resume` should:\n     - reload durable state\n     - rehydrate the latest compact summary\n     - verify workspace state against stored hashes\n     - continue from the next unverified step\n   - A paused agent should be able to resume after hours or days with no hidden dependency on RAM state.\n\n8. **Recover from process loss by replaying from the last checkpoint**\n   - On restart:\n     - load the latest durable checkpoint\n     - verify filesystem/artifact state\n     - re-establish the current plan\n     - re-run only the minimum verification needed if uncertainty exists\n   - Never assume the last in-memory action completed unless it was checkpointed.\n   - If there is a mismatch between stored state and actual workspace state, trust the workspace only after re-validation.\n\n9. **Use idempotent side effects**\n   - Tool actions should be designed so they can be retried safely.\n   - Record operation IDs for file edits, commands, builds, and external calls.\n   - This prevents duplication during crash recovery or resume.\n\n10. **Keep a recovery envelope**\n   - Every checkpoint should include:\n     - `task_id`\n     - `checkpoint_id`\n     - `parent_checkpoint_id`\n     - `current_goal`\n     - `last_verified_step`\n     - `open_files`\n     - `changed_paths`\n     - `test_status`\n     - `known_failures`\n     - `next_action`\n   - That envelope is what the harness uses to restart without ambiguity.\n\nA practical control loop is:\n\n- execute step\n- verify result\n- write checkpoint\n- compact context if needed\n- continue\n\nIf you want a strict operating policy, use this rule:\n\n- **Nothing is “done” until it is checkpointed.**\n- **Nothing is “remembered” unless it is in durable state.**\n- **Nothing is “recoverable” unless the next action is derivable from the checkpoint.**\n\nIf useful, I can turn this into a concrete harness spec with:\n1. state schema,\n2. checkpoint format,\n3. compaction algorithm,\n4. resume/recovery flow.",
+      "kind": "positive",
+      "observed_skills": [],
+      "passed": false,
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 26880,
+        "input_tokens": 33569,
+        "output_tokens": 1311,
+        "reasoning_output_tokens": 168
+      }
+    },
+    {
+      "accepted_skill_sets": [
+        [
+          "agent-harness-design"
+        ]
+      ],
+      "case": "positive_long_horizon_recovery_design",
+      "case_id": 3,
+      "duration_seconds": 26.698,
+      "final_output": "A week-long coding-agent harness should treat the model context as a cache, not the source of truth.\n\n- `Context compaction`: trigger compaction on a budget, not only on token exhaustion. Before compaction, distill the live working set into a small state bundle: objective, constraints, decisions made, verified facts, open questions, next actions, and known risks. Drop raw chat history unless it contains unresolved evidence or exact tool outputs that must be preserved.\n- `Durable state`: keep all durable progress outside the prompt in a machine-readable store, ideally append-only plus a current snapshot. Separate:\n  - task spec and acceptance criteria\n  - decision log\n  - artifact inventory\n  - verification results\n  - recovery metadata: run id, last checkpoint, pending tool actions, branch/commit, file hashes, and timestamps\n- `Verified progress`: never mark work complete from model self-report alone. Record progress only when it is backed by an external check:\n  - tests passed\n  - build/lint/typecheck succeeded\n  - file diff inspected\n  - command output captured\n  - invariant confirmed by a validator\n  The harness should distinguish `claimed`, `attempted`, `verified`, and `blocked`.\n- `Pause`: support an explicit pause that freezes new side effects, writes a checkpoint, and returns a resumable state. Pausing should leave the task in a clean state: no half-written durable record, no ambiguous in-flight tool calls.\n- `Recovery after process loss`: on restart, do not trust memory. Reconstruct state from durable storage, then reconcile with the workspace:\n  - reload the latest checkpoint\n  - detect whether prior actions committed to disk, git, or external systems\n  - compare expected artifact hashes and branch state to actual state\n  - resume from the last verified checkpoint, or re-run verification if the environment may have diverged\n  - if an effect may have happened but cannot be proven, treat it as uncertain and verify before proceeding\n\nA practical pattern is:\n\n1. `Event log` for every action the harness allowed.\n2. `Checkpoint snapshot` every time the agent reaches a stable point.\n3. `Verification record` attached to each completed step.\n4. `Recovery routine` that can replay or revalidate from the last checkpoint.\n5. `Compaction routine` that rewrites the working context from durable state, not from the whole chat.\n\nThe key policy is: **only durable, externally verified facts survive compaction and restart**. Everything else is advisory.\n\nIf you want, I can turn this into a concrete harness contract or state schema.\n\n<probe:agent-harness-design>",
+      "kind": "positive",
+      "observed_skills": [
+        "agent-harness-design"
+      ],
+      "passed": true,
+      "status": "ok",
+      "trial": 2,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 15872,
+        "input_tokens": 18816,
+        "output_tokens": 812,
+        "reasoning_output_tokens": 109
+      }
+    },
+    {
+      "accepted_skill_sets": [
+        [
+          "agent-harness-design"
+        ]
+      ],
+      "case": "positive_model_native_adapters",
+      "case_id": 4,
+      "duration_seconds": 28.811,
+      "final_output": "Provider neutrality does not require identical prompts and tools.\n\nWhat it requires is:\n- A consistent task contract at the product boundary.\n- Comparable information, permissions, and success criteria across providers.\n- Harness logic that compensates for provider-native differences only when they are part of the product design, not when they leak as accidental advantage.\n\nIn practice:\n- Keep the user-facing intent, task framing, and evaluation rubric stable.\n- Allow provider-specific adapters for native edit mechanisms, message formatting, tool schemas, and retry/recovery behavior.\n- Do not force identical prompts if that would misrepresent a model’s native interface or penalize one provider’s intended usage pattern.\n- Do not force identical tools if one provider expects a different edit primitive, as long as the harness normalizes the effective capability exposed to the model.\n\nHow to evaluate the model-harness pair:\n- Evaluate the pair, not the model in isolation.\n- Measure end-to-end task success on a fixed benchmark set that reflects real workflows.\n- Compare the same task under each provider adapter with the same visible objective, constraints, and acceptance criteria.\n- Track both outcome quality and harness overhead: edit correctness, tool-call efficiency, recovery from malformed outputs, latency, token cost, and failure modes.\n- Run ablations:\n  - same model, different harness versions\n  - same harness, different models\n  - native edit path vs normalized edit path\n- Separate “model capability” from “adapter compatibility” and “harness policy” in the scorecard.\n\nA useful rule:\n- If a difference changes only how the model is spoken to, it is usually a harness concern.\n- If a difference changes what the model can observe or do, it is a capability parity concern.\n\nThe main design goal is not identical prompts/tools. It is equivalent opportunity to solve the task under each provider’s native constraints, with a harness that makes those differences explicit and testable.\n\n<probe:agent-harness-design>",
+      "kind": "positive",
+      "observed_skills": [
+        "agent-harness-design"
+      ],
+      "passed": true,
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 26880,
+        "input_tokens": 32213,
+        "output_tokens": 903,
+        "reasoning_output_tokens": 245
+      }
+    },
+    {
+      "accepted_skill_sets": [
+        [
+          "agent-harness-design"
+        ]
+      ],
+      "case": "positive_model_native_adapters",
+      "case_id": 4,
+      "duration_seconds": 28.01,
+      "final_output": "Provider neutrality does not require identical prompts and identical tools. It requires equivalent task semantics and comparable opportunity to succeed.\n\nWhat should be identical:\n- The underlying task, repo state, and success criteria\n- The visible objective and constraints\n- The evaluation rubric\n- The budget limits and stopping conditions, as much as possible\n\nWhat can differ:\n- Prompt formatting, if needed to expose the same intent in a model’s preferred interaction style\n- Tool shape, if a provider has a different native edit mechanism\n- Adapter logic that translates a common internal operation into provider-specific calls\n\nThe key rule is: normalize at the harness boundary, not by forcing every model to use the same low-level interface. If one model edits best through structured patch ops and another through file rewrite calls, the harness can expose the same high-level “make this change” action while mapping it differently per provider.\n\nHow to evaluate the model-harness pair:\n- Evaluate the pair, not the model in isolation.\n- Use the same benchmark tasks across providers, but run each through its native-compatible harness adapter.\n- Measure end-to-end outcomes:\n  - task completion rate\n  - correctness of edits\n  - regression rate\n  - number of tool calls / tokens / latency\n  - recovery from failure cases\n- Compare against a common baseline harness to separate:\n  - model capability\n  - harness quality\n  - interaction fit between the two\n\nA practical test matrix:\n- Fixed task set\n- Fixed repository snapshots\n- Fixed scoring rubric\n- Multiple model/provider pairs\n- Same harness policy, with provider-specific adapters only where necessary\n\nInterpretation:\n- If a model performs well only with a custom prompt/tool setup, that is not evidence against neutrality.\n- If the harness only works well for one provider’s native edit style, that is a harness portability problem.\n- If performance changes materially when only the adapter changes, you are measuring the model-harness pair, which is the right unit for production decisions.\n\nBottom line:\n- No, provider neutrality does not mean identical prompts and tools.\n- Yes, it does mean equivalent semantics and fair evaluation.\n- The right way to evaluate is by fixing the task and rubric, then measuring each model-harness pair end to end.",
+      "kind": "positive",
+      "observed_skills": [],
+      "passed": false,
+      "status": "ok",
+      "trial": 2,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 24832,
+        "input_tokens": 33719,
+        "output_tokens": 841,
+        "reasoning_output_tokens": 220
+      }
+    },
+    {
+      "accepted_skill_sets": [
+        [
+          "agent-harness-design"
+        ]
+      ],
+      "case": "positive_capability_tax_eval",
+      "case_id": 5,
+      "duration_seconds": 27.372,
+      "final_output": "Audit it as a safety-utility tradeoff, not as a single success rate.\n\nUse these baselines:\n- No control: raw harness behavior on benign and malicious prompts.\n- Weak control: a minimal or heuristic filter, to show whether the new control beats an obvious baseline.\n- Existing default policy: whatever your current production or pre-change guardrail is.\n- Oracle / idealized baseline: human-labeled outcomes for what should be blocked vs allowed, used only as a reference target.\n- Benign-only baseline and attack-only baseline: separate slices, so you can measure safety and usefulness independently.\n\nRun repeated trials:\n- Use the same prompt set across multiple random seeds, model calls, and tool-order permutations.\n- Repeat enough times to expose variance from nondeterminism, especially if the control depends on classifier thresholds or LLM judgments.\n- Report per-prompt distributions, not just averages.\n- Stratify by attack style: direct injection, indirect injection, hidden instructions, tool-output injection, and multi-turn attacks.\n\nUse outcome evidence that is observable:\n- Attack blocked: the harmful instruction was not executed, not just “the model sounded cautious.”\n- Benign task completed: the assistant still produced the requested output or tool action.\n- Partial completion: task succeeded but with degradation.\n- Escalation / deferral: the control asked for confirmation or refused.\n- Log the exact triggering condition, decision path, and any tool calls or refusals.\n\nMeasure false blocks explicitly:\n- False block rate on benign prompts.\n- False block rate on benign prompts that include suspicious but legitimate content, such as code, quoted text, logs, YAML, JSON, URLs, or copied system messages.\n- False block rate by task class, because controls often over-block high-entropy work like coding, retrieval, summarization, and data extraction.\n- Separate “hard block” from “soft block” such as warnings, extra confirmation, or degraded outputs.\n\nQuantify capability tax:\n- Task success delta versus baseline on benign workloads.\n- Latency overhead.\n- Extra token / compute cost.\n- Tool-call reduction or unnecessary confirmation rate.\n- User-interruption rate.\n- Quality regression on core tasks, ideally with a rubric or human preference score.\n- If possible, convert this to a single cost curve: safety gain per unit of utility loss.\n\nWhat a good report should contain:\n- A confusion matrix for benign vs malicious cases.\n- Confidence intervals or bootstrap intervals for all key rates.\n- Per-category breakdowns, not just an aggregate.\n- Examples of false positives and false negatives.\n- A clear operating point, since the right threshold depends on whether you prefer fewer attacks or fewer false blocks.\n\nDecision rule:\n- The control is only strong if it raises attack-block rate materially above baseline while keeping false-block rate and capability tax within an acceptable budget.\n- If it blocks attacks but materially harms benign work, the audit should call that out as an overfit safety control, not a success.\n\n<probe:agent-harness-design>",
+      "kind": "positive",
+      "observed_skills": [
+        "agent-harness-design"
+      ],
+      "passed": true,
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 15872,
+        "input_tokens": 18845,
+        "output_tokens": 912,
+        "reasoning_output_tokens": 122
+      }
+    },
+    {
+      "accepted_skill_sets": [
+        [
+          "agent-harness-design"
+        ]
+      ],
+      "case": "positive_capability_tax_eval",
+      "case_id": 5,
+      "duration_seconds": 28.482,
+      "final_output": "Audit it against a control that measures both protection and collateral damage.\n\n**Right baselines**\n- `No control`: the same harness with the prompt-injection defense disabled. This is the primary baseline for both attack success and task completion.\n- `Benign-only control`: identical tasks with no injected attack content. This isolates normal task success and any pure capability loss from the defense.\n- `Attack-only control`: tasks containing injection attempts but no legitimate work pressure. This measures raw attack containment.\n- `Alternative control`: if you have more than one mitigation, compare against the weakest acceptable one and, if relevant, a non-blocking variant such as warnings, sandboxing, or delayed execution.\n- `Manual adjudication baseline`: a human-labeled sample for “should block” vs “should allow,” used to validate the control’s decisions.\n\n**Repeated trials**\n- Run each test case multiple times, not once. Prompt-injection defenses are often non-deterministic.\n- Use the same task set across runs, with randomized order to avoid drift.\n- Split into at least three buckets:\n  - clean benign tasks\n  - benign tasks with irrelevant attack text nearby\n  - tasks where the injected text is actually malicious\n- Repeat enough times to estimate variance, not just mean performance. If the control is stochastic, report confidence intervals or bootstrapped ranges.\n- If the harness or model changes, re-run the full set; do not mix results across versions.\n\n**Outcome evidence**\nFor each trial, record:\n- task id\n- attack present or absent\n- expected action: allow / block / partial\n- actual action\n- task outcome: success / fail / degraded\n- reason for block, if any\n- model output or trace snippet showing what happened\n- whether a human agreed with the block decision\n\nThen report:\n- attack block rate\n- benign completion rate\n- false block rate\n- net utility delta vs baseline\n- severity of failures, not just counts\n\n**False blocks**\nTreat as false block any case where the control stopped or degraded legitimate work that the baseline completed.\nExamples:\n- blocked a valid file read because it contained suspicious wording\n- refused to continue on a benign instruction nested inside user-provided text\n- overblocked on metadata, comments, or quoted content\n- forced unnecessary escalation when the task was safe\n\nReport false blocks separately by:\n- frequency\n- task type\n- trigger category\n- severity, from mild slowdown to total failure\n\n**Capability tax**\nMeasure what the defense costs on normal work, not just whether it stops attacks.\nUse at least these metrics:\n- success drop vs no-control baseline\n- extra turns / retries\n- added latency\n- token overhead\n- tool-call reduction or suppression\n- task quality delta on benign tasks\n- recovery cost after a mistaken block\n\nA good summary is:\n- `security gain`: how much attack success fell\n- `capability tax`: how much benign success fell\n- `operational tax`: latency, tokens, retries, and manual review load\n\n**What to conclude**\nThe control is only good if:\n- attack success drops materially versus `No control`\n- false blocks stay low on benign-only tasks\n- the capability tax is small enough for the workflow\n- results are stable across repeated trials\n\nIf you want, I can turn this into a one-page audit rubric or a results table template you can drop into your harness report.",
+      "kind": "positive",
+      "observed_skills": [],
+      "passed": false,
+      "status": "ok",
+      "trial": 2,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 6912,
+        "input_tokens": 18258,
+        "output_tokens": 1062,
+        "reasoning_output_tokens": 319
+      }
+    },
+    {
+      "accepted_skill_sets": [
+        []
+      ],
+      "case": "negative_translation",
+      "case_id": 6,
+      "duration_seconds": 10.42,
+      "final_output": "“构建已成功完成。”",
+      "kind": "negative",
+      "observed_skills": [],
+      "passed": true,
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 6912,
+        "input_tokens": 9164,
+        "output_tokens": 25,
+        "reasoning_output_tokens": 12
+      }
+    },
+    {
+      "accepted_skill_sets": [
+        []
+      ],
+      "case": "negative_translation",
+      "case_id": 6,
+      "duration_seconds": 13.452,
+      "final_output": "“构建已成功完成。”",
+      "kind": "negative",
+      "observed_skills": [],
+      "passed": true,
+      "status": "ok",
+      "trial": 2,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 6912,
+        "input_tokens": 9184,
+        "output_tokens": 22,
+        "reasoning_output_tokens": 9
+      }
+    },
+    {
+      "accepted_skill_sets": [
+        []
+      ],
+      "case": "negative_ordinary_code_review",
+      "case_id": 7,
+      "duration_seconds": 13.215,
+      "final_output": "High severity: the `WHERE name = ...` clause is vulnerable to SQL injection because raw user input is concatenated directly into the SQL string.\n\nIf an attacker supplies input like `' OR '1'='1`, they can alter the query logic, bypass filters, or potentially access or modify data depending on the broader query and database permissions.\n\nUse a parameterized query instead of string concatenation:\n\n```js\n// Bad\nconst sql = `SELECT * FROM users WHERE name = '${name}'`;\n\n// Good\nconst sql = `SELECT * FROM users WHERE name = ?`;\ndb.query(sql, [name]);\n```\n\nIf your driver uses named parameters, use those instead. Also validate the input type and length, but validation should be additional protection, not a replacement for parameters.",
+      "kind": "negative",
+      "observed_skills": [],
+      "passed": true,
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 6912,
+        "input_tokens": 9187,
+        "output_tokens": 242,
+        "reasoning_output_tokens": 79
+      }
+    },
+    {
+      "accepted_skill_sets": [
+        []
+      ],
+      "case": "negative_ordinary_code_review",
+      "case_id": 7,
+      "duration_seconds": 14.392,
+      "final_output": "**Finding**\n\n- High: Concatenating raw user input into the `WHERE name = ...` clause is a SQL injection vulnerability. An attacker can break out of the string literal and alter the query, potentially reading or modifying data. Use a parameterized query or prepared statement instead of string concatenation.\n\n**Fix**\n\n```js\n// bad\nconst sql = `SELECT * FROM users WHERE name = '${name}'`;\n\n// good\nconst sql = 'SELECT * FROM users WHERE name = ?';\ndb.query(sql, [name]);\n```\n\nIf you want, I can also review the exact query and rewrite it safely for your specific database driver.",
+      "kind": "negative",
+      "observed_skills": [],
+      "passed": true,
+      "status": "ok",
+      "trial": 2,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 6912,
+        "input_tokens": 9177,
+        "output_tokens": 189,
+        "reasoning_output_tokens": 52
+      }
+    },
+    {
+      "accepted_skill_sets": [
+        []
+      ],
+      "case": "negative_application_state",
+      "case_id": 8,
+      "duration_seconds": 15.244,
+      "final_output": "Use local component state for a React form when the form data is only needed inside that form or its immediate children, and Redux only when the form state has to be shared broadly or survive outside the component tree.\n\nRule of thumb:\n\n- Use local state for:\n  - Simple forms like login, search, contact, settings dialogs, or wizards that are self-contained.\n  - Temporary input that only matters while the form is open.\n  - UI-only state such as touched, dirty, validation messages, open/closed fields, or current step.\n  - Cases where you want less boilerplate and faster iteration.\n\n- Use Redux for:\n  - Form data that multiple unrelated components need to read or update.\n  - Drafts that must survive navigation, route changes, or component unmounts.\n  - Multi-step flows where many distant parts of the app depend on the same form state.\n  - Forms that coordinate with other global app state, like permissions, cached entities, or cross-page checkout state.\n\nPractical guidance:\n- Default to local state.\n- Move to Redux only if you can name a concrete shared-state need.\n- Don’t put every keystroke in Redux by default; that usually adds complexity without benefit.\n\nA common split is:\n- Local state for the live form fields and validation.\n- Redux for the submitted result, persisted draft, or server-backed entity state.\n\nIf you want, I can also give you a decision checklist or show the same idea with a small code example.",
+      "kind": "negative",
+      "observed_skills": [],
+      "passed": true,
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 6912,
+        "input_tokens": 9178,
+        "output_tokens": 318,
+        "reasoning_output_tokens": 10
+      }
+    },
+    {
+      "accepted_skill_sets": [
+        []
+      ],
+      "case": "negative_application_state",
+      "case_id": 8,
+      "duration_seconds": 13.716,
+      "final_output": "Use local component state for a React form when the form’s data is only needed inside that form or its immediate children.\n\nUse Redux when the form state must be shared broadly, persisted, or coordinated with other parts of the app.\n\n**Prefer local state when:**\n- The form is self-contained, like a login, contact, or search form.\n- Only the form component needs the current values, validation, and submit state.\n- You want simpler code and fewer moving parts.\n- The form state is temporary UI state, such as “dirty”, “focused”, “show password”, or field errors.\n- You do not need to keep the values after unmounting.\n\n**Prefer Redux when:**\n- Multiple distant components need the same form data.\n- The form is part of a larger workflow across routes or screens.\n- You need to preserve draft data while navigating away.\n- Other app logic depends on the form state in real time.\n- You need centralized handling for complex interactions across many components.\n\n**Rule of thumb**\nIf the form state is only useful while the form is on screen, keep it local. If it becomes application state, put it in Redux.\n\n**Important nuance**\nEven for large forms, Redux is often still not the best place for every keystroke. A common pattern is:\n- Keep field input state local while editing.\n- Dispatch to Redux only on submit, save, or step transition.\n\nThat usually gives the best balance of simplicity and control.",
+      "kind": "negative",
+      "observed_skills": [],
+      "passed": true,
+      "status": "ok",
+      "trial": 2,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 6912,
+        "input_tokens": 9158,
+        "output_tokens": 323,
+        "reasoning_output_tokens": 20
+      }
+    },
+    {
+      "accepted_skill_sets": [
+        []
+      ],
+      "case": "ambiguous_ai_feature_not_harness",
+      "case_id": 9,
+      "duration_seconds": 12.638,
+      "final_output": "Here are a few friendly empty-state copy options for an AI customer-support chat screen:\n\n1. “Hi there. I’m here to help with orders, billing, account questions, and more. Ask me anything to get started.”\n2. “Need a hand? I can answer common questions, track down info, and point you in the right direction.”\n3. “Welcome in. Start by typing your question, and I’ll do my best to help right away.”\n4. “I’m your support assistant. Share what you need, and I’ll help you find a solution.”\n5. “No messages yet. When you’re ready, send a question and I’ll jump in.”\n\nIf you want, I can also draft:\n1. more conversational options,\n2. a more polished brand voice version,\n3. or a shorter version optimized for tight UI space.",
+      "kind": "ambiguous",
+      "observed_skills": [],
+      "passed": true,
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 6912,
+        "input_tokens": 9177,
+        "output_tokens": 200,
+        "reasoning_output_tokens": 20
+      }
+    },
+    {
+      "accepted_skill_sets": [
+        []
+      ],
+      "case": "ambiguous_ai_feature_not_harness",
+      "case_id": 9,
+      "duration_seconds": 12.836,
+      "final_output": "Here are a few friendly empty-state copy options for an AI customer-support chat screen:\n\n1. \"Hi there. How can I help today? Ask me anything about your order, account, or settings.\"\n2. \"You’re chatting with support AI. I can help with common questions, troubleshoot issues, or point you in the right direction.\"\n3. \"No messages yet. Start a conversation whenever you're ready.\"\n4. \"Need help? I’m here to answer questions and get you to a solution faster.\"\n5. \"Tell me what’s going on, and I’ll do my best to help.\"\n\nIf you want, I can also tailor this to a warmer, more premium, or more concise brand voice.",
+      "kind": "ambiguous",
+      "observed_skills": [],
+      "passed": true,
+      "status": "ok",
+      "trial": 2,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 6912,
+        "input_tokens": 9167,
+        "output_tokens": 164,
+        "reasoning_output_tokens": 14
+      }
+    },
+    {
+      "accepted_skill_sets": [
+        [
+          "task-state-with-files"
+        ]
+      ],
+      "case": "coexistence_long_task_state",
+      "case_id": 10,
+      "duration_seconds": 26.78,
+      "final_output": "I can’t implement the migration in this workspace as-is because it is read-only, and the repository appears empty, so there’s nothing to migrate or record against yet.\n\nIf you want me to proceed, provide a writable checkout or mount the actual repo, then I can create the durable task-state record and carry the migration across compaction.\n\n<probe:task-state-with-files>",
+      "kind": "coexistence",
+      "observed_skills": [
+        "task-state-with-files"
+      ],
+      "passed": true,
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 34304,
+        "input_tokens": 38412,
+        "output_tokens": 790,
+        "reasoning_output_tokens": 317
+      }
+    },
+    {
+      "accepted_skill_sets": [
+        [
+          "task-state-with-files"
+        ]
+      ],
+      "case": "coexistence_long_task_state",
+      "case_id": 10,
+      "duration_seconds": 38.608,
+      "final_output": "I can’t implement the migration in this workspace because there’s no repository content mounted here and the filesystem is read-only, so I can’t create the required owner-readable task record or make code changes.\n\nWhat I need to proceed:\n1. The actual repo files mounted in the workspace.\n2. Write access, or a workspace setup that allows file edits.\n\nOnce that’s available, I’ll:\n- create a persistent migration record,\n- inspect the codebase,\n- implement the migration incrementally,\n- keep the record updated with objective, decisions, evidence, next action, and unfinished work.",
+      "kind": "coexistence",
+      "observed_skills": [],
+      "passed": false,
+      "status": "ok",
+      "trial": 2,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 54784,
+        "input_tokens": 60119,
+        "output_tokens": 1408,
+        "reasoning_output_tokens": 336
+      }
+    },
+    {
+      "accepted_skill_sets": [
+        [
+          "agent-delegation"
+        ]
+      ],
+      "case": "coexistence_delegate_mission",
+      "case_id": 11,
+      "duration_seconds": 32.511,
+      "final_output": "**Mission Packet**\n\n**Task**\nConduct an independent literature search on the assigned topic and return a concise, evidence-backed synthesis.\n\n**Objective**\nIdentify the most relevant primary and secondary sources, extract the key claims each source supports, and report any meaningful disagreements, gaps, or limitations in the literature.\n\n**Boundaries**\n- Stay within the assigned topic only.\n- Do not broaden into adjacent questions unless they are necessary to interpret the core literature.\n- Do not produce implementation or policy recommendations unless the source material directly supports them.\n- Prefer authoritative and recent sources, but include older foundational work if it is still cited or necessary for context.\n\n**Inherited Authority**\nYou are authorized to:\n- Search the open literature and credible indexed sources.\n- Read, compare, and summarize source material.\n- Cite sources with enough precision for auditability.\n- Make bounded interpretive judgments where the literature supports them.\n\nYou are not authorized to:\n- Change the scope of the mission.\n- Assert conclusions not supported by the cited sources.\n- Treat non-source speculation as evidence.\n- Delegate the literature search further without explicit permission.\n\n**Required Evidence**\nFor every substantive claim in your report, include at least one of:\n- A direct citation to a primary source\n- A direct citation to a high-quality review or meta-analysis\n- A clearly labeled synthesis derived from multiple cited sources\n\nFor each cited source, provide:\n- Author or organization\n- Title\n- Year\n- Venue or publisher\n- A short note on why it matters to this mission\n\nWhen evidence conflicts:\n- State the conflict explicitly\n- Identify which sources disagree\n- Explain which interpretation is better supported and why\n\n**Deliverable**\nReturn a structured brief with:\n1. Search scope and inclusion criteria\n2. Top sources found\n3. Evidence synthesis\n4. Open questions or gaps\n5. Confidence level\n\n**Receipt to Return**\nReturn exactly this receipt format when done:\n\n```text\nRECEIPT\nmission: <mission title>\nscope: <1-2 sentence scope summary>\nsources_reviewed: <count>\nkey_findings: <3-5 bullets>\nevidence_gaps: <1-3 bullets>\nconfidence: <low|medium|high>\nnotes: <any deviations, exclusions, or limitations>\n```\n\n<probe:agent-delegation>",
+      "kind": "coexistence",
+      "observed_skills": [
+        "agent-delegation"
+      ],
+      "passed": true,
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 26880,
+        "input_tokens": 32030,
+        "output_tokens": 923,
+        "reasoning_output_tokens": 192
+      }
+    },
+    {
+      "accepted_skill_sets": [
+        [
+          "agent-delegation"
+        ]
+      ],
+      "case": "coexistence_delegate_mission",
+      "case_id": 11,
+      "duration_seconds": 26.155,
+      "final_output": "Mission Packet\n\nObjective\n- Conduct an independent literature search on the specified topic and return a grounded, source-backed synthesis.\n\nBounded Scope\n- Search only the literature relevant to the topic as stated.\n- Prioritize primary sources, review articles, and authoritative surveys.\n- Do not expand into adjacent questions unless they directly affect the core answer.\n- Stop once the evidence is sufficient to support a defensible summary.\n\nInherited Authority\n- You are authorized to:\n- Search publicly available scholarly sources, preprints, and authoritative technical references.\n- Read and cite papers, abstracts, official docs, and bibliographic metadata.\n- Make limited inferences when explicitly labeled as inference.\n- You are not authorized to:\n- Change files, run destructive actions, or make external commitments.\n- Treat uncited claims as confirmed facts.\n- Broaden the scope without stating why the broader scope is necessary.\n\nRequired Evidence\n- Provide at least 5 high-quality sources unless the topic is genuinely sparse.\n- For each key claim, include one of:\n- a direct citation to the source,\n- a short paraphrase tied to the source,\n- or an explicit note that the statement is an inference.\n- Distinguish primary evidence from secondary synthesis.\n- Note publication dates where relevant.\n- Flag disagreements, uncertainty, or gaps in the literature.\n\nReceipt to Return\n- Return a receipt with:\n- Search terms used.\n- Databases or source types consulted.\n- Number of sources screened and number retained.\n- 3 to 7 bullet findings, each tied to citations.\n- Confidence level for the overall conclusion.\n- Open questions or evidence gaps.\n- A one-paragraph recommendation on whether the literature is sufficient for the intended use.\n\nExecution Rules\n- Prefer precision over breadth.\n- If the topic is too narrow or too broad, say so immediately and explain the constraint.\n- Do not fabricate citations.\n- If evidence conflicts, present the conflict rather than resolving it by guesswork.\n\n<probe:agent-delegation>",
+      "kind": "coexistence",
+      "observed_skills": [
+        "agent-delegation"
+      ],
+      "passed": true,
+      "status": "ok",
+      "trial": 2,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 24832,
+        "input_tokens": 32063,
+        "output_tokens": 811,
+        "reasoning_output_tokens": 151
+      }
+    },
+    {
+      "accepted_skill_sets": [
+        [
+          "agent-delegation"
+        ],
+        [
+          "agent-delegation",
+          "agent-harness-design"
+        ]
+      ],
+      "case": "coexistence_delegate_harness_audit",
+      "case_id": 12,
+      "duration_seconds": 29.006,
+      "final_output": "Delegate it as a constrained audit with three explicit layers:\n\n1. Objective\n- Ask the worker to assess the harness on two questions only:\n  - Are permissions scoped to the minimum necessary authority?\n  - Does recovery preserve progress, auditability, and safe retry without silently widening effects?\n\n2. Authority model\n- Give the worker full analytical freedom inside the audit scope.\n- Do not give them mutable operational authority over production controls unless the audit specifically needs live verification.\n- Let them inspect configs, logs, policies, and recovery paths, but require read-only access by default.\n- State which actions are disallowed, such as changing permissions, replaying destructive workflows, or bypassing approval gates.\n\n3. Effect boundaries\n- Separate findings from changes.\n- Require the worker to return:\n  - Evidence\n  - Risk assessment\n  - Concrete remediation recommendations\n  - Any places where they could not verify behavior\n- If they need to test effectful flows, require a predeclared test plan and a narrow, reversible sandbox.\n\n4. Recovery design criteria\n- Have them check whether recovery:\n  - Restores state from durable checkpoints\n  - Replays only idempotent steps\n  - Preserves decision provenance and receipts\n  - Prevents duplicate side effects after interruption\n  - Distinguishes retryable failures from terminal failures\n\n5. Delegation packet\n- Give the worker:\n  - Scope\n  - Allowed tools\n  - Forbidden effects\n  - Success criteria\n  - Escalation conditions\n  - Output format\n- Keep it short enough that they can act independently without reinterpretation.\n\n6. Example instruction\n- “Audit the agent harness permission and recovery design. You may inspect configs, traces, and code paths. Do not modify any systems. Do not trigger live side effects. Report findings with evidence, ranked by severity, and include any unverified assumptions. If you need effectful validation, propose a minimal sandboxed test and stop for approval before running it.”\n\nThe core pattern is: broad intellectual autonomy, narrow operational authority, explicit effect gates, and a receipts-first report structure. That preserves the worker’s agency while keeping the owner’s boundaries intact.\n\n<probe:agent-delegation>\n<probe:agent-harness-design>",
+      "kind": "coexistence",
+      "observed_skills": [
+        "agent-delegation",
+        "agent-harness-design"
+      ],
+      "passed": true,
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 15872,
+        "input_tokens": 19182,
+        "output_tokens": 953,
+        "reasoning_output_tokens": 141
+      }
+    },
+    {
+      "accepted_skill_sets": [
+        [
+          "agent-delegation"
+        ],
+        [
+          "agent-delegation",
+          "agent-harness-design"
+        ]
+      ],
+      "case": "coexistence_delegate_harness_audit",
+      "case_id": 12,
+      "duration_seconds": 30.737,
+      "final_output": "Use a delegation contract that separates **analysis authority** from **effect authority**.\n\nA practical pattern:\n\n1. Define the audit scope precisely\n   - Example: “Review the agent harness’s permission model, recovery flow, and failure handling for gaps, ambiguity, escalation risk, and recovery drift.”\n   - Specify what counts as in-scope evidence: configs, code paths, logs, docs, tests.\n\n2. Preserve worker agency\n   - Give the worker the outcome, not a script.\n   - Ask for findings, risks, and concrete recommendations.\n   - Let it choose its own inspection order, hypotheses, and level of depth.\n   - Avoid over-prescribing the sequence unless there is a hard dependency.\n\n3. Preserve owner effect boundaries\n   - State what the worker may observe, summarize, and propose.\n   - State what it may not do without explicit approval:\n     - change permissions\n     - alter recovery logic\n     - run destructive recovery drills\n     - widen privileges\n     - write to production-like state\n   - If it needs stronger access, require an explicit request with rationale and blast radius.\n\n4. Use inherited authority, not fresh authority\n   - The worker should operate under the same constraints as the owner, not invent new ones.\n   - If the owner cannot perform an effect directly, the worker should not be able to do it just because it is delegated.\n   - Delegation transfers work, not sovereignty.\n\n5. Require receipts\n   - Ask for cited evidence, file paths, logs, or traces for every major claim.\n   - Require a distinction between:\n     - observed fact\n     - inference\n     - recommendation\n   - This prevents “confident but ungrounded” audits.\n\n6. Set cycle limits\n   - Define how many review passes or follow-up questions are allowed before escalation.\n   - Example: “Investigate for one pass, then return findings; only request follow-up if blocked by missing evidence.”\n   - This keeps the worker autonomous without turning the task into an open-ended loop.\n\nA good delegation brief looks like this:\n\n> Audit the agent harness’s permission and recovery design. Focus on where authority is granted, how it is constrained, how recovery is triggered, and whether recovery can accidentally expand privileges or bypass owner intent. You may inspect code, docs, and tests, and you may propose changes, but do not modify anything or execute effectful actions. Return: top risks, evidence for each, likely failure modes, and concrete fixes ranked by impact. If you need access beyond read-only inspection, stop and request it with a clear reason and expected blast radius.\n\nThe key design rule is:\n\n- **Worker agency**: freedom to investigate and reason\n- **Owner effect boundary**: only the owner authorizes state-changing actions\n\nIf you want, I can turn this into a reusable delegation template for your harness.  \n<probe:agent-delegation>",
+      "kind": "coexistence",
+      "observed_skills": [
+        "agent-delegation"
+      ],
+      "passed": true,
+      "status": "ok",
+      "trial": 2,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 26880,
+        "input_tokens": 32061,
+        "output_tokens": 1002,
+        "reasoning_output_tokens": 116
+      }
+    }
+  ],
+  "schema_version": 1,
+  "started_at": "2026-08-31T07:19:12.700604+00:00",
+  "stop_reason": null,
+  "summary": {
+    "ambiguous": {
+      "accuracy": 1.0,
+      "completed_runs": 2,
+      "passed_runs": 2
+    },
+    "coexistence": {
+      "accuracy": 0.833,
+      "completed_runs": 6,
+      "passed_runs": 5
+    },
+    "negative": {
+      "accuracy": 1.0,
+      "completed_runs": 6,
+      "passed_runs": 6
+    },
+    "positive": {
+      "accuracy": 0.7,
+      "completed_runs": 10,
+      "passed_runs": 7
+    }
+  }
+}

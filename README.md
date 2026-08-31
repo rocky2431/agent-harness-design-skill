@@ -64,9 +64,12 @@ would not improve this instruction-and-design capability.
 From GitHub:
 
 ```bash
-codex plugin marketplace add rocky2431/agent-harness-design-skill --ref main
+codex plugin marketplace add rocky2431/agent-harness-design-skill --ref v0.3.0
 codex plugin add agent-harness-design@rocky-agent-harness-design
 ```
+
+Use `--ref main` only when intentionally testing the moving development snapshot.
+Release tags are the reproducible install boundary.
 
 From a reviewed local checkout:
 
@@ -145,40 +148,49 @@ references:
 
 ## Evaluation
 
-The bundled eval set targets both activation and calibration. It includes cases that
-the predecessor handled too rigidly: proactive regulated controls, naturally parallel
-multi-agent work, isolated parallel writes, validated semantic gates, broad tools in a
-real sandbox, and pre-authorized low-risk actions. Capability-preservation cases also
-cover local denial, silent downgrades, provider-native adapters, stale guardrail
-retirement, long-task recovery, concise root instructions, and control ablation.
+The standard-library runner creates a fresh temporary `HOME`, `CODEX_HOME`, workspace,
+and ephemeral Codex session for every run. It never builds a shell command. Behavior
+mode records final outputs, wall-clock duration, configuration, and Codex-reported
+tokens for no-Skill, legacy, and candidate arms; optional blind grading records its
+semantic judgments separately from those measurements.
 
-For behavior evaluation, run every case at least three times in three arms:
+```bash
+python3 scripts/run_evals.py behavior \
+  --arm no_skill \
+  --arm agents-best-practices=/absolute/path/to/legacy-skill \
+  --arm agent-harness-design=plugins/agent-harness-design/skills/agent-harness-design \
+  --trials 2 --workers 4 --grade \
+  --output eval-results/v0.3.0-behavior.json
+```
 
-1. no harness-design Skill;
-2. the previous `agents-best-practices` Skill;
-3. `agent-harness-design`.
+Trigger mode tests the host's real implicit discovery. It installs marker-only probe
+Skills into each clean temporary home and observes which bodies were actually loaded;
+the corpus includes positive, negative, ambiguous, and adjacent-Skill coexistence
+cases.
 
-Score task fit, correctness, unnecessary blocking, unsupported certainty, cost, and
-latency. Prefer real environment state or deterministic artifacts over a model's claim
-that it followed the instructions.
+```bash
+python3 scripts/run_evals.py trigger \
+  --trials 2 --workers 4 \
+  --output eval-results/v0.3.0-trigger.json
+```
 
-The pre-release smoke used Codex CLI 0.149.0 with `gpt-5.4-mini`. The two cases most
-likely to expose the predecessor's rigid defaults were repeated three times:
+The corpus remains inside the Skill package so every installed copy carries the cases;
+the runner and retained release evidence remain at repository level so portable Skill
+installs do not acquire an execution dependency. Results are configuration-specific,
+not claims about every model or host.
 
-| Case | Previous Skill | This Skill |
-|---|---:|---:|
-| Naturally separable multi-agent research | Inconsistent; required a single-agent insufficiency proof in two runs | 3/3 recommended parallel workers from visible task shape |
-| Validated semantic grader as a gate | 0/3 accepted the measured semantic criterion without adding a mechanical-only restriction | 3/3 allowed a monitored, appealable blocking gate |
-
-Five additional one-shot calibration and safety cases matched the expected behavior,
-including prompt-injection containment and outcome verification. The ordinary
-translation negative-control did not activate either Skill. This is a targeted
-pre-release smoke, not a claim of model-independent benchmark performance.
+The v0.3.0 run completed 114/114 behavior answers and 38/38 blind grades. The candidate
+scored 3.684/4 with a 97.4% graded pass rate, versus 3.526/94.7% for the predecessor and
+3.395/92.1% without a Skill. Implicit discovery made 20/24 exact accepted selections,
+including 8/8 negative or ambiguous non-activations; positive recall was 7/10 and is a
+known stochastic limitation. See the
+[`v0.3.0 evaluation report`](reports/v0.3.0-evaluation.md) and retained raw evidence.
 
 ## Development
 
 ```bash
 python3 -m unittest discover -s tests -p 'test_*.py' -v
+python3 scripts/run_evals.py --help
 python3 "${CODEX_HOME:-$HOME/.codex}/skills/.system/skill-creator/scripts/quick_validate.py" \
   plugins/agent-harness-design/skills/agent-harness-design
 ```

@@ -1,0 +1,97 @@
+{
+  "skill_name": "agent-harness-design",
+  "adjacent_skills": {
+    "task-state-with-files": "Use for tool-driven execution that is substantive, multi-step, long-running, likely to survive context compaction or resume, or deliberately left unfinished. Keep objective, decisions, evidence, next action, and unfinished work in an owner-readable file. Do not use for answer-only questions or one-step edits.",
+    "agent-delegation": "Use when handing a meaningful research, analysis, writing, operations, or coding mission to another agent while preserving worker agency, inherited authority, effect gates, receipts, and cycle limits."
+  },
+  "evals": [
+    {
+      "id": 1,
+      "name": "positive_harness_authority_and_tools",
+      "kind": "positive",
+      "prompt": "Design the execution layer for an AI support agent that reads tickets, proposes refunds, and sometimes issues them. Decide what belongs in the model loop, tool schemas, permissions, and approval boundary.",
+      "expected_skills": ["agent-harness-design"]
+    },
+    {
+      "id": 2,
+      "name": "positive_overconstraint_audit",
+      "kind": "positive",
+      "prompt": "Audit an agent system whose router silently downgrades models and whose policy blocks the whole run after any denied tool call. I want capability preserved without weakening the real security boundary.",
+      "expected_skills": ["agent-harness-design"]
+    },
+    {
+      "id": 3,
+      "name": "positive_long_horizon_recovery_design",
+      "kind": "positive",
+      "prompt": "How should the harness for a week-long coding agent handle context compaction, durable state, verified progress, pause, and recovery after process loss?",
+      "expected_skills": ["agent-harness-design"]
+    },
+    {
+      "id": 4,
+      "name": "positive_model_native_adapters",
+      "kind": "positive",
+      "prompt": "Our product supports several coding models whose native edit mechanisms differ. Review whether provider neutrality requires identical prompts and tools, and how to evaluate the model-harness pair.",
+      "expected_skills": ["agent-harness-design"]
+    },
+    {
+      "id": 5,
+      "name": "positive_capability_tax_eval",
+      "kind": "positive",
+      "prompt": "Audit our AI agent harness evaluation for a prompt-injection control that stops attacks but may also block benign work. Specify the right baselines, repeated trials, outcome evidence, false blocks, and capability tax.",
+      "expected_skills": ["agent-harness-design"]
+    },
+    {
+      "id": 6,
+      "name": "negative_translation",
+      "kind": "negative",
+      "prompt": "Translate 'The build completed successfully.' into Chinese.",
+      "expected_skills": []
+    },
+    {
+      "id": 7,
+      "name": "negative_ordinary_code_review",
+      "kind": "negative",
+      "prompt": "Review a JavaScript-built SQL query that concatenates raw user input into a WHERE name clause instead of using parameters.",
+      "expected_skills": []
+    },
+    {
+      "id": 8,
+      "name": "negative_application_state",
+      "kind": "negative",
+      "prompt": "Explain when a React form should use local component state instead of Redux.",
+      "expected_skills": []
+    },
+    {
+      "id": 9,
+      "name": "ambiguous_ai_feature_not_harness",
+      "kind": "ambiguous",
+      "prompt": "Draft friendly empty-state copy for an AI customer-support chat screen.",
+      "expected_skills": []
+    },
+    {
+      "id": 10,
+      "name": "coexistence_long_task_state",
+      "kind": "coexistence",
+      "prompt": "Implement a multi-day repository migration now. It will cross context compaction, so keep an owner-readable record of objective, decisions, evidence, next action, and unfinished work while you execute.",
+      "expected_skills": ["task-state-with-files"]
+    },
+    {
+      "id": 11,
+      "name": "coexistence_delegate_mission",
+      "kind": "coexistence",
+      "prompt": "Prepare a bounded mission packet for another coding agent to conduct an independent literature search. It must state inherited authority, required evidence, and the receipt it should return.",
+      "expected_skills": ["agent-delegation"]
+    },
+    {
+      "id": 12,
+      "name": "coexistence_delegate_harness_audit",
+      "kind": "coexistence",
+      "prompt": "Explain how to delegate a substantive audit of our agent harness permissions and recovery design while preserving the worker's agency and the owner's effect boundaries.",
+      "expected_skills": ["agent-delegation"],
+      "accepted_skill_sets": [
+        ["agent-delegation"],
+        ["agent-delegation", "agent-harness-design"]
+      ]
+    }
+  ]
+}

@@ -1,10 +1,10 @@
 ---
 name: agent-harness-design
-description: "Design, audit, debug, or evaluate provider-neutral AI agent harnesses. Use for agent loops, prompts and context, tools, permissions, approval flows, state, memory, compaction, multi-agent orchestration, MCP or Skill integration, security boundaries, observability, evidence, and harness over-constraint reviews. Do not use for ordinary coding or writing unless the agent system itself is the subject."
+description: "Design, audit, or evaluate an AI agent's execution layer: model/tool loops, authority and effects, context/state/recovery, orchestration, provider-native adapters, and model-harness safety, utility, or capability tax. Use only when the agent system is the subject; not for ordinary coding, writing, app state, task tracking, or delegation alone."
 license: MIT
 metadata:
   author: rocky2431
-  version: "0.2.1"
+  version: "0.3.0"
 ---
 
 # Agent Harness Design
@@ -14,6 +14,14 @@ capable but fallible model. Preserve the selected model's effective capability
 envelope—authorized evidence, task-sized context and output budget, real tools, and
 environmental feedback—while grounding authority, secrets, resources, effects, and
 claims of success in trusted boundaries.
+
+## Keep activation scoped
+
+Use this Skill when the system around an agent is the design or review target. Do not
+turn ordinary coding, prose, application state, task-progress bookkeeping, or the act
+of delegating work into a harness exercise. If one of those appears inside a genuine
+harness request, cover only the harness-facing decision and let the adjacent workflow
+or Skill own the rest.
 
 ## Calibrate every rule
 

@@ -1,6 +1,6 @@
 interface:
   display_name: "Agent Harness Design"
-  short_description: "Preserve capability with narrow trusted boundaries"
-  default_prompt: "Use $agent-harness-design to review this agent system, preserve authorized model capability, and enforce authority and effects at the narrowest trusted boundary."
+  short_description: "Preserve agent capability at trusted effect boundaries"
+  default_prompt: "Use $agent-harness-design to preserve authorized capability while enforcing authority and effects at narrow trusted boundaries."
 policy:
   allow_implicit_invocation: true

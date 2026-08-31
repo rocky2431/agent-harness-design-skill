@@ -1,7 +1,7 @@
 {
   "name": "agent-harness-design",
-  "version": "0.2.1",
-  "description": "Design and review provider-neutral agent harnesses that preserve authorized model capability while enforcing narrow authority and effect boundaries.",
+  "version": "0.3.0",
+  "description": "Design and review agent execution layers that preserve authorized capability while enforcing narrow authority and effect boundaries.",
   "author": {
     "name": "rocky2431",
     "url": "https://github.com/rocky2431"
@@ -10,11 +10,11 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Agent Harness Design",
-    "shortDescription": "Preserve agent capability with narrow trusted boundaries.",
+    "shortDescription": "Preserve agent capability at trusted effect boundaries",
     "longDescription": "Adds a provider-neutral Skill for designing, auditing, debugging, and evaluating agent harnesses. It preserves the selected model's authorized capability envelope, distinguishes hard trust boundaries from defaults and conditional patterns, and measures the utility cost of controls.",
     "developerName": "rocky2431",
     "category": "Developer Tools",
     "capabilities": ["Skills"],
-    "defaultPrompt": "Use $agent-harness-design to preserve model capability and enforce effects at narrow trusted boundaries."
+    "defaultPrompt": "Use $agent-harness-design to preserve authorized capability while enforcing authority and effects at narrow trusted boundaries."
   }
 }

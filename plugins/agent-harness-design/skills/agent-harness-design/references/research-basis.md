@@ -66,9 +66,10 @@ so verify them again when implementing against a newer host.
 - [Cognition, Multi-agents: what's actually working](https://cognition.com/blog/multi-agents-working):
   increased model capability changed an earlier broad warning into a narrower pattern:
   shared intelligence can help while conflicting parallel writes remain costly.
-- [Anthropic Model Context Protocol](https://modelcontextprotocol.io/specification/2025-11-25):
-  a standard protocol for exposing resources and tools; it does not replace domain
-  authorization or evidence design.
+- [Model Context Protocol 2026-07-28](https://blog.modelcontextprotocol.io/posts/2026-07-28/):
+  the current protocol release adds a stateless core, extensions, Tasks, and
+  authorization hardening. MCP remains an optional integration surface and does not
+  replace domain authorization or evidence design.
 
 ## Reliability, security, and architecture evidence
 
