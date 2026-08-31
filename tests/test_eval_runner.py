@@ -62,6 +62,17 @@ class EvalRunnerTests(unittest.TestCase):
             sorted(set(run_evals.PROBE_PATTERN.findall(output))),
         )
 
+    def test_tree_digest_is_stable_across_text_line_endings(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            lf = root / "lf"
+            crlf = root / "crlf"
+            lf.mkdir()
+            crlf.mkdir()
+            (lf / "SKILL.md").write_bytes(b"first\nsecond\n")
+            (crlf / "SKILL.md").write_bytes(b"first\r\nsecond\r\n")
+            self.assertEqual(run_evals._tree_digest(lf), run_evals._tree_digest(crlf))
+
     def test_atomic_json_writer_replaces_only_the_target(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             target = Path(temporary) / "nested" / "result.json"
