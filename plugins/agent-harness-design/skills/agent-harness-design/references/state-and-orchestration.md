@@ -15,6 +15,56 @@ Progressively disclose Skills, references, and tool schemas. Make names and
 descriptions specific enough for discovery, then load the full material only when the
 task needs it.
 
+## Context degrades with length
+
+Effective context is a fraction of advertised context, and the loss is not uniform.
+Across model families, accuracy on realistic retrieval and reasoning declines well before
+the stated limit, degrades faster when the target shares little vocabulary with the
+query, and drops further with each distractor present. Measured effective lengths have
+been reported at a small fraction of advertised windows, and rankings between models
+reorder substantially as length grows. Recent frontier models still miss relevant events
+several times more often late in very long transcripts, partially recoverable with
+periodic restatement.
+
+Two consequences:
+
+- Treat attention as a budget. Aim for the smallest set of high-signal tokens that
+  supports the task, not the largest set that fits.
+- Measure effective context on your own task shape. Do not derive budgets from the
+  advertised window, and do not assume a longer window removes the need for retrieval.
+
+Retrieval usually beats stuffing. Reported reductions from retrieving tools and results
+on demand rather than preloading them run to an order of magnitude in tokens with equal
+or better accuracy, and tool-selection accuracy improves substantially when the tool
+space is retrieved rather than fully enumerated. The size of the tool surface is a
+harness variable, not a free parameter.
+
+A dissenting result is worth keeping in view: agentic scaffolds that re-retrieve rather
+than rely on recall have shown strong robustness across very long horizons. That is
+consistent with the rule above rather than against it.
+
+## Truncation is a correctness decision
+
+Truncation and cache strategy are usually discussed as cost optimizations. They change
+behavior.
+
+- Opening tokens absorb disproportionate attention regardless of content. Evicting them
+  degrades the model badly. A naive oldest-first policy hits this directly.
+- Cached attention state is reusable only at the same position. Inserting or reordering
+  content inside a stable prefix forfeits the cache and changes cost sharply. Keep the
+  system prompt and tool definitions in a fixed prefix and put per-turn variability after
+  it.
+- Do not add or remove tool definitions mid-run. Prior actions still reference them, and
+  the mismatch produces schema violations and invented calls. Restrict availability
+  without changing the definitions when possible.
+- Never sever a tool call from its result. Snap any cut to a turn boundary.
+
+The settled practice for oversized output is to truncate, persist, and point: store the
+full artifact, return a bounded preview, and hand back a retrievable reference and the
+position where the cut began. Independent implementations have converged on this.
+Compression should be designed to be restorable — dropping page content is safe while
+the URL survives.
+
 ## Durable state and memory
 
 Persist state when it has a consumer after the current context ends:
@@ -65,6 +115,43 @@ Never hide model, context, tool, or budget reduction behind a normal completion 
 If the preferred path is temporarily unavailable, preserve evidence and expose the
 safe actions that remain.
 
+## Long-horizon pathologies
+
+Name these; they are distinct and have different fixes.
+
+- **Self-conditioning.** Per-step accuracy falls as a run lengthens, and the model's own
+  visible errors raise its subsequent error rate further. Scale does not remove this,
+  though reasoning modes reduce it in some models.
+- **Multi-turn reliability collapse.** Moving the same work from one turn to many costs
+  far more in reliability than in ability. Models commit early to a wrong reading and
+  rarely recover on their own. Restating a consolidated specification can beat continuing
+  the thread.
+- **Context anxiety.** As the window fills, a model may hedge, scope down, or refuse work
+  it could still do. Observed independently by several teams, and present on some models
+  and absent on others, so it is a per-model check rather than a permanent fixture.
+- **Looping without strategy change.** Repeating a failing approach with cosmetic
+  variation. The productive response is a stall counter that forces re-planning, or an
+  in-band message naming the repeated call, its arguments, and the identical error.
+- **Declaring done without verification.** The most common single long-run failure across
+  independent analyses: the model reviews its own output, judges it fine, and stops.
+  Close completion on the environment, not on self-assessment.
+- **Summary drift.** Errors in summaries compound when summaries are built on summaries.
+  Anchor to canonical artifacts and merge newly trimmed spans into a stable structured
+  summary rather than regenerating it from scratch each cycle.
+- **Sycophancy accumulation.** Positions erode across turns under pushback. Anchor
+  decisions in durable state rather than in conversation.
+
+Note that context exhaustion does not explain all of this. Long runs have derailed into
+unrecoverable loops without approaching the window limit, so a larger window is not a
+fix for coherence.
+
+Self-correction without an external signal is unreliable and can reduce accuracy.
+Open-ended drafting can be self-reviewed; correctness must close on a ground-truth
+signal such as tests, tool errors, or environment state.
+
+What compaction loses first, empirically, is the record of which artifacts were changed.
+Preserve that explicitly rather than trusting a general summary to retain it.
+
 ## Multi-agent decision
 
 Multiple agents are a conditional architecture. They can be the first implementation
@@ -85,6 +172,28 @@ Evaluate these properties:
 
 Do not use a fixed “planner, researcher, builder, reviewer” team for every task. Choose
 only roles with distinct work, context, tools, or acceptance responsibilities.
+
+Isolation is also a context tool, not only a parallelism tool. A subagent can explore
+widely and return a small distilled result, keeping exploration cost out of the parent's
+window. The same property makes an independent reviewer valuable: a reviewer with no
+prior context cannot inherit the author's assumptions and must rediscover the intent.
+
+Two questions in this area are genuinely disputed. Do not cite one side as settled.
+
+- **Should failed attempts stay in context?** Keeping them preserves evidence the model
+  needs to adapt; removing them avoids compounding degradation. Current best reading:
+  keep failures visible for near-term steering, clear them across a compaction boundary,
+  and re-test per model, since some models no longer self-condition.
+- **Does subagent isolation help or hurt?** Reported results point both ways within days
+  of each other. The discriminator is task shape: isolation tends to win for
+  parallelizable, read-mostly investigation and to lose for shared-state construction
+  where implicit decisions must stay consistent. Keep writes single-threaded even when
+  several agents contribute analysis.
+
+When quoting a multi-agent improvement, quote its cost and variance decomposition with
+it. A large reported gain accompanied by an order-of-magnitude token increase, and an
+analysis attributing most variance to token spend, is a compute result as much as an
+architecture result.
 
 ## Work packets and ownership
 

@@ -54,6 +54,36 @@ Prompt reminders and injection classifiers can reduce risk, but they are probabi
 For material effects, combine them with runtime authorization and information-flow or
 capability controls appropriate to the threat.
 
+Read published defense numbers carefully. An evaluation against fixed attacks reports an
+upper bound on security, not an estimate: when attackers optimize against the specific
+defense, previously effective defenses have all been driven back above half of attacks
+succeeding. A stronger model is not a mitigation either — greater capability has
+correlated with greater susceptibility to indirect injection.
+
+Structural defenses cost utility, and the cost is worth naming rather than hiding.
+Separating control flow from data flow and enforcing capabilities outside the model has
+been measured at roughly a seven point drop in task completion in exchange for provable
+resistance on that benchmark. That is a reasonable trade for some systems and not for
+others; the point is to state it. Note also that a pattern's guarantee holds only while
+the pattern is followed. Falling back to a general tool loop for hard cases silently
+discards the property the pattern was chosen for.
+
+Place validation next to the tool that creates the side effect. Checks that run only at
+the entry or exit of a conversation do not cover every tool call in between, and checks
+that run concurrently with execution may complete after tokens were spent and effects
+occurred.
+
+For work that unfolds over hours or days, per-action approval is structurally
+insufficient. Each step can be individually acceptable while the sequence produces an
+outcome nobody would have approved; a blocked action can be reattempted in fragments that
+individually pass. Long-horizon systems need trajectory-level review that can pause the
+run, alongside the per-action gates. Useful invariants for such a reviewer: prior
+decisions are context rather than precedent; authorization to create or handle content is
+not authorization to move it outward; and a task request does not authorize every step
+that might accomplish it. Keep the reviewer a reviewer — swapping who approves must not
+enlarge what is permitted — and do not treat an ordinary sandbox retry or escalation as
+suspicious on its own.
+
 ## Approval is conditional
 
 Require human approval when an action exceeds existing authority, contains a material

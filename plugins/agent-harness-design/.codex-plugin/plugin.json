@@ -1,6 +1,6 @@
 {
   "name": "agent-harness-design",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Design and review agent execution layers that preserve authorized capability while enforcing narrow authority and effect boundaries.",
   "author": {
     "name": "rocky2431",

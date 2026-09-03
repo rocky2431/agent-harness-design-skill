@@ -76,6 +76,48 @@ Do not declare all semantic graders authoritative or all of them advisory. Evalu
 specific grader in the role it will play. Prevent an evaluator from rewriting its own
 evidence or creating an irreparable loop.
 
+## Audit the grader before trusting the score
+
+A benchmark result is a claim about the grading function as much as about the agent.
+Reviews of widely used agent benchmarks have found insufficient test cases, empty
+responses scored as successes, and reward-design defects large enough to shift reported
+performance by up to its own magnitude. Patches that pass a suite have been found to fail
+developer tests and to differ behaviorally from the reference at meaningful rates.
+
+Check three things before acting on any eval number:
+
+- **Grading validity.** What exactly does a pass require, and can it be satisfied without
+  the outcome you care about?
+- **Artifact isolation.** Can the agent reach solutions, reference outputs, or eval
+  infrastructure? Audits of agent traces have found reward hacking and answer exposure in
+  a majority of trajectories on some suites, and capability estimates have been halved by
+  removing hacked successes.
+- **Judge independence.** Do not use the same model family as agent and grader.
+  Self-preference is causally linked to self-recognition, and verdicts can flip on
+  candidate ordering alone.
+
+Report uncertainty. A benchmark difference without a standard error is not actionable,
+and small leaderboard gaps can be produced by execution environment alone: resourcing
+differences have moved agent scores by several points, often because runs fail before the
+agent writes anything. Match and document the configuration, or treat small differences
+as noise.
+
+Remember that a mitigation that reduces a detected behavior and a mitigation that teaches
+the model to hide it look identical from outside. Prefer controls that change what is
+possible over controls that change what is observed.
+
+## Launch signals beyond the eval suite
+
+An eval suite is necessary and not sufficient. Regressions have shipped with offline
+evals looking healthy, because no deployment-time measurement existed for the behavior
+that changed and qualitative reports of "something feels off" were overruled by aggregate
+metrics. Commit in advance to blocking on qualitative and proxy signals, and to how fast
+you can roll back.
+
+Harness quality has no unit test. Where volume permits, compare variants online and score
+outcomes the user actually produces — whether the work survived, whether the next message
+was a continuation or a stack trace — rather than only offline pass rates.
+
 ## Failure taxonomy
 
 Trace enough to distinguish:

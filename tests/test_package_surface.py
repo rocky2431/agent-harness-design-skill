@@ -89,6 +89,17 @@ class PackageSurfaceTests(unittest.TestCase):
         self.assertIn("multiple agents", skill)
         self.assertIn("without an incident", skill)
         self.assertIn("## Keep activation scoped", skill)
+        self.assertIn("backward\n  compatibility", skill)
+        self.assertIn("in band, in the artifact, and in the trace", skill)
+        self.assertIn("Separate authority gates from resource governors", skill)
+        self.assertIn("soft in-band\n  tier before its hard ceiling", skill)
+        self.assertIn("Re-test on upgrade; do not remove on upgrade", skill)
+        for reference in (
+            "references/harness-vs-software.md",
+            "references/failure-visibility.md",
+        ):
+            self.assertIn(reference, skill)
+            self.assertTrue((SKILL_ROOT / reference).is_file())
         self.assertNotIn("only after the simpler live path has failed", skill)
         self.assertNotIn("Parallelize only independent, read-only", skill)
         self.assertLess(len(skill.splitlines()), 220)
@@ -104,7 +115,7 @@ class PackageSurfaceTests(unittest.TestCase):
         )
         names = {case["name"] for case in data["evals"]}
         self.assertEqual(
-            ["no_skill", "agents-best-practices", "agent-harness-design"],
+            ["no_skill", "agent-harness-design-v030", "agent-harness-design"],
             data["comparison_arms"],
         )
         self.assertGreaterEqual(len(data["evals"]), 10)
@@ -122,6 +133,14 @@ class PackageSurfaceTests(unittest.TestCase):
             "root_agents_file_is_a_map",
             "measure_capability_tax_with_ablation",
             "ordinary_task_does_not_activate",
+            "success_shaped_fallback_is_a_defect",
+            "compatibility_must_not_hide_capability_loss",
+            "two_tier_budget_not_a_bare_step_cap",
+            "no_fixed_number_on_semantic_quantities",
+            "long_thread_versus_consolidated_restart",
+            "retest_scaffolding_rather_than_remove_it",
+            "completion_must_close_on_the_environment",
+            "disputed_practice_needs_a_criterion",
         ):
             self.assertIn(required, names)
 
@@ -144,12 +163,12 @@ class PackageSurfaceTests(unittest.TestCase):
 
     def test_release_evidence_matches_the_current_skill(self) -> None:
         behavior = json.loads(
-            (REPO_ROOT / "eval-results" / "v0.3.0-behavior.json").read_text(
+            (REPO_ROOT / "eval-results" / "v0.4.0-behavior.json").read_text(
                 encoding="utf-8"
             )
         )
         trigger = json.loads(
-            (REPO_ROOT / "eval-results" / "v0.3.0-trigger.json").read_text(
+            (REPO_ROOT / "eval-results" / "v0.4.0-trigger.json").read_text(
                 encoding="utf-8"
             )
         )
@@ -161,8 +180,8 @@ class PackageSurfaceTests(unittest.TestCase):
         )
         self.assertEqual(digest, candidate["source_sha256"])
         self.assertEqual(digest, trigger["configuration"]["skill_source_sha256"])
-        self.assertEqual(114, len(behavior["runs"]))
-        self.assertEqual(38, len(behavior["grades"]))
+        self.assertEqual(162, len(behavior["runs"]))
+        self.assertEqual(54, len(behavior["grades"]))
         self.assertEqual(24, len(trigger["runs"]))
 
     def test_research_basis_uses_many_primary_sources(self) -> None:
@@ -176,6 +195,10 @@ class PackageSurfaceTests(unittest.TestCase):
         self.assertIn("arxiv.org/abs/2503.18813", research)
         self.assertIn("2026-07-28", research)
         self.assertNotIn("specification/2025-11-25", research)
+        self.assertIn("outgrow the benefits of **collaboration**", research)
+        self.assertNotIn("outgrow the benefits of multi-agent systems", research)
+        self.assertIn("## Commonly miscited", research)
+        self.assertNotIn("/research/building-effective-agents", research)
 
     def test_package_has_no_hooks_mcp_or_machine_specific_paths(self) -> None:
         package_files = [

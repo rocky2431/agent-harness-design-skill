@@ -2,7 +2,7 @@
   "skill_name": "agent-harness-design",
   "comparison_arms": [
     "no_skill",
-    "agents-best-practices",
+    "agent-harness-design-v030",
     "agent-harness-design"
   ],
   "evals": [
@@ -119,6 +119,54 @@
       "name": "measure_capability_tax_with_ablation",
       "prompt": "A prompt-injection filter reduces attack success, but benign task completion falls by 30% because it blocks whole sessions whenever security vocabulary appears. What evidence should decide the redesign?",
       "expected_output": "Measures safety and benign utility together, includes false blocks and recovery, compares the current filter with no-control and narrower effect-boundary arms where safe, and avoids accepting security through unusability."
+    },
+    {
+      "id": 20,
+      "name": "success_shaped_fallback_is_a_defect",
+      "prompt": "Our tool wrapper catches every exception and returns \"An error occurred, please try again\" as an ordinary tool result. It logs the error and increments no counter. The agent kept working and eventually hit the turn limit. Is this acceptable error handling?",
+      "expected_output": "Identifies a success-shaped fallback that merges distinct failure meanings and hides a broken tool behind a turn-limit symptom; requires typed failure kinds, a failure counter with escalation, and the failure surfaced in band, in the artifact, and in the trace rather than only in a log."
+    },
+    {
+      "id": 21,
+      "name": "compatibility_must_not_hide_capability_loss",
+      "prompt": "Our new provider path cannot carry reasoning items. To avoid breaking existing configs we keep accepting the old wire format option and quietly route it through the reduced path. Is preserving backward compatibility the right call here?",
+      "expected_output": "Rejects the silent fallback because compatibility may preserve an interface but not a capability claim; requires a typed error at the earliest detection point naming the replacement, and notes that an inert documented legacy field is acceptable only when it provably does nothing."
+    },
+    {
+      "id": 22,
+      "name": "two_tier_budget_not_a_bare_step_cap",
+      "prompt": "Our agent loop has a hard cap of ten steps and nothing else. Long tasks get cut off mid-edit, and a broken tool once burned all ten steps. Should we raise the cap to fifty?",
+      "expected_output": "Treats the cap as a resource governor needing a soft in-band tier before a hard ceiling so the agent can checkpoint or hand off; sizes it from measured spend rather than intuition; notes a step cap cannot detect a failing tool and requires a separate consecutive-failure or stall counter; requires a typed exhaustion state distinct from interruption and execution error."
+    },
+    {
+      "id": 23,
+      "name": "no_fixed_number_on_semantic_quantities",
+      "prompt": "To control cost we want the harness to enforce at most 25 words between tool calls, a 100-word final answer, and maximum reasoning effort on every request regardless of task. Is that a sound harness policy?",
+      "expected_output": "Classifies these as semantic prescriptions rather than authority gates or resource governors; rejects fixed caps on judgment quantities and notes measured quality loss from prompt-level word caps and from uniformly raised reasoning effort; permits hard limits only on externally verifiable physical quantities."
+    },
+    {
+      "id": 24,
+      "name": "long_thread_versus_consolidated_restart",
+      "prompt": "A debugging session has run 90 turns with many failed attempts still in context. Quality is drifting and the model keeps retrying variants of one broken approach. Should we just enable a bigger context window?",
+      "expected_output": "Explains that effective context is smaller than the advertised window and that visible prior errors raise later error rates, so a larger window does not fix coherence; recommends consolidating a restated specification and clearing failed attempts across a compaction boundary while preserving canonical artifacts; adds stall detection that forces a strategy change rather than more retries."
+    },
+    {
+      "id": 25,
+      "name": "retest_scaffolding_rather_than_remove_it",
+      "prompt": "We are upgrading to a newer model. Our harness has prompts that force interim status updates, a context reset for premature stopping, and a separate verifier pass. Best practice says smarter models need less scaffolding, so should we delete all three?",
+      "expected_output": "Frames each component as an assumption about what the model cannot do alone that must be re-tested rather than deleted on faith; requires removing one component at a time with measurement, warns that drift is not monotone and the same change can help one model and hurt another, and asks which regime the new model is in before keeping anti-premature-stopping scaffolding."
+    },
+    {
+      "id": 26,
+      "name": "completion_must_close_on_the_environment",
+      "prompt": "Our migration agent writes 'all records migrated successfully' to the progress file and we mark the task done. We added a strong reviewer model to check the agent's summary. Is that enough verification?",
+      "expected_output": "Rejects self-report and model review of a self-report as sufficient; requires an independent check of the environment state, notes that model graders detect false success near chance while an independent state check removes most of this failure class, and keeps progress derived from environment evidence rather than the actor's claim."
+    },
+    {
+      "id": 27,
+      "name": "disputed_practice_needs_a_criterion",
+      "prompt": "One source says to leave failed attempts in context so the model can learn from them, another says to strip them because they cause context rot. Which one is correct?",
+      "expected_output": "Presents both positions as genuinely unsettled rather than picking a side as doctrine; supplies a decision criterion such as keeping failures visible for near-term steering, clearing them across a compaction boundary, and re-testing per model; notes that self-conditioning is model-dependent."
     }
   ]
 }

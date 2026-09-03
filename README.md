@@ -64,7 +64,7 @@ would not improve this instruction-and-design capability.
 From GitHub:
 
 ```bash
-codex plugin marketplace add rocky2431/agent-harness-design-skill --ref v0.3.0
+codex plugin marketplace add rocky2431/agent-harness-design-skill --ref v0.4.0
 codex plugin add agent-harness-design@rocky-agent-harness-design
 ```
 
