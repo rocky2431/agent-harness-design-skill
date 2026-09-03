@@ -138,29 +138,41 @@ $agent-harness-design review this support agent's tools and approval flow
 It can also activate implicitly for agent-loop, tool, permission, prompt, memory,
 compaction, orchestration, evaluation, security, and harness-debugging requests.
 
-The main `SKILL.md` is a short decision procedure. It routes deeper work into four
+The main `SKILL.md` is a short decision procedure. It routes deeper work into six
 references:
 
-- design and architecture choices;
+- how harness engineering differs from ordinary software;
+- silent failure and silent degradation;
+- design and architecture choices, including budgets and model portability;
 - trust, tools, permissions, and effects;
 - context, state, recovery, and orchestration;
 - evaluation, observability, and the primary research basis.
 
 ## Evaluation
 
-The standard-library runner creates a fresh temporary `HOME`, `CODEX_HOME`, workspace,
-and ephemeral Codex session for every run. It never builds a shell command. Behavior
-mode records final outputs, wall-clock duration, configuration, and Codex-reported
-tokens for no-Skill, legacy, and candidate arms; optional blind grading records its
-semantic judgments separately from those measurements.
+The standard-library runner is host-pluggable. `--host` selects an adapter that owns
+every host-specific fact: binary and argv, per-run isolation, config injection, the user
+skills directory, how the final message and token usage are captured, how structured
+output is requested, and how a rate-limit error is recognized. `codex` and `zcode` are
+implemented; `claude`, `hermes`, `kimi`, and `opencode` are named extension points. An
+adapter refuses rather than degrades: a flag the host would silently ignore raises
+instead, and the result file records the real host, CLI version, observed model, and
+structured-output mechanism.
+
+Every run uses a fresh temporary home and workspace, and never builds a shell command.
+Behavior mode records final outputs, wall-clock duration, configuration, and
+host-reported tokens per arm; optional blind grading records its semantic judgments
+separately from those measurements, with arm identity hidden behind labels whose order
+rotates per case.
 
 ```bash
 python3 scripts/run_evals.py behavior \
+  --host zcode --host-binary /path/to/zcode \
   --arm no_skill \
-  --arm agents-best-practices=/absolute/path/to/legacy-skill \
+  --arm agent-harness-design-v030=/path/to/previous-release/skill \
   --arm agent-harness-design=plugins/agent-harness-design/skills/agent-harness-design \
   --trials 2 --workers 4 --grade \
-  --output eval-results/v0.3.0-behavior.json
+  --output eval-results/v0.4.0-behavior.json
 ```
 
 Trigger mode tests the host's real implicit discovery. It installs marker-only probe
@@ -170,8 +182,9 @@ cases.
 
 ```bash
 python3 scripts/run_evals.py trigger \
+  --host zcode --host-binary /path/to/zcode \
   --trials 2 --workers 4 \
-  --output eval-results/v0.3.0-trigger.json
+  --output eval-results/v0.4.0-trigger.json
 ```
 
 The corpus remains inside the Skill package so every installed copy carries the cases;
@@ -179,12 +192,15 @@ the runner and retained release evidence remain at repository level so portable 
 installs do not acquire an execution dependency. Results are configuration-specific,
 not claims about every model or host.
 
-The v0.3.0 run completed 114/114 behavior answers and 38/38 blind grades. The candidate
-scored 3.684/4 with a 97.4% graded pass rate, versus 3.526/94.7% for the predecessor and
-3.395/92.1% without a Skill. Implicit discovery made 20/24 exact accepted selections,
-including 8/8 negative or ambiguous non-activations; positive recall was 7/10 and is a
-known stochastic limitation. See the
-[`v0.3.0 evaluation report`](reports/v0.3.0-evaluation.md) and retained raw evidence.
+The v0.4.0 run completed 162/162 behavior answers and 54/54 blind grades on ZCode with
+GLM-5.2. The candidate scored 3.796/4 against 3.685 for the previous release and 3.296
+without a Skill. Paired against the previous release the difference is +0.111 with a 95%
+interval of [-0.058, +0.280], so **v0.4.0 is not distinguishable from v0.3.0 on this
+task distribution**; both Skill arms beat no Skill with intervals clear of zero.
+Implicit discovery made 24/24 accepted selections, which measures ZCode and is not
+comparable to the v0.3.0 figure measured on Codex. See the
+[`v0.4.0 evaluation report`](reports/v0.4.0-evaluation.md) for the full deviation list
+and retained raw evidence.
 
 ## Development
 
