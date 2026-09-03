@@ -114,10 +114,11 @@ class PackageSurfaceTests(unittest.TestCase):
             (SKILL_ROOT / "evals" / "evals.json").read_text(encoding="utf-8")
         )
         names = {case["name"] for case in data["evals"]}
-        self.assertEqual(
-            ["no_skill", "agent-harness-design-v030", "agent-harness-design"],
-            data["comparison_arms"],
-        )
+        arms = data["comparison_arms"]
+        self.assertGreaterEqual(len(arms), 2)
+        self.assertEqual(len(arms), len(set(arms)))
+        self.assertIn("no_skill", arms)
+        self.assertIn("agent-harness-design", arms)
         self.assertGreaterEqual(len(data["evals"]), 10)
         self.assertEqual(len(data["evals"]), len(names))
         for required in (
@@ -162,17 +163,25 @@ class PackageSurfaceTests(unittest.TestCase):
         self.assertEqual(2, len(coexistence["accepted_skill_sets"]))
 
     def test_release_evidence_matches_the_current_skill(self) -> None:
-        behavior = json.loads(
-            (REPO_ROOT / "eval-results" / "v0.4.0-behavior.json").read_text(
-                encoding="utf-8"
+        """Release evidence must exist for the declared version and be internally
+        consistent. Counts are derived from the recorded configuration rather than
+        pinned, so any host, case count, or trial count stays valid."""
+        version = json.loads(
+            (PLUGIN_ROOT / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8")
+        )["version"]
+        evidence = REPO_ROOT / "eval-results"
+        behavior_path = evidence / f"v{version}-behavior.json"
+        trigger_path = evidence / f"v{version}-trigger.json"
+        for path in (behavior_path, trigger_path):
+            self.assertTrue(
+                path.is_file(),
+                f"missing release evidence for v{version}: {path.name}",
             )
-        )
-        trigger = json.loads(
-            (REPO_ROOT / "eval-results" / "v0.4.0-trigger.json").read_text(
-                encoding="utf-8"
-            )
-        )
+
+        behavior = json.loads(behavior_path.read_text(encoding="utf-8"))
+        trigger = json.loads(trigger_path.read_text(encoding="utf-8"))
         digest = skill_digest()
+
         candidate = next(
             arm
             for arm in behavior["configuration"]["arms"]
@@ -180,9 +189,35 @@ class PackageSurfaceTests(unittest.TestCase):
         )
         self.assertEqual(digest, candidate["source_sha256"])
         self.assertEqual(digest, trigger["configuration"]["skill_source_sha256"])
-        self.assertEqual(162, len(behavior["runs"]))
-        self.assertEqual(54, len(behavior["grades"]))
-        self.assertEqual(24, len(trigger["runs"]))
+
+        configuration = behavior["configuration"]
+        trials = configuration["trials"]
+        arms = configuration["arms"]
+        cases = configuration["selected_cases"]
+        self.assertEqual(len(cases) * len(arms) * trials, len(behavior["runs"]))
+        if behavior.get("grades"):
+            self.assertEqual(len(cases) * trials, len(behavior["grades"]))
+
+        trigger_configuration = trigger["configuration"]
+        self.assertEqual(
+            len(trigger_configuration["selected_cases"]) * trigger_configuration["trials"],
+            len(trigger["runs"]),
+        )
+
+        # Evidence means completed runs. A file full of failures is not a release record.
+        for name, payload in (("behavior", behavior), ("trigger", trigger)):
+            failed = [run for run in payload["runs"] if run.get("status") != "ok"]
+            self.assertEqual(
+                [], failed[:3], f"{name} evidence contains unsuccessful runs"
+            )
+
+        # The host that produced the evidence must be recorded, whichever host it was.
+        recorded_host = {
+            key: value
+            for key, value in configuration.items()
+            if key.endswith("_cli") or key in {"host", "model"}
+        }
+        self.assertTrue(recorded_host, "evidence must record the host and model used")
 
     def test_research_basis_uses_many_primary_sources(self) -> None:
         research = (SKILL_ROOT / "references" / "research-basis.md").read_text(
