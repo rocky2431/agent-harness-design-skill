@@ -64,7 +64,7 @@ would not improve this instruction-and-design capability.
 From GitHub:
 
 ```bash
-codex plugin marketplace add rocky2431/agent-harness-design-skill --ref v0.4.0
+codex plugin marketplace add rocky2431/agent-harness-design-skill --ref main
 codex plugin add agent-harness-design@rocky-agent-harness-design
 ```
 
@@ -100,9 +100,13 @@ Supported destinations:
 | Hermes | `~/.hermes/skills/agent-harness-design` |
 | Claude Code | `~/.claude/skills/agent-harness-design` |
 | Codex portable discovery | `~/.agents/skills/agent-harness-design` |
-| Kimi | `~/.kimi/skills/agent-harness-design` |
+| Kimi | `~/.kimi-code/skills/agent-harness-design` |
 | zCode | `~/.zcode/skills/agent-harness-design` |
 | OpenCode | `~/.config/opencode/skills/agent-harness-design` |
+
+Kimi Code user installs honor `KIMI_CODE_HOME` (default `~/.kimi-code`),
+including the `skills` subdirectory. The legacy Python CLI directory `~/.kimi`
+is not migrated or deleted. See [Kimi Skill discovery](https://www.kimi.com/code/docs/kimi-code-cli/customization/skills.html).
 
 The installer uses only the Python standard library. It preflights every selected
 destination, creates recovery copies before replacement, uses an atomic directory

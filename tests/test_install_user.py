@@ -7,6 +7,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -44,7 +45,7 @@ class UserInstallerTests(unittest.TestCase):
             "hermes": home / ".hermes/skills/agent-harness-design",
             "claude": home / ".claude/skills/agent-harness-design",
             "codex": home / ".agents/skills/agent-harness-design",
-            "kimi": home / ".kimi/skills/agent-harness-design",
+            "kimi": home / ".kimi-code/skills/agent-harness-design",
             "zcode": home / ".zcode/skills/agent-harness-design",
             "opencode": home / ".config/opencode/skills/agent-harness-design",
         }
@@ -158,6 +159,19 @@ class UserInstallerTests(unittest.TestCase):
             self.assertEqual(1, doctor.returncode)
             report = json.loads(doctor.stdout)
             self.assertEqual("drifted", report["hosts"]["opencode"]["skill"])
+
+
+class KimiHomeTests(unittest.TestCase):
+    def test_native_default_and_custom_kimi_home(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            home = Path(temporary)
+            with patch.dict(install_user.os.environ, {"KIMI_CODE_HOME": ""}):
+                self.assertEqual(install_user._skill_destination(home, "kimi"),
+                                 home / ".kimi-code/skills/agent-harness-design")
+            custom = home / "custom kimi home"
+            with patch.dict(install_user.os.environ, {"KIMI_CODE_HOME": str(custom)}):
+                self.assertEqual(install_user._skill_destination(home, "kimi"),
+                                 custom / "skills/agent-harness-design")
 
 
 if __name__ == "__main__":
