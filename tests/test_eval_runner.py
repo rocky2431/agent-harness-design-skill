@@ -82,11 +82,11 @@ class EvalRunnerTests(unittest.TestCase):
             "--color",
             "never",
             "--output-last-message",
-            "/tmp/final.txt",
+            str(Path("/tmp/final.txt")),
             "--cd",
-            "/tmp/ws",
+            str(Path("/tmp/ws")),
             "--output-schema",
-            "/tmp/schema.json",
+            str(Path("/tmp/schema.json")),
         ]
         self.assertEqual(expected_prefix, command[:-1])
 
@@ -102,7 +102,7 @@ class EvalRunnerTests(unittest.TestCase):
             restrict_tools=False,
         )
         self.assertEqual(
-            ["zcode", "--prompt", "p", "--json", "--no-color", "--cwd", "/tmp/ws",
+            ["zcode", "--prompt", "p", "--json", "--no-color", "--cwd", str(Path("/tmp/ws")),
              "--mode", "yolo"],
             common,
         )
