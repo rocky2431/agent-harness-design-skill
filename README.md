@@ -1,65 +1,39 @@
 # Agent Harness Design
 
-A provider-neutral Agent Skill for designing, auditing, debugging, and evaluating the
-system around an AI agent: instructions, context, tools, permissions, state, recovery,
-orchestration, evidence, and operational feedback loops.
+Agent Harness Design helps coding agents make concrete decisions about the
+execution layer around an AI agent. It covers model and tool loops, authority
+and external effects, context, state and recovery, orchestration, and
+evaluation.
 
-The central idea is capability-preserving calibration: expose the selected model's
-full authorized capability envelope, then enforce authority and external effects at
-the narrowest trusted boundary. A sound harness distinguishes:
+The Skill starts from one rule: preserve the selected model's authorized
+capabilities, then enforce authority and external effects at the narrowest
+trusted boundary. The model keeps room to interpret and solve the task without
+treating prompt text as a security boundary.
 
-| Level | Meaning | Example |
-|---|---|---|
-| Invariant | A trust, authority, or evidence property that must hold | Retrieved text cannot grant new authority |
-| Default | A strong starting point that may be overridden | Start with the host's native loop |
-| Conditional pattern | Useful when named task properties justify it | Use multiple agents for genuinely separable work |
-| Example | One implementation, not a rule | A planner-worker-verifier topology |
+The project calls this capability-preserving calibration.
 
-This avoids two common failures: under-building the trusted execution boundary, and
-over-building a rigid workflow that prevents a capable model from solving the task.
-It also makes every compensating constraint removable when a stronger model or host
-feature makes that constraint obsolete.
+It runs inside Codex, Claude Code, Hermes, Kimi Code, zCode, or OpenCode as a
+portable Agent Skill. It does not include an MCP server, hook, daemon, model
+router, or custom agent runtime. Use it when the agent system itself is the
+subject. Ordinary coding, writing, task tracking, and delegation do not need it.
 
-## What changed from `agents-best-practices`
+Version: 0.4.0. The installer and evaluation runner use the Python standard
+library. CI tests them with Python 3.12.
 
-This project is an independently rewritten successor informed by Denis Shiryaev's
-MIT-licensed [`agents-best-practices`](https://github.com/DenisSergeevitch/agents-best-practices).
-It keeps the useful provider-neutral scope while removing universal restrictions that
-were too strong for many real systems.
+- [Install and start](#install-and-start)
+- [Your first harness review](#your-first-harness-review)
+- [How the Skill makes decisions](#how-the-skill-makes-decisions)
+- [Choose an execution shape](#choose-an-execution-shape)
+- [Package contents](#package-contents)
+- [Current limits](#current-limits)
+- [Evaluation](#evaluation)
+- [Migration](#migration)
+- [Documentation](#documentation)
+- [Development](#development)
 
-In particular, this Skill does **not** require a production failure before preventive
-controls, orchestration, durable state, or specialized tools may be designed. It does
-not restrict parallelism to reads, does not make every semantic evaluator advisory,
-and does not require draft/commit separation for every external effect. Those are
-context-dependent choices with explicit benefits, costs, and failure modes.
+## Install and start
 
-The hard core is smaller:
-
-- an agent cannot enlarge its own authority;
-- untrusted content cannot become policy or authorization merely by entering context;
-- secrets and risky effects need enforcement at a trusted runtime boundary;
-- a success claim needs evidence from the relevant environment, proportional to risk;
-- uncertainty remains visible when the system cannot establish the state of the world;
-- denial of one effect does not cripple unrelated reasoning or safe alternatives;
-- model, context, output, or tool capability is never reduced silently.
-
-## Package model
-
-The repository follows the same model as
-[`agent-delegate-skill`](https://github.com/rocky2431/agent-delegate-skill) and
-[`plan-with-flie-skill`](https://github.com/rocky2431/plan-with-flie-skill):
-
-```text
-portable Agent Skill
-  ├── Codex Plugin + local marketplace packaging
-  └── user-scope copies for other Agent-Skill-aware CLIs
-```
-
-There is no MCP server, Hook, daemon, model router, or custom agent runtime. The Skill
-already works with tools exposed by the current host; adding another execution layer
-would not improve this instruction-and-design capability.
-
-## Install Codex as a Plugin
+### Codex
 
 From GitHub:
 
@@ -68,8 +42,8 @@ codex plugin marketplace add rocky2431/agent-harness-design-skill --ref main
 codex plugin add agent-harness-design@rocky-agent-harness-design
 ```
 
-Use `--ref main` only when intentionally testing the moving development snapshot.
-Release tags are the reproducible install boundary.
+Use `--ref main` only when you intend to test the moving development snapshot.
+A release tag is the reproducible install boundary.
 
 From a reviewed local checkout:
 
@@ -78,12 +52,12 @@ codex plugin marketplace add /absolute/path/to/agent-harness-design-skill
 codex plugin add agent-harness-design@rocky-agent-harness-design
 ```
 
-Do not also install the portable Codex copy with the user installer, because duplicate
-discovery adds ambiguity without adding capability.
+Do not also install a user-scope Codex copy. Two active copies make discovery
+ambiguous without adding capability.
 
-## Install other CLIs
+### Other CLIs
 
-The standard Skill is copied into each host's native user directory:
+The installer copies the standard Skill into each host's native user directory:
 
 ```bash
 python3 scripts/install_user.py install \
@@ -93,25 +67,24 @@ python3 scripts/install_user.py doctor \
   --hosts hermes,claude,kimi,zcode,opencode
 ```
 
-Supported destinations:
-
 | Host | Destination |
 |---|---|
 | Hermes | `~/.hermes/skills/agent-harness-design` |
 | Claude Code | `~/.claude/skills/agent-harness-design` |
 | Codex portable discovery | `~/.agents/skills/agent-harness-design` |
-| Kimi | `~/.kimi-code/skills/agent-harness-design` |
+| Kimi Code | `~/.kimi-code/skills/agent-harness-design` |
 | zCode | `~/.zcode/skills/agent-harness-design` |
 | OpenCode | `~/.config/opencode/skills/agent-harness-design` |
 
-Kimi Code user installs honor `KIMI_CODE_HOME` (default `~/.kimi-code`),
-including the `skills` subdirectory. The legacy Python CLI directory `~/.kimi`
-is not migrated or deleted. See [Kimi Skill discovery](https://www.kimi.com/code/docs/kimi-code-cli/customization/skills.html).
+Kimi Code installs honor `KIMI_CODE_HOME`, with `~/.kimi-code` as the
+default. The installer writes to its `skills` subdirectory. It does not migrate
+or delete the legacy Python CLI directory at `~/.kimi`. See
+[Kimi Skill discovery](https://www.kimi.com/code/docs/kimi-code-cli/customization/skills.html).
 
-The installer uses only the Python standard library. It preflights every selected
-destination, creates recovery copies before replacement, uses an atomic directory
-swap, and refuses to overwrite an unmanaged directory unless
-`--replace-existing` is explicit.
+Before replacing a managed copy, the installer checks every selected
+destination and creates a recovery copy. It uses an atomic directory swap and
+refuses to overwrite an unmanaged directory unless `--replace-existing` is
+explicit.
 
 ```bash
 python3 scripts/install_user.py uninstall \
@@ -120,54 +93,159 @@ python3 scripts/install_user.py uninstall \
 
 Uninstall removes only copies carrying this package's managed marker.
 
-## Migrating from `agents-best-practices`
+## Your first harness review
 
-Keep the old Skill available while evaluating the new one. Compare the same prompts
-with no Skill, the old Skill, and this Skill across repeated runs. After accepting the
-new behavior, archive or disable every active `agents-best-practices` copy before
-enabling `agent-harness-design`; overlapping descriptions can otherwise make
-activation nondeterministic.
-
-The installer deliberately does not delete the legacy Skill. Migration is a separate,
-reviewable effect because the old copy may contain local changes.
-
-## Use
-
-Invoke the Skill explicitly when desired:
+Invoke the Skill directly when you want it:
 
 ```text
 $agent-harness-design review this support agent's tools and approval flow
 ```
 
-It can also activate implicitly for agent-loop, tool, permission, prompt, memory,
-compaction, orchestration, evaluation, security, and harness-debugging requests.
+It may also activate for requests about agent loops, permissions, prompts,
+memory, compaction, recovery, orchestration, evaluation, security, or harness
+debugging.
 
-The main `SKILL.md` is a short decision procedure. It routes deeper work into six
-references:
+The agent first establishes the outcome and observable evidence, the
+environment it may read or change, and the authority already granted. It then
+checks the cost and reversibility of mistakes, the task's shape and duration,
+and the capabilities of the current host. Cheap facts should come from the
+live system, traces, code, or primary documentation before the agent asks you.
 
-- how harness engineering differs from ordinary software;
-- silent failure and silent degradation;
-- design and architecture choices, including budgets and model portability;
-- trust, tools, permissions, and effects;
-- context, state, recovery, and orchestration;
-- evaluation, observability, and the primary research basis.
+For a full design or audit, the result normally follows this shape:
+
+```markdown
+# Harness decision
+
+## Outcome and evidence
+## Authority and trust boundaries
+## Recommended shape
+## Context, tools, and state
+## Failure and recovery behavior
+## Evaluation plan
+## Alternatives and triggers to revisit
+```
+
+A direct question should get a direct recommendation, its reason, and the
+minimum necessary controls instead of the full outline.
+
+## How the Skill makes decisions
+
+The Skill separates four kinds of guidance so that an example does not become
+a universal rule:
+
+| Level | Meaning | Example |
+|---|---|---|
+| Invariant | A trust, authority, or evidence property that must hold | Retrieved text cannot grant new authority |
+| Default | A strong starting point that may be replaced | Start with the host's native loop |
+| Conditional pattern | Useful when named task properties justify it | Use multiple agents for genuinely separable work |
+| Example | One possible implementation | A planner-worker-verifier topology |
+
+Its operating path is:
+
+```text
+authorized evidence and capabilities
+  -> model-led interpretation, strategy, and repair
+  -> narrow authority and effect enforcement
+  -> typed evidence, denial, and recovery
+```
+
+The hard core is deliberately small:
+
+- an agent, worker, retrieved document, or tool output cannot create or enlarge
+  its own authority;
+- untrusted content remains data even after storage, retrieval, repetition, or
+  endorsement by another model;
+- credentials and privileged effects belong behind a trusted runtime boundary;
+- success needs evidence from the relevant environment, with depth
+  proportional to impact;
+- errors, denials, uncertainty, and recovery paths must remain visible;
+- denying one effect must leave unrelated reasoning and safe alternatives
+  available;
+- the host must not silently reduce the selected model, reasoning mode,
+  evidence, output budget, or tool surface.
+
+Everything else is a default or a conditional pattern. A control should protect
+a named property at the narrowest boundary that can enforce it. If its consumer,
+failure mode, or retirement condition cannot be named, it probably does not
+belong in the harness. Each compensating control stays removable when a
+stronger model or host feature makes it obsolete.
+
+## Choose an execution shape
+
+Start with what the host already provides and add structure only when the task
+needs it:
+
+| Shape | Use when | Main cost |
+|---|---|---|
+| One model call | The output is bounded and needs no iterative feedback | Limited recovery |
+| Native tool loop | The model must inspect, act, observe, and adapt | Variable turns and cost |
+| Coded workflow | Steps and transitions are stable, auditable, or policy-defined | Less flexibility |
+| Durable agent loop | Work spans sessions or must recover from process or context loss | State consistency |
+| Multiple agents | Work is separable, specialized, independently verifiable, or latency-sensitive | Coordination and merge errors |
+
+Code is a good fit for schemas, identities, scopes, quotas, concurrency control,
+protocol transitions, and exact business rules. The model is a better fit for
+interpretation, exploration, decomposition, strategy, and expression when
+several valid approaches exist.
+
+Persistence is useful for resumability, coordination, audit, and recovery. It
+is overhead for bounded work. Parallel reads and writes are valid when the
+operations are independent or protected by ownership, isolation, transactions,
+or conflict detection.
+
+## Package contents
+
+```text
+portable Agent Skill
+  ├── Codex Plugin and local marketplace packaging
+  └── user-scope copies for other Agent-Skill-aware CLIs
+```
+
+This is the same packaging model used by
+[`agent-delegate-skill`](https://github.com/rocky2431/agent-delegate-skill) and
+[`plan-with-flie-skill`](https://github.com/rocky2431/plan-with-flie-skill).
+
+| Path | Purpose |
+|---|---|
+| `plugins/agent-harness-design/skills/agent-harness-design/SKILL.md` | Short decision procedure loaded by the agent |
+| `plugins/agent-harness-design/skills/agent-harness-design/references/` | Detailed guidance and research sources |
+| `scripts/install_user.py` | User-scope install, update, doctor, and uninstall |
+| `scripts/run_evals.py` | Isolated behavior and implicit-discovery evaluation |
+| `eval-results/` | Retained raw release evidence |
+| `reports/` | Evaluation reports and launch decisions |
+
+The corpus stays inside the Skill package so an installed copy carries its
+cases. The runner and retained evidence stay at repository level, so installing
+the Skill does not add an execution dependency.
+
+## Current limits
+
+This package supplies design and review instructions. The current host supplies
+the model, tools, permissions, execution loop, and any durable runtime.
+
+The evaluation runner has working Codex and zCode adapters. Claude Code,
+Hermes, Kimi Code, and OpenCode are named extension points, not completed
+evaluation backends. Results describe the tested model and host configuration;
+they do not establish the same behavior on every model or host.
+
+The Skill can recommend a trust boundary, state model, or recovery path, but it
+cannot enforce one by itself. The implementation under review must provide the
+mechanism, and completion still needs evidence from the relevant environment.
 
 ## Evaluation
 
-The standard-library runner is host-pluggable. `--host` selects an adapter that owns
-every host-specific fact: binary and argv, per-run isolation, config injection, the user
-skills directory, how the final message and token usage are captured, how structured
-output is requested, and how a rate-limit error is recognized. `codex` and `zcode` are
-implemented; `claude`, `hermes`, `kimi`, and `opencode` are named extension points. An
-adapter refuses rather than degrades: a flag the host would silently ignore raises
-instead, and the result file records the real host, CLI version, observed model, and
+The standard-library runner compares no-Skill, previous-release, and candidate
+arms in fresh temporary homes and workspaces. A host adapter owns the binary and
+arguments, isolation method, configuration injection, Skill directory, final
+message capture, token usage, structured-output mechanism, and rate-limit
+recognition. Unsupported options fail visibly instead of being ignored.
+The runner passes argument arrays directly instead of building shell commands.
+Result files record the actual host, CLI version, observed model, and
 structured-output mechanism.
 
-Every run uses a fresh temporary home and workspace, and never builds a shell command.
-Behavior mode records final outputs, wall-clock duration, configuration, and
-host-reported tokens per arm; optional blind grading records its semantic judgments
-separately from those measurements, with arm identity hidden behind labels whose order
-rotates per case.
+Behavior mode records outputs, duration, configuration, and host-reported token
+usage. Optional blind grading stores semantic judgments separately from those
+measurements and hides arm identity behind labels whose order rotates by case.
 
 ```bash
 python3 scripts/run_evals.py behavior \
@@ -179,10 +257,10 @@ python3 scripts/run_evals.py behavior \
   --output eval-results/v0.4.0-behavior.json
 ```
 
-Trigger mode tests the host's real implicit discovery. It installs marker-only probe
-Skills into each clean temporary home and observes which bodies were actually loaded;
-the corpus includes positive, negative, ambiguous, and adjacent-Skill coexistence
-cases.
+Trigger mode tests the host's real implicit discovery. It installs marker-only
+probe Skills in each clean temporary home and records which bodies the host
+loaded. Its cases include positive, negative, ambiguous, and adjacent-Skill
+coexistence requests.
 
 ```bash
 python3 scripts/run_evals.py trigger \
@@ -191,22 +269,61 @@ python3 scripts/run_evals.py trigger \
   --output eval-results/v0.4.0-trigger.json
 ```
 
-The corpus remains inside the Skill package so every installed copy carries the cases;
-the runner and retained release evidence remain at repository level so portable Skill
-installs do not acquire an execution dependency. Results are configuration-specific,
-not claims about every model or host.
+The v0.4.0 ZCode run completed 162 of 162 behavior answers and 54 of 54 blind
+grades with GLM-5.2. The candidate scored 3.796 out of 4, compared with 3.685
+for v0.3.0 and 3.296 without a Skill. Its paired difference from v0.3.0 was
++0.111 with a 95% interval of [-0.058, +0.280], so the two Skill versions were
+not distinguishable on this task distribution. Both Skill arms beat no Skill
+with intervals clear of zero.
 
-The v0.4.0 run completed 162/162 behavior answers and 54/54 blind grades on ZCode with
-GLM-5.2. The candidate scored 3.796/4 against 3.685 for the previous release and 3.296
-without a Skill. Paired against the previous release the difference is +0.111 with a 95%
-interval of [-0.058, +0.280], so **v0.4.0 is not distinguishable from v0.3.0 on this
-task distribution**; both Skill arms beat no Skill with intervals clear of zero.
-Implicit discovery made 24/24 accepted selections, which measures ZCode and is not
-comparable to the v0.3.0 figure measured on Codex. See the
-[`v0.4.0 evaluation report`](reports/v0.4.0-evaluation.md) for the full deviation list
-and retained raw evidence.
+Implicit discovery made 24 of 24 accepted selections. That result measures
+ZCode and is not comparable with the v0.3.0 trigger result measured on Codex.
+The [v0.4.0 evaluation report](reports/v0.4.0-evaluation.md) records the full
+configuration, deviations, cost, one activation regression signal, and raw
+evidence.
+
+## Migration
+
+This project is an independently rewritten successor informed by Denis
+Shiryaev's MIT-licensed
+[`agents-best-practices`](https://github.com/DenisSergeevitch/agents-best-practices).
+It keeps the provider-neutral scope but replaces universal workflow
+restrictions with explicit invariants, defaults, conditional patterns, costs,
+and failure modes.
+
+The Skill does not require a production incident before preventive controls,
+durable state, orchestration, or specialized tools may be considered. It does
+not limit parallelism to reads, make every model-based evaluator advisory, or
+require draft and commit phases for every external effect. Each choice depends
+on the task, its risks, and the available recovery path.
+
+Keep the old Skill available while evaluating this one. Compare identical
+prompts across no Skill, the old Skill, and this Skill over repeated runs. Once
+you accept the new behavior, archive or disable every active
+`agents-best-practices` copy before enabling `agent-harness-design`. Overlapping
+descriptions can make activation nondeterministic.
+
+The installer does not delete the old Skill. It may contain local changes, so
+migration remains a separate, reviewable action.
+
+## Documentation
+
+- [Harnesses and ordinary software](plugins/agent-harness-design/skills/agent-harness-design/references/harness-vs-software.md)
+- [Failure visibility](plugins/agent-harness-design/skills/agent-harness-design/references/failure-visibility.md)
+- [Design decisions](plugins/agent-harness-design/skills/agent-harness-design/references/design-decisions.md)
+- [Trust, tools, and effects](plugins/agent-harness-design/skills/agent-harness-design/references/trust-tools-and-effects.md)
+- [State and orchestration](plugins/agent-harness-design/skills/agent-harness-design/references/state-and-orchestration.md)
+- [Evaluation and observability](plugins/agent-harness-design/skills/agent-harness-design/references/evaluation-and-observability.md)
+- [Research basis](plugins/agent-harness-design/skills/agent-harness-design/references/research-basis.md)
+
+The research basis covers the open Agent Skills specification, current Codex,
+Claude Code, and OpenCode documentation, reports from OpenAI and Anthropic, and
+work including tau-bench, AgentDojo, CaMeL, Harness-Bench, and
+capability-preserving defenses. It links each claim to its source.
 
 ## Development
+
+Run the checks from the repository root:
 
 ```bash
 python3 -m unittest discover -s tests -p 'test_*.py' -v
@@ -215,13 +332,9 @@ python3 "${CODEX_HOME:-$HOME/.codex}/skills/.system/skill-creator/scripts/quick_
   plugins/agent-harness-design/skills/agent-harness-design
 ```
 
-CI runs the standard-library test suite on Linux, macOS, and Windows.
+CI runs the standard-library test suite on Linux, macOS, and Windows with
+Python 3.12.
 
-## Research basis
+## License
 
-The guidance is grounded in the open Agent Skills specification, current Codex,
-Claude Code, and OpenCode documentation, practitioner reports from OpenAI and
-Anthropic, and agent reliability and security research including tau-bench,
-AgentDojo, CaMeL, Harness-Bench, and recent capability-preserving defense work. The
-annotated list and the claims drawn from it live in
-[`references/research-basis.md`](plugins/agent-harness-design/skills/agent-harness-design/references/research-basis.md).
+[MIT](LICENSE).
