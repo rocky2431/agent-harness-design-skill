@@ -56,15 +56,16 @@ run. A single success does not establish that the configuration works.
 because type systems and runtimes stop it. Here a failed operation still produces
 fluent, plausible output. See [failure-visibility.md](failure-visibility.md).
 
-**Every component encodes an assumption about what the model cannot do.** Those
-assumptions go stale as models improve, and they were not always right to begin with.
+**Every compensating component encodes an assumption about model or host limits.**
+Those assumptions can go stale or be wrong; business authority and environment contracts
+may remain necessary independently of model capability.
 Re-test them on upgrade; remove one at a time and measure.
 
 **A control is not free.** It consumes context, latency, and authorized strategies. The
 question is never "is this control good practice" but "does this control buy more than
 its capability tax on this model-harness pair."
 
-**The environment is the highest-leverage surface.** Fast tests, readable errors,
+**The environment can be a high-leverage surface.** Fast tests, readable errors,
 reproducible setup, and a working development environment change agent outcomes more
 than most loop logic. A cloud agent lacking a full environment degrades in output
 quality rather than failing visibly, which makes the cause hard to find.

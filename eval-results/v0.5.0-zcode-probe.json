@@ -1,0 +1,67 @@
+{
+  "completed_at": "2026-09-09T01:49:01.406525+00:00",
+  "configuration": {
+    "arms": [
+      {
+        "name": "agent-harness-design-v040",
+        "source_sha256": "943b0501c2e091683806c150cd80f38898fc6722477b897249b71ab8a71eed3a"
+      }
+    ],
+    "cases_sha256": "90e0bf16e7f7259ed1007c413ad77538e47678baf9049e262f73263ff7d8c6f0",
+    "host": "zcode",
+    "host_cli": "zcode-cli 0.16.5",
+    "model": "builtin:bigmodel-coding-plan/GLM-5.3",
+    "reasoning": "host default",
+    "selected_cases": [
+      "ordinary_task_does_not_activate"
+    ],
+    "structured_output": "prompt_json_validated",
+    "timeout_seconds": 180,
+    "trials": 1,
+    "workers": 1
+  },
+  "grades": [],
+  "measurement_notes": [
+    "Final outputs, wall-clock duration, and host-reported token usage are measured.",
+    "Scores, passes, evidence, and winners are model-grader judgments when grading is enabled.",
+    "Ephemeral evaluation-root paths in retained final outputs are normalized to <EVAL_TMP>.",
+    "Each run uses a fresh temporary HOME and workspace; the ZCode provider config is referenced by symlink into that home and is never copied or read.",
+    "A fresh home receives ZCode's bundled official plugins on bootstrap; user MCP servers from the linked config connect in every run, and user-configured hooks cannot find their $HOME-relative scripts. These host surfaces are identical across all arms of a run.",
+    "ZCode 0.16.5 documents --settings, --max-turns, and --allowed-tools but rejects them at parse time, so runs rely on the wall-clock timeout alone.",
+    "Behavior and grading runs deny effectful tools with --disallowed-tools as the read-only equivalent; trigger runs keep the host's default tool surface to measure implicit discovery as the host actually runs it.",
+    "The model id, thinking budget, and effort recorded per run are read from ZCode's own request trace (model-io rollout), not from assumptions."
+  ],
+  "mode": "behavior",
+  "runs": [
+    {
+      "arm": "agent-harness-design-v040",
+      "case": "ordinary_task_does_not_activate",
+      "case_id": 12,
+      "duration_seconds": 10.396,
+      "error": "zcode_process_error",
+      "observed_model": {
+        "model_id": "GLM-5.3",
+        "provider": "builtin:bigmodel-coding-plan"
+      },
+      "returncode": 1,
+      "status": "error",
+      "trial": 1,
+      "usage": {}
+    }
+  ],
+  "schema_version": 1,
+  "started_at": "2026-09-09T01:48:47.820592+00:00",
+  "stop_reason": null,
+  "summary": {
+    "agent-harness-design-v040": {
+      "completed_runs": 1,
+      "graded_pass_rate": null,
+      "input_tokens": 0,
+      "mean_duration_seconds": null,
+      "mean_grade": null,
+      "output_tokens": 0,
+      "successful_runs": 0,
+      "wins": 0
+    }
+  }
+}

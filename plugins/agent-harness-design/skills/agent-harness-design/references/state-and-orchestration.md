@@ -54,16 +54,17 @@ behavior.
   content inside a stable prefix forfeits the cache and changes cost sharply. Keep the
   system prompt and tool definitions in a fixed prefix and put per-turn variability after
   it.
-- Do not add or remove tool definitions mid-run. Prior actions still reference them, and
-  the mismatch produces schema violations and invented calls. Restrict availability
-  without changing the definitions when possible.
+- Preserve definitions referenced by history; do not silently rewrite cached or signed
+  prefixes. Native tool search, deferred loading and supported configuration updates
+  may expose additional tools without that rewrite. Verify the actual mechanism in
+  [model-adaptation.md](model-adaptation.md); dynamic discovery is not universally forbidden.
 - Never sever a tool call from its result. Snap any cut to a turn boundary.
 
 The settled practice for oversized output is to truncate, persist, and point: store the
 full artifact, return a bounded preview, and hand back a retrievable reference and the
 position where the cut began. Independent implementations have converged on this.
-Compression should be designed to be restorable — dropping page content is safe while
-the URL survives.
+Compression should be designed to be restorable. A URL alone is insufficient when a page
+can change or disappear; retain the required snapshot or state the recovery limitation.
 
 ## Durable state and memory
 
@@ -98,6 +99,14 @@ written intent may be stale and never authorizes automatic continuation.
 Prefer host-native lifecycle support when it reliably reaches the next model request.
 A custom recovery adapter is justified when a real lifecycle gap exists and the
 adapter can remain bounded, inspectable, and non-blocking.
+
+Native continuation, provider compaction and a fresh consolidated handoff have different
+state contracts. Preserve provider reasoning state only in a valid history; a summary
+cannot recreate signed/encrypted state. Carry pending call IDs and reconcile actual
+operation outcomes before resubmission. In a recovery design, name the chosen session
+recovery path, who owns the current work record, and how the latest user corrections
+replace stale directions. Explain alternatives only when they affect this decision.
+See [model-adaptation.md](model-adaptation.md).
 
 ## Long-horizon liveness
 
@@ -183,12 +192,13 @@ Two questions in this area are genuinely disputed. Do not cite one side as settl
 - **Should failed attempts stay in context?** Keeping them preserves evidence the model
   needs to adapt; removing them avoids compounding degradation. Current best reading:
   keep failures visible for near-term steering, clear them across a compaction boundary,
-  and re-test per model, since some models no longer self-condition.
+  and re-test per model. Preserve the failure facts and attempted approaches in the
+  handoff even if the noisy transcript is compacted.
 - **Does subagent isolation help or hurt?** Reported results point both ways within days
   of each other. The discriminator is task shape: isolation tends to win for
   parallelizable, read-mostly investigation and to lose for shared-state construction
-  where implicit decisions must stay consistent. Keep writes single-threaded even when
-  several agents contribute analysis.
+  where implicit decisions must stay consistent. Serialize shared mutable dependencies;
+  isolated writes can proceed concurrently with an explicit integration owner.
 
 When quoting a multi-agent improvement, quote its cost and variance decomposition with
 it. A large reported gain accompanied by an order-of-magnitude token increase, and an

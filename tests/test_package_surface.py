@@ -87,13 +87,13 @@ class PackageSurfaceTests(unittest.TestCase):
         self.assertIn("Keep a denial local", skill)
         self.assertIn("Do not silently downgrade", skill)
         self.assertIn("capability tax", skill)
-        self.assertIn("multiple agents", skill)
+        self.assertIn("multiple agents", " ".join(skill.split()))
         self.assertIn("without an incident", skill)
         self.assertIn("## Keep activation scoped", skill)
         self.assertIn("backward\n  compatibility", skill)
         self.assertIn("in band, in the artifact, and in the trace", skill)
         self.assertIn("Separate authority gates from resource governors", skill)
-        self.assertIn("soft in-band\n  tier before its hard ceiling", skill)
+        self.assertIn("soft in-band tier before a hard resource ceiling", skill)
         self.assertIn("Re-test on upgrade; do not remove on upgrade", skill)
         for reference in (
             "references/harness-vs-software.md",
@@ -109,6 +109,26 @@ class PackageSurfaceTests(unittest.TestCase):
         self.assertIsNotNone(description)
         self.assertLessEqual(len(description.group(1)), 380)
         self.assertIn("not for ordinary coding", description.group(1))
+
+    def test_every_reference_is_reachable_and_local_links_resolve(self) -> None:
+        """An installed copy must expose its details from the entrypoint."""
+        pending = [SKILL_ROOT / "SKILL.md"]
+        visited = set()
+        while pending:
+            path = pending.pop()
+            if path in visited:
+                continue
+            visited.add(path)
+            for target in re.findall(r"\[[^\]]+\]\(([^)]+)\)", path.read_text()):
+                if "://" in target or target.startswith("#"):
+                    continue
+                linked = (path.parent / target.split("#", 1)[0]).resolve()
+                self.assertTrue(linked.is_relative_to(SKILL_ROOT.resolve()), target)
+                self.assertTrue(linked.is_file(), f"{path.name}: {target}")
+                if linked.suffix == ".md":
+                    pending.append(linked)
+        references = set((SKILL_ROOT / "references").rglob("*.md"))
+        self.assertTrue(references <= visited, references - visited)
 
     def test_eval_set_covers_activation_and_anti_dogma_cases(self) -> None:
         data = json.loads(

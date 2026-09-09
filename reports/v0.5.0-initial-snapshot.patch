@@ -1,0 +1,56 @@
+--- a/plugins/agent-harness-design/skills/agent-harness-design/SKILL.md
++++ b/plugins/agent-harness-design/skills/agent-harness-design/SKILL.md
+@@ -79,8 +79,7 @@
+ Read [failure-visibility.md](references/failure-visibility.md) whenever the design
+ touches error handling, fallbacks, truncation, compaction, or completion claims.
+ 
+-Architectural choices are defaults or conditional patterns; provider interface contracts
+-remain binding within their documented configuration.
++Everything else in this Skill is a default or conditional pattern.
+ 
+ ## Make the smallest sufficient design
+ 
+@@ -131,16 +130,12 @@
+ for diagnosis, distinguish verified causes from hypotheses. Avoid forcing a full template.
+ 
+ Separate documented protocol requirements, locally observed behavior, vendor-reported
+-benefits, inference and unknowns. For specific model/API claims, cite the primary source
+-and its checked date in the answer; a local profile read is not a user-visible citation.
+-State when target-system behavior remains untested. Verify changing interface facts
+-before adoption.
++benefits, inference and unknowns. Verify changing interface facts before adoption.
+ Compare the candidate with the current or simpler legal baseline at comparable resources;
+ never score an invalid protocol baseline as a behavioral improvement. Repeat stochastic
+ trials, inspect outcomes and costs, and report which model-harness configuration ran.
+ Skill-answer quality does not prove the target system's runtime behavior.
+ 
+ Each compensation encodes an assumption: Re-test on upgrade; do not remove on upgrade.
+-Drift is not monotone: the same change may help one model and hurt another.
+ Change the smallest implicated surface, test relevant regressions and retain useful
+ historical evidence. No hidden chain-of-thought is required for evaluation.
+--- a/plugins/agent-harness-design/skills/agent-harness-design/references/state-and-orchestration.md
++++ b/plugins/agent-harness-design/skills/agent-harness-design/references/state-and-orchestration.md
+@@ -103,10 +103,7 @@
+ Native continuation, provider compaction and a fresh consolidated handoff have different
+ state contracts. Preserve provider reasoning state only in a valid history; a summary
+ cannot recreate signed/encrypted state. Carry pending call IDs and reconcile actual
+-operation outcomes before resubmission. In a recovery design, name the chosen session
+-recovery path, who owns the current work record, and how the latest user corrections
+-replace stale directions. Explain alternatives only when they affect this decision.
+-See [model-adaptation.md](model-adaptation.md).
++operation outcomes before resubmission. See [model-adaptation.md](model-adaptation.md).
+ 
+ ## Long-horizon liveness
+ 
+--- a/plugins/agent-harness-design/skills/agent-harness-design/references/model-adaptation.md
++++ b/plugins/agent-harness-design/skills/agent-harness-design/references/model-adaptation.md
+@@ -69,8 +69,7 @@
+ ## Migrate without an invalid baseline
+ 
+ 1. Freeze task semantics, authority, success evidence and environment. Record the old
+-   configuration and observable failure or migration objective. Distinguish premature
+-   stopping from excessive persistence; controls for one regime may harm the other.
++   configuration and observable failure or migration objective.
+ 2. Make the new target **protocol-valid first**: required API, templates, tool formats,
+    history state, supported parameters and effective effort. Literal prompt preservation
+    is conditional on both models accepting that representation.

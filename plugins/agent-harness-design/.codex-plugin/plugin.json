@@ -1,6 +1,6 @@
 {
   "name": "agent-harness-design",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Design and review agent execution layers that preserve authorized capability while enforcing narrow authority and effect boundaries.",
   "author": {
     "name": "rocky2431",
@@ -11,10 +11,12 @@
   "interface": {
     "displayName": "Agent Harness Design",
     "shortDescription": "Preserve agent capability at trusted effect boundaries",
-    "longDescription": "Adds a provider-neutral Skill for designing, auditing, debugging, and evaluating agent harnesses. It preserves the selected model's authorized capability envelope, distinguishes hard trust boundaries from defaults and conditional patterns, and measures the utility cost of controls.",
+    "longDescription": "Design, review, diagnose, and migrate agent harnesses. Separates general component contracts from dated model/API adaptation and historical cases, preserves authorized capability at trusted effect boundaries, and distinguishes documented guidance from tested runtime benefits.",
     "developerName": "rocky2431",
     "category": "Developer Tools",
-    "capabilities": ["Skills"],
+    "capabilities": [
+      "Skills"
+    ],
     "defaultPrompt": "Use $agent-harness-design to preserve authorized capability while enforcing authority and effects at narrow trusted boundaries."
   }
 }

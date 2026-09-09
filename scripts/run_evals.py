@@ -388,6 +388,24 @@ class CodexHost(HostAdapter):
             "status": "ok" if completed.returncode == 0 else "error",
             "usage": _usage_from_events(completed.stdout),
         }
+        # Retain scoped read commands, not their contents or full host transcripts.
+        reads = []
+        skill_path = str(root / "explicit-skill")
+        for line in completed.stdout.splitlines():
+            try:
+                event = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            item = event.get("item", {})
+            command = item.get("command", "")
+            if (
+                event.get("type") == "item.completed"
+                and item.get("type") == "command_execution"
+                and item.get("exit_code") == 0
+                and skill_path in command
+            ):
+                reads.append(command.replace(str(root), "<EVAL_TMP>"))
+        result["completed_skill_commands"] = reads
         if completed.returncode == 0 and output_file.is_file():
             result["final_output"] = output_file.read_text(encoding="utf-8").strip()
         else:
@@ -402,6 +420,8 @@ class CodexHost(HostAdapter):
             "Each run uses a fresh temporary HOME, CODEX_HOME, workspace, and "
             "ephemeral Codex session with plugins, memories, hooks, and apps "
             "disabled and a read-only sandbox.",
+            "Completed commands referencing the explicit Skill copy are retained "
+            "without outputs; they show requested reads, not attention or comprehension.",
         ]
 
 

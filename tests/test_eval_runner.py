@@ -134,6 +134,33 @@ class EvalRunnerTests(unittest.TestCase):
             )
             self.assertTrue((home / ".zcode" / "skills").is_dir())
 
+    def test_codex_retains_only_completed_scoped_skill_commands(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            output = root / "final.txt"
+            output.write_text("answer")
+            command = f"cat '{root}/explicit-skill/references/models/google.md'"
+            events = []
+            for event_type, code, cmd in (
+                ("item.started", 0, command),
+                ("item.completed", 1, command),
+                ("item.completed", 0, "cat unrelated.txt"),
+                ("item.completed", 0, command),
+            ):
+                events.append(json.dumps({"type": event_type, "item": {
+                    "type": "command_execution", "command": cmd,
+                    "exit_code": code, "aggregated_output": "not retained",
+                }}))
+            parsed = run_evals.CodexHost().parse_execution(
+                completed=subprocess.CompletedProcess([], 0, "\n".join(events), ""),
+                root=root, output_file=output,
+            )
+            self.assertEqual(
+                ["cat '<EVAL_TMP>/explicit-skill/references/models/google.md'"],
+                parsed["completed_skill_commands"],
+            )
+            self.assertNotIn("not retained", json.dumps(parsed))
+
     def test_zcode_config_is_referenced_by_symlink_and_never_copied(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

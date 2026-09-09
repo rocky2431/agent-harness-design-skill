@@ -1,6 +1,6 @@
 # Agent Harness Design
 
-Agent Harness Design helps coding agents make concrete decisions about the
+Agent Harness Design helps agents make concrete decisions about the
 execution layer around an AI agent. It covers model and tool loops, authority
 and external effects, context, state and recovery, orchestration, and
 evaluation.
@@ -17,7 +17,7 @@ portable Agent Skill. It does not include an MCP server, hook, daemon, model
 router, or custom agent runtime. Use it when the agent system itself is the
 subject. Ordinary coding, writing, task tracking, and delegation do not need it.
 
-Version: 0.4.0. The installer and evaluation runner use the Python standard
+Version: 0.5.0. The installer and evaluation runner use the Python standard
 library. CI tests them with Python 3.12.
 
 - [Install and start](#install-and-start)
@@ -38,7 +38,7 @@ library. CI tests them with Python 3.12.
 From GitHub:
 
 ```bash
-codex plugin marketplace add rocky2431/agent-harness-design-skill --ref main
+codex plugin marketplace add rocky2431/agent-harness-design-skill --ref v0.5.0
 codex plugin add agent-harness-design@rocky-agent-harness-design
 ```
 
@@ -94,6 +94,28 @@ python3 scripts/install_user.py uninstall \
 Uninstall removes only copies carrying this package's managed marker.
 
 ## Your first harness review
+
+Start with the request you actually have:
+
+```text
+$agent-harness-design design a read-only document agent from the basic model/tool loop
+$agent-harness-design review this agent's recovery after a tool timeout
+$agent-harness-design adapt our tool loop to DeepSeek V4 thinking; check history and effort
+```
+
+The [architecture guide](plugins/agent-harness-design/skills/agent-harness-design/references/architecture-guide.md)
+starts with one model and one tool, then maps twelve component responsibilities,
+interfaces, choices, failures and checks. The
+[adaptation guide](plugins/agent-harness-design/skills/agent-harness-design/references/model-adaptation.md)
+routes to dated OpenAI, Anthropic, Google, DeepSeek, Moonshot, Z.ai and Qwen profiles.
+It selects the target system's model, which may differ from the consulting model.
+
+Profiles separate API contracts, behavioral recommendations, disclosed training facts
+and unknowns. They are documentation-supported design material, not an exhaustive
+model support matrix or a claim that seven providers were locally benchmarked.
+[Historical cases](plugins/agent-harness-design/skills/agent-harness-design/references/historical-cases.md)
+retain why a component was added or replaced and how to update current guidance.
+
 
 Invoke the Skill directly when you want it:
 
@@ -164,7 +186,8 @@ The hard core is deliberately small:
 - the host must not silently reduce the selected model, reasoning mode,
   evidence, output budget, or tool surface.
 
-Everything else is a default or a conditional pattern. A control should protect
+Provider interface requirements are binding within their documented configuration.
+Other design guidance is a default or a conditional pattern. A control should protect
 a named property at the narrowest boundary that can enforce it. If its consumer,
 failure mode, or retirement condition cannot be named, it probably does not
 belong in the harness. Each compensating control stays removable when a
@@ -249,12 +272,12 @@ measurements and hides arm identity behind labels whose order rotates by case.
 
 ```bash
 python3 scripts/run_evals.py behavior \
-  --host zcode --host-binary /path/to/zcode \
+  --host codex --model gpt-5.6-sol --reasoning low \
   --arm no_skill \
-  --arm agent-harness-design-v030=/path/to/previous-release/skill \
+  --arm agent-harness-design-v040=/path/to/previous-release/skill \
   --arm agent-harness-design=plugins/agent-harness-design/skills/agent-harness-design \
   --trials 2 --workers 4 --grade \
-  --output eval-results/v0.4.0-behavior.json
+  --output eval-results/v0.5.0-behavior.json
 ```
 
 Trigger mode tests the host's real implicit discovery. It installs marker-only
@@ -264,23 +287,19 @@ coexistence requests.
 
 ```bash
 python3 scripts/run_evals.py trigger \
-  --host zcode --host-binary /path/to/zcode \
+  --host codex --model gpt-5.6-sol --reasoning low \
   --trials 2 --workers 4 \
-  --output eval-results/v0.4.0-trigger.json
+  --output eval-results/v0.5.0-trigger.json
 ```
 
-The v0.4.0 ZCode run completed 162 of 162 behavior answers and 54 of 54 blind
-grades with GLM-5.2. The candidate scored 3.796 out of 4, compared with 3.685
-for v0.3.0 and 3.296 without a Skill. Its paired difference from v0.3.0 was
-+0.111 with a 95% interval of [-0.058, +0.280], so the two Skill versions were
-not distinguishable on this task distribution. Both Skill arms beat no Skill
-with intervals clear of zero.
-
-Implicit discovery made 24 of 24 accepted selections. That result measures
-ZCode and is not comparable with the v0.3.0 trigger result measured on Codex.
-The [v0.4.0 evaluation report](reports/v0.4.0-evaluation.md) records the full
-configuration, deviations, cost, one activation regression signal, and raw
-evidence.
+For v0.5.0, the initial targeted comparison completed 108 answers and 36 blind
+grades. Three candidate omissions prompted narrow corrections. The final focused run
+completed 16 answers and 8 grades; candidate 8/8 graded passes, v0.4.0 6/8. These are
+small, targeted Skill-answer checks, not proof of general performance gains or seven
+providers' runtime behavior. The
+[v0.5.0 evaluation report](reports/v0.5.0-evaluation.md) retains snapshots, failures,
+read-command evidence, limitations and the A1–A9 mapping. Historical results remain in
+[v0.4.0](reports/v0.4.0-evaluation.md) and [v0.3.0](reports/v0.3.0-evaluation.md).
 
 ## Migration
 
@@ -307,6 +326,10 @@ The installer does not delete the old Skill. It may contain local changes, so
 migration remains a separate, reviewable action.
 
 ## Documentation
+
+- [Architecture: from the basic loop to components](plugins/agent-harness-design/skills/agent-harness-design/references/architecture-guide.md)
+- [Target model adaptation and provider profiles](plugins/agent-harness-design/skills/agent-harness-design/references/model-adaptation.md)
+- [Historical cases and maintaining recommendations](plugins/agent-harness-design/skills/agent-harness-design/references/historical-cases.md)
 
 - [Harnesses and ordinary software](plugins/agent-harness-design/skills/agent-harness-design/references/harness-vs-software.md)
 - [Failure visibility](plugins/agent-harness-design/skills/agent-harness-design/references/failure-visibility.md)

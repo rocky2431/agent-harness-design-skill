@@ -92,9 +92,10 @@ Check three things before acting on any eval number:
   infrastructure? Audits of agent traces have found reward hacking and answer exposure in
   a majority of trajectories on some suites, and capability estimates have been halved by
   removing hacked successes.
-- **Judge independence.** Do not use the same model family as agent and grader.
-  Self-preference is causally linked to self-recognition, and verdicts can flip on
-  candidate ordering alone.
+- **Judge independence.** Prefer an independent model family or grounded human checks
+  where feasible. Same-family judging can have self-preference; different-family
+  judging can still be biased. Blind identity, vary order and inspect disputed outcomes.
+  Report residual dependence rather than presenting a score as objective truth.
 
 Report uncertainty. A benchmark difference without a standard error is not actionable,
 and small leaderboard gaps can be produced by execution environment alone: resourcing
@@ -156,3 +157,15 @@ not prove discovery, invocation, execution, or cleanup.
 Promote a change when it improves the accepted task distribution without violating
 hard invariants or exceeding agreed trade-offs. Record known exclusions and the signal
 that would trigger another architecture review.
+
+## Skill guidance and target-system claims
+
+A new-session Skill trial checks activation, relevant reference loading and the delivered
+design decision. A protocol check verifies request/response compatibility. A real
+model-harness comparison measures task outcomes, costs and recovery. These are distinct
+claims; mocks and advice grades do not establish target-model optimization gains.
+
+Record configuration and source/package digest. Compare current and candidate versions
+on relevant cases, preserving regressions and raw outputs. For dated model profiles,
+report documented-only coverage separately from locally exercised targets. Do not require
+an arbitrary composite score when per-case evidence answers the release decision.

@@ -1,6 +1,6 @@
 # Research Basis
 
-Accessed 2026-09-04. These sources support the Skill's distinctions; they are not a
+Legacy corpus accessed 2026-09-04; new architecture/profile sources checked 2026-09-09. These sources support the Skill's distinctions; they are not a
 checklist to copy wholesale. Provider behavior and plugin surfaces are versioned facts,
 so verify them again when implementing against a newer host.
 
@@ -8,7 +8,8 @@ so verify them again when implementing against a newer host.
 
 Weigh sources by tier, and say which tier you are relying on.
 
-- **Robust**: peer-reviewed or widely replicated; safe to reason from.
+- **Robust**: stronger methodological or replication support within the studied regime;
+  peer review alone does not establish universal applicability.
 - **Preprint**: single-lab, sound method, not independently reproduced; cite as evidence,
   not as settled.
 - **Vendor**: lab or company reporting on its own system, usually without a released
@@ -16,6 +17,28 @@ Weigh sources by tier, and say which tier you are relying on.
 
 Numbers from a benchmark are claims about a grading function too. See
 [evaluation-and-observability.md](evaluation-and-observability.md) before acting on one.
+
+
+## General architecture and model adaptation (2026-09-09)
+
+Use [architecture-guide.md](architecture-guide.md) for the basic loop and component
+contracts, [model-adaptation.md](model-adaptation.md) for the seven provider profiles,
+and [historical-cases.md](historical-cases.md) for dated evolution and maintenance rules.
+The profile pages carry exact target scope, sources, checks and unverified limits.
+Their protocol facts were read from primary documentation; performance was not locally
+reproduced. Older entries below retain their original evidence boundaries and are not
+all revalidated for current models by this update.
+
+- [ReAct](https://react-lm.github.io/) (2022): action/observation feedback as a teaching
+  entry, without requiring modern models to disclose hidden reasoning.
+- [SWE-agent ACI](https://swe-agent.com/0.7/background/) (2024, historical): tools and
+  feedback as an interface to design, not merely an API to expose.
+- [OpenAI building agents](https://developers.openai.com/tracks/building-agents)
+  (dynamic): composable model, tool, state and orchestration primitives; the SDK is an
+  implementation option, not a general architecture requirement.
+- Training evidence is separated in [Qwen](models/qwen.md) and
+  [DeepSeek](models/deepseek.md); published RL/SFT stages do not establish causal gains
+  from a particular harness on a different model or task.
 
 ## Skill format and distribution
 
@@ -148,9 +171,9 @@ Numbers from a benchmark are claims about a grading function too. See
 - [Anthropic, task budgets](https://platform.claude.com/docs/en/build-with-claude/task-budgets):
   the reference two-tier design. A soft countdown visible only to the model, alongside a
   hard output ceiling. Documents the failure mode of an undersized budget as
-  refusal-like behavior and premature stopping, prescribes raising the budget before
-  debugging anything else, warns against mirroring the countdown client-side, and sizes
-  budgets from a high percentile of unbudgeted spend.
+  refusal-like behavior and premature stopping. Its advice to raise the budget first,
+  avoid mirroring the countdown and size from unbudgeted spend applies to that feature;
+  it is not a universal diagnostic order or permission for unbounded runs.
 - [Claude Agent SDK agent loop](https://code.claude.com/docs/en/agent-sdk/agent-loop):
   typed terminal subtypes distinguishing success, turn limit, budget limit, execution
   error, and retry exhaustion, with the result field present only on success.

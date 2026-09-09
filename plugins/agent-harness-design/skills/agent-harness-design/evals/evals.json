@@ -2,7 +2,7 @@
   "skill_name": "agent-harness-design",
   "comparison_arms": [
     "no_skill",
-    "agent-harness-design-v030",
+    "agent-harness-design-v040",
     "agent-harness-design"
   ],
   "evals": [
@@ -167,6 +167,66 @@
       "name": "disputed_practice_needs_a_criterion",
       "prompt": "One source says to leave failed attempts in context so the model can learn from them, another says to strip them because they cause context rot. Which one is correct?",
       "expected_output": "Presents both positions as genuinely unsettled rather than picking a side as doctrine; supplies a decision criterion such as keeping failures visible for near-term steering, clearing them across a compaction boundary, and re-testing per model; notes that self-conditioning is model-dependent."
+    },
+    {
+      "id": 28,
+      "name": "simple_read_only_agent_from_loop",
+      "prompt": "Design a minimal agent that answers questions from an approved document collection using one search tool. Walk through one request, tool execution, observation and completion. It runs for a few minutes and does not need to resume.",
+      "expected_output": "Explains model proposal versus runtime execution and environment observation, source-aware answer evidence and a valid call/result loop; no mandatory planner, subagents, vector database, shell or durable store."
+    },
+    {
+      "id": 29,
+      "name": "recover_pending_tool_across_context",
+      "prompt": "Design recovery for a two-day research agent. It loses context after submitting a slow source-ingestion call whose outcome is not yet known. What should the next session restore, inspect, and do?",
+      "expected_output": "Preserves goal, authority, corrections, evidence and changed artifacts, pending call identity and current-state ownership; reconciles original operation before retry; distinguishes native continuation, provider compaction and fresh handoff, with valid provider state and real outcome evidence."
+    },
+    {
+      "id": 30,
+      "name": "target_differs_from_consulting_model",
+      "prompt": "You are advising from an OpenAI model, but the target agent uses deepseek-v4-pro thinking via OpenAI-format Chat Completions. Requests always include tools; some assistant turns contain no tool call. Should I strip reasoning_content from those turns and set xhigh for more effort than high? Answer for the target system.",
+      "expected_output": "Selects DeepSeek V4 profile regardless of consulting model; preserves prior reasoning_content even on non-tool turns when tools is carried; xhigh and high map to actual high. Distinguishes documented compatibility from untested optimization and cites provider documentation."
+    },
+    {
+      "id": 31,
+      "name": "two_models_same_tool_goal",
+      "prompt": "We need the same read-only search agent on gpt-6-astra via OpenAI API and Gemini 3 using stateful Interactions. Should both use Chat Completions, temperature 0.1 and a manually flattened transcript? Explain the shared architecture and concrete provider differences.",
+      "expected_output": "Keeps goal/authority/evidence shared; Astra tool calling requires Responses and no unsupported temperature; Gemini 3 recommended temperature 1.0 and stateful previous_interaction_id manages signatures. Does not confuse protocol requirements with task-verified benefits; sources or dated qualifications are provided."
+    },
+    {
+      "id": 32,
+      "name": "unknown_alias_and_training_cause",
+      "prompt": "Our config just says Qwen latest. An old Qwen3-Coder article discusses agent RL. Can we use its template and delete our planner because Qwen3.8 must have learned planning? Give a usable migration recommendation.",
+      "expected_output": "Does not infer exact target or causal architecture benefit from family/training names; identifies model/checkpoint, server template/parser and task conditions to resolve, keeps historical Qwen3 separate, gives general migration steps and legal baseline with unverified current specifics."
+    },
+    {
+      "id": 33,
+      "name": "premature_stop_without_budget_evidence",
+      "prompt": "Our agent stopped halfway through a long report. Token and time budgets were not exhausted, and we have not checked its request trace. A teammate says increase the budget first, then add an outer controller. Diagnose this advice.",
+      "expected_output": "Checks instruction/approval conflicts, missing tool or reasoning history, provider stop reasons, host cancellation and task/acceptance interpretation as well as misleading visible limits; does not require budget increase or a controller without evidence."
+    },
+    {
+      "id": 34,
+      "name": "native_tool_discovery_vs_history_mutation",
+      "prompt": "Our Claude-based harness uses native tool search with preregistered deferred tools. A reviewer cites Manus and says every tool must be loaded at turn one because adding tools mid-run is forbidden. Is that correct?",
+      "expected_output": "Distinguishes native deferred discovery from rewriting cached or bound definitions/history; checks exact model/API/account mechanism, allows valid discovery, protects historical references and does not impose a universal preload rule."
+    },
+    {
+      "id": 35,
+      "name": "claude_history_binding_conditions",
+      "prompt": "For Claude Fable 5.1, our account was created September 1, 2026. Our client rewrites the system prompt and summarizes earlier turns in place, while replaying old thinking blocks. What must change? Is drop_block a quality optimization?",
+      "expected_output": "Uses applicable post-August-31 history-binding condition, preserves exact prefix or supported native updates/compaction, can fresh-start without old bound blocks; beta drop_block is explicit state discard with header/conditions, not proven quality improvement or silent fallback."
+    },
+    {
+      "id": 36,
+      "name": "same_vendor_different_modes",
+      "prompt": "We want one configuration with thinking disabled, reasoning_effort high and preserved thinking enabled for kimi-k3, kimi-k2.7-code, kimi-k2.6 and GLM-5.3. Our GLM calls may use standard API or Coding Plan. Is a shared preset correct?",
+      "expected_output": "Separates exact models and endpoints: K3 and K2.7 always think, only K3 effort field among listed Kimi models; K2.6 supports disable and optional keep all; GLM-5.3 forced thinking; Coding Plan and standard preservation defaults differ. Records complete state and does not invent universal preset."
+    },
+    {
+      "id": 37,
+      "name": "single_component_tool_contract",
+      "prompt": "In an agent harness, what should a document-search tool return so the model can use it? Please keep it focused on this component.",
+      "expected_output": "Gives source identifiers, relevant passage context, scope/provenance, truthful empty/error/timeout states and retrievable oversized evidence with usable next action; avoids full architecture process or irrelevant model profiles."
     }
   ]
 }

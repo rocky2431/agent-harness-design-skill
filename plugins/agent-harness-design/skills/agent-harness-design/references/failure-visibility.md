@@ -92,15 +92,16 @@ the operation moved to the background with an identifier to retrieve it.
 
 Never instruct the model to conceal that its context or capability changed.
 
-## Unknown is a defect, not a fallback
+## Distinguish unknown effects from unclassified errors
 
-Enumerate failure kinds and treat anything falling through to unknown as a harness bug
-to fix, not a bucket to live in. A useful minimum taxonomy distinguishes denied, failed,
+An effect can legitimately be unknown after a lost connection: preserve its identity
+and reconcile with the environment before retrying. An unclassified exception instead
+indicates a diagnostic gap to investigate. Neither state is success. A useful minimum taxonomy distinguishes denied, failed,
 timed out, cancelled, blocked by policy, unavailable, retryable, and unknown, with
 timeout carried as its own field rather than inferred from an exit code.
 
-Baseline error rates per tool and per model. A rate that differs across models usually
-indicates a tool-description or schema problem, not model weakness.
+Baseline error rates per tool and per model. A rate that differs across models warrants checking adapter fields, tool descriptions,
+schemas, model behavior and task mix; it does not identify a cause by itself.
 
 Give distinct consequences distinct wording. A generic denial can lead a model to
 believe a mutation landed; state explicitly what did not happen and what the current

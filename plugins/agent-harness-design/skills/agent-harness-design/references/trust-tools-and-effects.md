@@ -73,11 +73,11 @@ the entry or exit of a conversation do not cover every tool call in between, and
 that run concurrently with execution may complete after tokens were spent and effects
 occurred.
 
-For work that unfolds over hours or days, per-action approval is structurally
-insufficient. Each step can be individually acceptable while the sequence produces an
+When cumulative or cross-tool effects can exceed the authorized task, per-action
+approval alone may be insufficient. Each step can be individually acceptable while the sequence produces an
 outcome nobody would have approved; a blocked action can be reattempted in fragments that
-individually pass. Long-horizon systems need trajectory-level review that can pause the
-run, alongside the per-action gates. Useful invariants for such a reviewer: prior
+individually pass. For that threat model, add trajectory-level review able to pause the run alongside
+per-action gates; duration alone does not require a separate reviewer. Useful invariants for such a reviewer: prior
 decisions are context rather than precedent; authorization to create or handle content is
 not authorization to move it outward; and a task request does not authorize every step
 that might accomplish it. Keep the reviewer a reviewer — swapping who approves must not

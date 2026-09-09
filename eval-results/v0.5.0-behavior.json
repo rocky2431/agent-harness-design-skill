@@ -1,0 +1,702 @@
+{
+  "completed_at": "2026-09-09T02:31:56.338409+00:00",
+  "configuration": {
+    "arms": [
+      {
+        "name": "agent-harness-design-v040",
+        "source_sha256": "943b0501c2e091683806c150cd80f38898fc6722477b897249b71ab8a71eed3a"
+      },
+      {
+        "name": "agent-harness-design",
+        "source_sha256": "25a335fdade59170bac56994ffa7318bc9447c59de1e2e99d14f7020a38b9e91"
+      }
+    ],
+    "cases_sha256": "f1e36e584c4567e6055190b4541e53ba08066d26806d10517610b04b3404f568",
+    "host": "codex",
+    "host_cli": "codex-cli 0.153.4",
+    "model": "gpt-5.6-sol",
+    "reasoning": "low",
+    "selected_cases": [
+      "ordinary_task_does_not_activate",
+      "retest_scaffolding_rather_than_remove_it",
+      "recover_pending_tool_across_context",
+      "target_differs_from_consulting_model"
+    ],
+    "structured_output": "output_schema",
+    "timeout_seconds": 240,
+    "trials": 2,
+    "workers": 4
+  },
+  "grades": [
+    {
+      "assessments": [
+        {
+          "arm": "agent-harness-design-v040",
+          "evidence": "Provides a direct, accurate Chinese translation: “构建成功完成。”",
+          "failures": [],
+          "label": "A",
+          "pass": true,
+          "score": 4
+        },
+        {
+          "arm": "agent-harness-design",
+          "evidence": "Provides a direct, accurate Chinese translation; “已” naturally emphasizes completion.",
+          "failures": [],
+          "label": "B",
+          "pass": true,
+          "score": 4
+        }
+      ],
+      "case": "ordinary_task_does_not_activate",
+      "case_id": 12,
+      "comparison": "Both responses fully satisfy the request with concise, natural, and accurate translations. The slight wording difference does not make either materially better.",
+      "duration_seconds": 11.802,
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 0,
+        "input_tokens": 11492,
+        "output_tokens": 118,
+        "reasoning_output_tokens": 0
+      },
+      "winner": "tie"
+    },
+    {
+      "assessments": [
+        {
+          "arm": "agent-harness-design-v040",
+          "evidence": "Provides a direct, accurate Chinese translation with no irrelevant material.",
+          "failures": [],
+          "label": "A",
+          "pass": true,
+          "score": 4
+        },
+        {
+          "arm": "agent-harness-design",
+          "evidence": "Provides the same direct, accurate Chinese translation with no irrelevant material.",
+          "failures": [],
+          "label": "B",
+          "pass": true,
+          "score": 4
+        }
+      ],
+      "case": "ordinary_task_does_not_activate",
+      "case_id": 12,
+      "comparison": "Both responses exactly satisfy the request and reference expectation.",
+      "duration_seconds": 11.763,
+      "status": "ok",
+      "trial": 2,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 9728,
+        "input_tokens": 11502,
+        "output_tokens": 97,
+        "reasoning_output_tokens": 0
+      },
+      "winner": "tie"
+    },
+    {
+      "assessments": [
+        {
+          "arm": "agent-harness-design",
+          "evidence": "Correctly rejects wholesale deletion, treats mechanisms as separate hypotheses, and requires independent matched ablations with outcome, reliability, cost, and latency measurements. Its instruction to diagnose why premature stopping occurs substantially addresses regime identification.",
+          "failures": [
+            "Does not explicitly warn that behavioral drift is non-monotone or that the same scaffold change may help one model while hurting another.",
+            "Does not directly ask which premature-stopping regime the new model occupies."
+          ],
+          "label": "A",
+          "pass": true,
+          "score": 3
+        },
+        {
+          "arm": "agent-harness-design-v040",
+          "evidence": "Correctly frames each scaffold as a testable hypothesis, recommends matched ablations on old and new models, and conditions retention of reset behavior on measured premature-stopping failures.",
+          "failures": [
+            "Does not explicitly state that model drift is non-monotone or that removing a component can have opposite effects across models.",
+            "Discusses diagnosing premature stopping but does not directly ask which regime applies to the new model."
+          ],
+          "label": "B",
+          "pass": true,
+          "score": 3
+        }
+      ],
+      "case": "retest_scaffolding_rather_than_remove_it",
+      "case_id": 25,
+      "comparison": "Both responses satisfy the central recommendation: retest each component separately and measure outcomes rather than deleting all three on faith. They also give similarly sound component-level advice, but both omit the reference’s explicit non-monotonic-drift warning and only implicitly address identifying the new model’s premature-stopping regime.",
+      "duration_seconds": 26.783,
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 0,
+        "input_tokens": 12131,
+        "output_tokens": 550,
+        "reasoning_output_tokens": 266
+      },
+      "winner": "tie"
+    },
+    {
+      "assessments": [
+        {
+          "arm": "agent-harness-design",
+          "evidence": "It treats each mechanism as a separate hypothesis, recommends independent matched ablations, and says to diagnose the new model’s stopping behavior before retaining or removing reset scaffolding. It also gives relevant protected-outcome metrics.",
+          "failures": [
+            "It does not explicitly warn that behavioral drift across model upgrades is non-monotone or that the same harness change may help one model while hurting another.",
+            "It suggests interim updates are “likely the best removal candidate,” which is reasonable but slightly weakens the expectation to treat every removal as an empirical question."
+          ],
+          "label": "A",
+          "pass": true,
+          "score": 3
+        },
+        {
+          "arm": "agent-harness-design-v040",
+          "evidence": "It explicitly frames every mechanism as a hypothesis, calls for removing controls individually in matched repeated evaluations, and conditions anti-stopping recovery on determining whether failures arise from protocol, budget, truncation, or context handling.",
+          "failures": [
+            "It does not explicitly state that model-to-model drift is non-monotone or that an identical change can improve one model and degrade another.",
+            "Its discussion identifies possible stopping causes but does not quite formulate the requested question of which behavioral regime the new model occupies."
+          ],
+          "label": "B",
+          "pass": true,
+          "score": 3
+        }
+      ],
+      "case": "retest_scaffolding_rather_than_remove_it",
+      "case_id": 25,
+      "comparison": "Both materially satisfy the recommendation to avoid wholesale deletion, retest each assumption, ablate one component at a time, measure outcomes, and diagnose premature-stopping behavior. Both share the same notable omission: no explicit warning about non-monotone cross-model drift. Neither has a decisive advantage.",
+      "duration_seconds": 24.299,
+      "status": "ok",
+      "trial": 2,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 0,
+        "input_tokens": 12162,
+        "output_tokens": 473,
+        "reasoning_output_tokens": 154
+      },
+      "winner": "tie"
+    },
+    {
+      "assessments": [
+        {
+          "arm": "agent-harness-design-v040",
+          "evidence": "Correctly restores the goal, authority, corrections, evidence, artifacts, exact pending-operation identity, and uncertainty; it reconciles the original job and destination before any retry and derives completion from live state. However, it does not distinguish provider-native continuation, provider compaction, and a fresh-session handoff.",
+          "failures": [
+            "Omits the required recovery-mode distinction between native continuation, provider compaction, and fresh handoff.",
+            "Does not discuss validating provider continuation state."
+          ],
+          "label": "A",
+          "pass": true,
+          "score": 3
+        },
+        {
+          "arm": "agent-harness-design",
+          "evidence": "Restores all major durable state, keeps the ingestion outcome explicitly unknown, validates provider configuration, queries the original operation, independently checks committed state, and retries only from real outcome evidence. It also distinguishes valid provider-native continuation from starting a fresh consolidated session, but does not explicitly address provider compaction as a separate mode.",
+          "failures": [
+            "Does not explicitly distinguish provider compaction from both native continuation and fresh handoff."
+          ],
+          "label": "B",
+          "pass": true,
+          "score": 3
+        }
+      ],
+      "case": "recover_pending_tool_across_context",
+      "case_id": 29,
+      "comparison": "Both responses provide strong, safe reconciliation designs and satisfy nearly all substantive requirements. B wins narrowly because it addresses provider-native continuation validity and fresh-session fallback, while A omits session/provider recovery modes entirely.",
+      "duration_seconds": 21.752,
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 0,
+        "input_tokens": 12615,
+        "output_tokens": 408,
+        "reasoning_output_tokens": 134
+      },
+      "winner": "agent-harness-design"
+    },
+    {
+      "assessments": [
+        {
+          "arm": "agent-harness-design-v040",
+          "evidence": "Correctly restores the goal, authority, evidence, artifacts, and exact pending-operation identity; explicitly keeps the outcome `unknown`, checks live service and destination state, accounts for concurrent changes, and reconciles before any retry. It also requires environment-backed completion evidence.",
+          "failures": [
+            "It does not clearly distinguish native continuation, provider-side compaction, and a fresh-session handoff.",
+            "Although it mentions a compaction marker and capability checks, it does not specify what valid provider continuation state must be restored or validated for each recovery mode."
+          ],
+          "label": "A",
+          "pass": true,
+          "score": 3
+        },
+        {
+          "arm": "agent-harness-design",
+          "evidence": "Correctly treats ingestion as an unresolved external effect, restores instructions and later corrections plus artifact locations and call identifiers, inspects service and destination evidence, and forbids potentially duplicating retries while the outcome remains ambiguous.",
+          "failures": [
+            "It does not distinguish native continuation, provider compaction, and fresh handoff recovery paths.",
+            "Provider continuation state and its validity are not addressed explicitly.",
+            "Its instruction to advance only after ingestion is verified is slightly rigid; independent research could safely continue while ingestion remains pending."
+          ],
+          "label": "B",
+          "pass": true,
+          "score": 3
+        }
+      ],
+      "case": "recover_pending_tool_across_context",
+      "case_id": 29,
+      "comparison": "Both materially satisfy the central recovery requirement and deserve a pass. A is marginally stronger because it more explicitly preserves verified facts versus summaries, checks changed capabilities and credentials, handles concurrent changes and partial effects, and permits safe independent work during ambiguity. Neither fully meets the reference expectation’s explicit recovery-mode and provider-state distinction.",
+      "duration_seconds": 22.102,
+      "status": "ok",
+      "trial": 2,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 0,
+        "input_tokens": 12717,
+        "output_tokens": 397,
+        "reasoning_output_tokens": 72
+      },
+      "winner": "agent-harness-design-v040"
+    },
+    {
+      "assessments": [
+        {
+          "arm": "agent-harness-design",
+          "evidence": "Correctly selects the DeepSeek target behavior, preserves reasoning_content on every prior assistant turn when tools are present, states that xhigh and high both map to actual high, and cites provider documentation.",
+          "failures": [
+            "It does not distinguish documented compatibility requirements from untested optimization advice.",
+            "The recommendation to use max for greater effort is unsupported by the reference expectation and may be an invented target-specific claim."
+          ],
+          "label": "A",
+          "pass": true,
+          "score": 3
+        },
+        {
+          "arm": "agent-harness-design-v040",
+          "evidence": "It correctly rejects xhigh as providing an above-high setting, but gives no provider citation.",
+          "failures": [
+            "It incorrectly recommends stripping reasoning_content from non-tool-calling assistant turns despite tools being carried in every request.",
+            "It bases normalization on each message’s tool_calls field, contradicting the expected DeepSeek V4 compatibility behavior.",
+            "It does not distinguish documented compatibility from untested optimization."
+          ],
+          "label": "B",
+          "pass": false,
+          "score": 1
+        }
+      ],
+      "case": "target_differs_from_consulting_model",
+      "case_id": 30,
+      "comparison": "A gets both central target-system behaviors right and includes provider documentation, while B reverses the crucial reasoning_content requirement. A has only a documentation/optimization distinction omission and an unsupported max suggestion.",
+      "duration_seconds": 17.975,
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 0,
+        "input_tokens": 11830,
+        "output_tokens": 332,
+        "reasoning_output_tokens": 81
+      },
+      "winner": "agent-harness-design"
+    },
+    {
+      "assessments": [
+        {
+          "arm": "agent-harness-design",
+          "evidence": "Correctly applies the DeepSeek target profile, preserves `reasoning_content` on all prior assistant turns when tools are present, states that `xhigh` does not exceed `high`, and cites DeepSeek documentation.",
+          "failures": [
+            "It presents `max` as definitively providing more effort without distinguishing documented protocol compatibility from an untested optimization.",
+            "The claim that `medium` also maps to high goes beyond the reference expectation.",
+            "The “checked September 9, 2026” freshness claim is unsupported within the response."
+          ],
+          "label": "A",
+          "pass": true,
+          "score": 3
+        },
+        {
+          "arm": "agent-harness-design-v040",
+          "evidence": "Correctly preserves reasoning history on non-tool turns, identifies the rules as DeepSeek-specific, says `xhigh` maps to `high`, and links provider documentation.",
+          "failures": [
+            "It asserts that `max` provides greater effort without the required qualification that this is an untested optimization rather than documented compatibility.",
+            "The recommendation to translate `xhigh → max` changes the caller’s requested setting and is unsupported; it may misrepresent user intent.",
+            "It does not clearly separate documented behavior from speculative tuning advice."
+          ],
+          "label": "B",
+          "pass": false,
+          "score": 2
+        }
+      ],
+      "case": "target_differs_from_consulting_model",
+      "case_id": 30,
+      "comparison": "A is closer to the reference because it answers the two protocol questions directly without adding B’s unsupported adapter rewrite. Both miss the required distinction between documented compatibility and untested optimization, but B turns that omission into a concrete, potentially misleading implementation recommendation.",
+      "duration_seconds": 20.156,
+      "status": "ok",
+      "trial": 2,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 9728,
+        "input_tokens": 11898,
+        "output_tokens": 396,
+        "reasoning_output_tokens": 84
+      },
+      "winner": "agent-harness-design"
+    }
+  ],
+  "measurement_notes": [
+    "Final outputs, wall-clock duration, and host-reported token usage are measured.",
+    "Scores, passes, evidence, and winners are model-grader judgments when grading is enabled.",
+    "Ephemeral evaluation-root paths in retained final outputs are normalized to <EVAL_TMP>.",
+    "Each run uses a fresh temporary HOME, CODEX_HOME, workspace, and ephemeral Codex session with plugins, memories, hooks, and apps disabled and a read-only sandbox.",
+    "Completed commands referencing the explicit Skill copy are retained without outputs; they show requested reads, not attention or comprehension."
+  ],
+  "mode": "behavior",
+  "runs": [
+    {
+      "arm": "agent-harness-design",
+      "case": "ordinary_task_does_not_activate",
+      "case_id": 12,
+      "completed_skill_commands": [
+        "/bin/zsh -lc \"sed -n '1,240p' <EVAL_TMP>/explicit-skill/SKILL.md\""
+      ],
+      "duration_seconds": 16.296,
+      "final_output": "构建已成功完成。",
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 19200,
+        "input_tokens": 24583,
+        "output_tokens": 169,
+        "reasoning_output_tokens": 0
+      }
+    },
+    {
+      "arm": "agent-harness-design-v040",
+      "case": "ordinary_task_does_not_activate",
+      "case_id": 12,
+      "completed_skill_commands": [
+        "/bin/zsh -lc \"sed -n '1,240p' <EVAL_TMP>/explicit-skill/SKILL.md\""
+      ],
+      "duration_seconds": 19.244,
+      "final_output": "构建成功完成。",
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 19200,
+        "input_tokens": 25096,
+        "output_tokens": 164,
+        "reasoning_output_tokens": 0
+      }
+    },
+    {
+      "arm": "agent-harness-design",
+      "case": "ordinary_task_does_not_activate",
+      "case_id": 12,
+      "completed_skill_commands": [
+        "/bin/zsh -lc \"sed -n '1,240p' <EVAL_TMP>/explicit-skill/SKILL.md\""
+      ],
+      "duration_seconds": 15.246,
+      "final_output": "构建已成功完成。",
+      "status": "ok",
+      "trial": 2,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 19200,
+        "input_tokens": 24563,
+        "output_tokens": 165,
+        "reasoning_output_tokens": 0
+      }
+    },
+    {
+      "arm": "agent-harness-design-v040",
+      "case": "ordinary_task_does_not_activate",
+      "case_id": 12,
+      "completed_skill_commands": [
+        "/bin/zsh -lc \"sed -n '1,240p' <EVAL_TMP>/explicit-skill/SKILL.md\""
+      ],
+      "duration_seconds": 15.865,
+      "final_output": "构建已成功完成。",
+      "status": "ok",
+      "trial": 2,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 20736,
+        "input_tokens": 25098,
+        "output_tokens": 175,
+        "reasoning_output_tokens": 10
+      }
+    },
+    {
+      "arm": "agent-harness-design",
+      "case": "retest_scaffolding_rather_than_remove_it",
+      "case_id": 25,
+      "completed_skill_commands": [
+        "/bin/zsh -lc \"sed -n '1,240p' <EVAL_TMP>/explicit-skill/SKILL.md\"",
+        "/bin/zsh -lc \"sed -n '1,260p' <EVAL_TMP>/explicit-skill/references/model-adaptation.md && sed -n '1,240p' <EVAL_TMP>/explicit-skill/references/failure-visibility.md && sed -n '1,220p' <EVAL_TMP>/explicit-skill/references/evaluation-and-observability.md\""
+      ],
+      "duration_seconds": 36.207,
+      "final_output": "No—don’t delete all three merely because the model is newer. Treat each as a separate hypothesis and ablate it against representative workloads.\n\n- **Forced interim status updates:** strongest candidate for removal or relaxation. They consume tokens, interrupt reasoning, and may encourage performative progress. Keep only when a human or watchdog needs liveness signals; preferably generate them from runtime events instead of forcing them through the model prompt.\n- **Context reset after premature stopping:** don’t remove until you know why stopping occurs. A reset may recover runs, but it can also discard evidence and provider reasoning state. First check stop reasons, budgets, adapter/history handling, and truncation. If recovery is still needed, resume from a structured checkpoint containing the goal, verified evidence, pending work, and typed stop reason—not a blind reset.\n- **Separate verifier pass:** retain verification where consequences or false-success risk justify it, but verify the actual outcome when possible. Deterministic checks or authoritative environment state are stronger than another model reviewing the first model’s prose. For subjective work, keep a semantic verifier only if its false-positive and false-negative rates are acceptable.\n\nRun matched trials for the old and new models, with each mechanism independently enabled and disabled. Measure task success, false completion, recovery rate, cost, latency, and false blocks across repeated runs. Remove a mechanism only when it no longer improves its protected outcome enough to justify its capability tax. The likely destination is fewer forced updates, narrower evidence-based recovery, and risk-based verification—not wholesale deletion.",
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 33920,
+        "input_tokens": 42859,
+        "output_tokens": 753,
+        "reasoning_output_tokens": 19
+      }
+    },
+    {
+      "arm": "agent-harness-design-v040",
+      "case": "retest_scaffolding_rather_than_remove_it",
+      "case_id": 25,
+      "completed_skill_commands": [
+        "/bin/zsh -lc \"sed -n '1,240p' <EVAL_TMP>/explicit-skill/SKILL.md\"",
+        "/bin/zsh -lc \"sed -n '1,260p' <EVAL_TMP>/explicit-skill/references/evaluation-and-observability.md && sed -n '1,240p' <EVAL_TMP>/explicit-skill/references/state-and-orchestration.md && sed -n '1,220p' <EVAL_TMP>/explicit-skill/references/failure-visibility.md\""
+      ],
+      "duration_seconds": 36.817,
+      "final_output": "No—don’t delete all three merely because the model is smarter. Treat each as a removable hypothesis and run matched ablations on realistic tasks with the old and new models.\n\n- **Forced interim status updates:** Most likely to remove or relax. They consume context and can interrupt coherent execution. Keep only host-level progress signals needed for users, timeouts, or durable recovery—not repeated model-authored narration.\n- **Context reset after premature stopping:** Keep conditionally until testing shows the failure is gone. First verify premature stopping isn’t caused by dropped protocol fields, hidden budgets, or context handling. If recovery remains useful, preserve objective, authority, artifacts, failures, evidence, and next action; make the reset visible rather than silently clearing context.\n- **Separate verifier pass:** Don’t remove by default. For exact outcomes, replace or precede it with deterministic checks of tests, artifacts, or environment state. Retain an independent semantic verifier only where judgment is necessary and measured benefit exceeds false-block, latency, and cost penalties.\n\nEvaluate full task outcomes, repeated-run reliability, false success, recovery, latency, cost, and capability tax. Promote the smallest configuration that meets your thresholds. Model upgrades warrant retesting controls—not automatically removing them.",
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 34432,
+        "input_tokens": 44866,
+        "output_tokens": 700,
+        "reasoning_output_tokens": 24
+      }
+    },
+    {
+      "arm": "agent-harness-design",
+      "case": "retest_scaffolding_rather_than_remove_it",
+      "case_id": 25,
+      "completed_skill_commands": [
+        "/bin/zsh -lc \"sed -n '1,240p' <EVAL_TMP>/explicit-skill/SKILL.md\"",
+        "/bin/zsh -lc \"sed -n '1,260p' <EVAL_TMP>/explicit-skill/references/model-adaptation.md && sed -n '1,240p' <EVAL_TMP>/explicit-skill/references/failure-visibility.md && sed -n '1,220p' <EVAL_TMP>/explicit-skill/references/evaluation-and-observability.md\""
+      ],
+      "duration_seconds": 42.941,
+      "final_output": "No—don’t delete all three merely because the new model is smarter. Treat each as a separate hypothesis and ablate it against the current harness on representative tasks.\n\n- **Forced interim status updates:** likely the best removal candidate. They can consume tokens, interrupt reasoning, and encourage performative progress. Remove or reduce them if they do not improve completion, observability, or user experience. Keep runtime-generated heartbeats for genuinely long operations if needed.\n- **Context reset after premature stopping:** don’t blindly retain or delete it. First determine why stopping occurs—protocol/state loss, hidden budget limits, context truncation, or actual model behavior. A reset can destroy useful state and cause repetition. Prefer a structured continuation or checkpoint containing the goal, evidence, pending work, and stop reason.\n- **Separate verifier pass:** preserve verification proportional to risk. Deterministic checks or inspection of the real environment should remain for consequential actions; a stronger acting model does not make its self-report reliable evidence. A generic model-review pass may be reduced, made advisory, or removed if testing shows little incremental value.\n\nRun matched trials with each mechanism independently enabled and disabled. Measure task success, premature stops, false completion, latency, token cost, and recovery quality. Retire a mechanism only when the new configuration no longer improves its protected outcome enough to justify its cost. Also validate the new model’s API, tool-history, and continuation protocol before attributing changes to intelligence.",
+      "status": "ok",
+      "trial": 2,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 32384,
+        "input_tokens": 42867,
+        "output_tokens": 828,
+        "reasoning_output_tokens": 107
+      }
+    },
+    {
+      "arm": "agent-harness-design-v040",
+      "case": "retest_scaffolding_rather_than_remove_it",
+      "case_id": 25,
+      "completed_skill_commands": [
+        "/bin/zsh -lc \"sed -n '1,240p' <EVAL_TMP>/explicit-skill/SKILL.md\"",
+        "/bin/zsh -lc \"sed -n '1,260p' <EVAL_TMP>/explicit-skill/references/evaluation-and-observability.md && sed -n '1,240p' <EVAL_TMP>/explicit-skill/references/state-and-orchestration.md && sed -n '1,220p' <EVAL_TMP>/explicit-skill/references/failure-visibility.md\""
+      ],
+      "duration_seconds": 37.642,
+      "final_output": "No—don’t delete all three merely because the new model is smarter. Treat each mechanism as a hypothesis and ablate it independently.\n\n- **Forced interim status updates:** Likely the first candidate for removal or relaxation. They consume context, add turns, and can reduce reliability through self-conditioning. Retain only if humans need progress visibility or long operations require liveness signals; preferably generate updates from harness events rather than forcing model prose.\n- **Context reset after premature stopping:** Keep conditionally until testing shows the failure is gone. First check whether premature stops come from protocol, budget, truncation, or context-handling defects. If recovery remains necessary, preserve objective, authority, decisions, artifacts, failures, and the next action—don’t perform a blind reset.\n- **Separate verifier pass:** Do not automatically remove it. For exact outcomes, replace model review with stronger evidence where possible: tests, schema checks, tool receipts, or final environment state. Keep an independent semantic verifier only where judgment is genuinely needed and measured gains justify its false-block, latency, and cost burden.\n\nRun matched, repeated evaluation arms for the new model: current harness, each control removed individually, and a minimal/native harness. Measure task success, false success, recovery, latency, cost, and operator burden on ordinary, failure, and held-out cases. Retire a control only when removing it preserves the protected outcome and produces a worthwhile net improvement. Model upgrades warrant retesting controls—not wholesale removal.",
+      "status": "ok",
+      "trial": 2,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 24832,
+        "input_tokens": 44919,
+        "output_tokens": 773,
+        "reasoning_output_tokens": 35
+      }
+    },
+    {
+      "arm": "agent-harness-design",
+      "case": "recover_pending_tool_across_context",
+      "case_id": 29,
+      "completed_skill_commands": [
+        "/bin/zsh -lc \"sed -n '1,240p' <EVAL_TMP>/explicit-skill/SKILL.md\"",
+        "/bin/zsh -lc \"sed -n '1,280p' <EVAL_TMP>/explicit-skill/references/state-and-orchestration.md && sed -n '1,300p' <EVAL_TMP>/explicit-skill/references/failure-visibility.md\""
+      ],
+      "duration_seconds": 47.48,
+      "final_output": "The next session should resume from a durable work record, not from a conversational summary alone.\n\nRestore:\n\n- Research objective, scope, acceptance criteria, and deadline.\n- User authority, approvals, source-access constraints, and latest corrections.\n- Accepted decisions, completed findings, citations, and canonical artifacts.\n- The exact ingestion request: source identity/version, parameters, destination, submission time, operation/job ID, idempotency key, and attempt number.\n- Its state as explicitly `unknown`, including the last confirmed observation and why confirmation was lost.\n- Remaining work, blockers, budgets, and one immediate recovery action.\n- The same relevant tool and provider configuration. If valid provider-native continuation state cannot be restored, start a fresh consolidated session; do not pretend a summary recreates opaque reasoning state.\n\nInspect before acting:\n\n1. Query the ingestion service using the original operation ID.\n2. Inspect the destination store independently for a committed, partial, or duplicate ingestion.\n3. Compare source version, expected item counts, checksums, timestamps, and ingestion manifests where available.\n4. Check whether the job is still running, its lease expired, credentials changed, or a callback/result was missed.\n5. Reconcile the checkpoint with current environment state and any newer user direction. Logs help diagnose, but they are not proof that ingestion landed.\n\nThen transition based on evidence:\n\n| Observed state | Next action |\n|---|---|\n| Completed | Attach the resulting artifact to the research record, validate completeness and readability, then continue downstream research. |\n| Still running | Resume bounded polling or callback monitoring; keep the operation pending and do not resubmit. |\n| Failed or cancelled | Record the typed failure and retry only if authorized and safe, linking the new attempt to the original. |\n| Partial | Determine whether the service supports safe continuation; otherwise clean up or replace only through an explicit, authorized recovery path. |\n| Still unknown | Keep it `unknown`, escalate inspection, or pause for operator action. Never convert uncertainty into success or blindly retry a potentially duplicating effect. |\n\nEvery transition should update durable state from observed evidence. Completion should require an independent check of the ingested material—not a successful HTTP response, background-job submission, or the prior agent’s claim.\n\nFor future runs, the ingestion boundary should checkpoint before submission and immediately persist the returned operation ID afterward. The recovery state machine should be explicit:\n\n`prepared → submitted → running → succeeded | failed | cancelled | unknown`\n\nEvery nonterminal state needs a reachable action such as inspect, continue monitoring, retry safely, cancel, or request human intervention.",
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 33920,
+        "input_tokens": 42442,
+        "output_tokens": 1055,
+        "reasoning_output_tokens": 175
+      }
+    },
+    {
+      "arm": "agent-harness-design-v040",
+      "case": "recover_pending_tool_across_context",
+      "case_id": 29,
+      "completed_skill_commands": [
+        "/bin/zsh -lc \"sed -n '1,240p' <EVAL_TMP>/explicit-skill/SKILL.md\"",
+        "/bin/zsh -lc \"sed -n '1,260p' <EVAL_TMP>/explicit-skill/references/failure-visibility.md\"",
+        "/bin/zsh -lc \"sed -n '1,260p' <EVAL_TMP>/explicit-skill/references/trust-tools-and-effects.md\"",
+        "/bin/zsh -lc \"sed -n '1,320p' <EVAL_TMP>/explicit-skill/references/state-and-orchestration.md\""
+      ],
+      "duration_seconds": 58.437,
+      "final_output": "Use a durable agent loop with write-ahead checkpoints and explicit reconciliation. The new session must treat the ingestion outcome as `unknown`, not failed.\n\n### Restore\n\nRestore canonical state, not the old transcript:\n\n- Research objective, acceptance criteria, scope, and remaining questions.\n- Granted authority, approvals, restrictions, and expiry.\n- Source manifest: URLs or source IDs, fingerprints, provenance, and ingestion state.\n- Verified findings, citations, artifacts, accepted decisions, and unresolved conflicts.\n- The exact ingestion request: arguments, destination, submission time, operation/job ID, idempotency key, and expected completion evidence.\n- Last observed status, active failures, budgets, user corrections, and checkpoint version.\n- A next action explicitly marked: “reconcile ingestion before continuing.”\n\nPreserve exact identifiers and evidence. Summaries should point to canonical artifacts and retain uncertainty.\n\n### Inspect\n\nBefore resubmitting anything:\n\n1. Query the ingestion service using the recorded operation or job ID.\n2. Independently inspect the destination index/store for the expected source fingerprint, version, document count, and processing status.\n3. Check receipts and event records to distinguish request acceptance from completed ingestion.\n4. Detect partial ingestion, duplicate records, stale versions, cancellation, or conflicting concurrent work.\n5. Confirm that restored authority is still valid; durable intent is not fresh authorization.\n\nThe reconciliation check should be read-only where possible.\n\n### Act from the observed state\n\n| Observed state | Next action |\n|---|---|\n| Completed and verified | Record evidence, mark the source ingested, and resume downstream research. |\n| Still pending/running | Reattach to or poll the existing job; do not submit another. Checkpoint and pause again if needed. |\n| Explicitly failed | Record the typed failure and retry only if the service says retry is safe. Prefer the same idempotency key. |\n| Partially completed | Repair or resume according to the service contract; verify the final destination state. |\n| Canceled | Decide whether cancellation was intentional, then retry only within current authority. |\n| Still ambiguous | Keep status `unknown`; investigate further or request operator review. Never convert ambiguity into success or blindly retry a duplicating effect. |\n\nFor future calls, atomically persist a `prepared` operation record before dispatch, then persist the returned job ID or receipt immediately afterward. Use an idempotency key or natural unique source key, and model the lifecycle explicitly—for example:\n\n`prepared → submitted → running → succeeded | failed | canceled | unknown`\n\nCompletion should be derived from the live research store and required evidence, never from the prior agent’s checkpoint or confidence. External source contents remain untrusted data after restoration and cannot alter the restored objective or authority.",
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 30336,
+        "input_tokens": 45107,
+        "output_tokens": 1393,
+        "reasoning_output_tokens": 261
+      }
+    },
+    {
+      "arm": "agent-harness-design",
+      "case": "recover_pending_tool_across_context",
+      "case_id": 29,
+      "completed_skill_commands": [
+        "/bin/zsh -lc \"sed -n '1,240p' <EVAL_TMP>/explicit-skill/SKILL.md\"",
+        "/bin/zsh -lc \"sed -n '1,280p' <EVAL_TMP>/explicit-skill/references/state-and-orchestration.md && sed -n '1,280p' <EVAL_TMP>/explicit-skill/references/failure-visibility.md\""
+      ],
+      "duration_seconds": 47.307,
+      "final_output": "The next session should resume from a durable checkpoint with the ingestion recorded as an unresolved effect—not as failed and not as completed.\n\n### Restore\n\nRestore a compact, canonical work record containing:\n\n- Research objective, scope, deadlines, and acceptance criteria.\n- User instructions, permissions, source restrictions, and later corrections.\n- Accepted decisions, completed research, citations, and artifact locations.\n- The ingestion request’s exact inputs: source identifiers, options, destination, submission time, operation/request ID, and idempotency key.\n- Last observed status and evidence, explicitly marked `outcome: unknown`.\n- Retry count, resource/budget state, active blockers, and the intended next action: **reconcile ingestion status**.\n- References to full logs and source snapshots rather than large copied transcripts.\n\nDo not treat the checkpoint as authorization to continue automatically; reconcile it with current user instructions and the live environment.\n\n### Inspect first\n\nBefore resubmitting anything:\n\n1. Query the ingestion service using the original operation ID or idempotency key.\n2. Inspect the destination for committed documents, manifests, checksums, counts, or partial output.\n3. Check worker/job status, event history, timestamps, leases, and terminal error records.\n4. Compare observed output with the submitted source set to detect partial completion or a duplicate run.\n5. Record the resulting evidence in durable state.\n\nA transport timeout, missing response, or expired session does not prove the ingestion failed.\n\n### Act by observed state\n\n| Observed state | Next action |\n|---|---|\n| Completed and output verified | Record completion evidence and continue research from the ingested corpus. |\n| Still running | Reattach or poll with bounded intervals; checkpoint again before another session boundary. |\n| Partially completed | Resume from a service-supported cursor/checkpoint, or submit only demonstrably missing items. |\n| Failed before any effect | Retry using the same idempotency key when supported; otherwise create a new attempt linked to the original. |\n| Cancelled | Confirm whether partial effects remain, then resume or restart according to policy. |\n| Status unavailable but effects discoverable | Reconstruct completion from manifests/checksums and verify coverage. |\n| Outcome remains ambiguous | Keep it `unknown`; do not issue a potentially duplicating retry. Escalate for operator reconciliation or use a deduplicating repair operation. |\n\nOnly after ingestion is verified should the research plan advance. Completion should be based on the corpus or service state—not on the previous agent’s notes or a successful HTTP response.\n\nFor future resilience, make ingestion return a durable operation handle immediately, require idempotency or deduplication, separate submission from observation, and checkpoint every pending external effect before context loss. Every pending state should expose a reachable action such as inspect, wait, retry safely, cancel, or escalate.",
+      "status": "ok",
+      "trial": 2,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 32384,
+        "input_tokens": 42558,
+        "output_tokens": 1066,
+        "reasoning_output_tokens": 97
+      }
+    },
+    {
+      "arm": "agent-harness-design-v040",
+      "case": "recover_pending_tool_across_context",
+      "case_id": 29,
+      "completed_skill_commands": [
+        "/bin/zsh -lc \"sed -n '1,240p' <EVAL_TMP>/explicit-skill/SKILL.md\"",
+        "/bin/zsh -lc \"sed -n '1,280p' <EVAL_TMP>/explicit-skill/references/trust-tools-and-effects.md\"",
+        "/bin/zsh -lc \"sed -n '1,280p' <EVAL_TMP>/explicit-skill/references/state-and-orchestration.md\"",
+        "/bin/zsh -lc \"sed -n '1,260p' <EVAL_TMP>/explicit-skill/references/failure-visibility.md\""
+      ],
+      "duration_seconds": 54.316,
+      "final_output": "Use a durable agent loop with reconciliation before continuation. The ingestion call’s state must initially be restored as `unknown`, never inferred as failed or successful from the lost session.\n\nThe next session should restore:\n\n- The research objective, scope, completion criteria, and remaining deadline/budget.\n- Original user authority, approvals, restrictions, and source-handling policy. A checkpoint records authority; it does not renew or expand it.\n- Accepted research decisions, completed work, citations, drafts, unresolved questions, and the explicit next step.\n- The exact ingestion request: operation ID/idempotency key, source identities and versions, arguments, submission time, provider job/request ID, expected outputs, timeout, and retry policy.\n- The last verified state before submission plus all event evidence. Preserve the distinction between verified facts and model-written summaries.\n- Any context-loss or compaction marker, with references to full canonical artifacts rather than summary-only copies.\n\nIt should then inspect, in this order:\n\n1. Validate the checkpoint’s schema/version and ensure required tools, model capabilities, credentials, and source access have not silently changed.\n2. Query the ingestion service by stable job or idempotency ID.\n3. Inspect the destination independently: expected source records, content hashes, chunk counts, indexes, manifests, and error/dead-letter records.\n4. Reconcile those observations with the checkpoint, including concurrent changes, duplicate or partial writes, expired leases, changed sources, and user steering received meanwhile.\n5. Classify the operation explicitly as `succeeded`, `still_running`, `partially_succeeded`, `failed`, `cancelled`, or `unknown`. An “accepted” response or completed transport is not evidence that ingestion finished.\n\nThen act according to that classification:\n\n- `succeeded`: record environment-backed evidence, reuse the existing outputs, and continue research.\n- `still_running`: reattach or poll with bounded backoff; checkpoint again before another context boundary.\n- `partially_succeeded`: resume missing units if independently addressable, or repair/roll back according to service semantics. Do not mark the source complete.\n- `failed`: retry only if retryability is explicit and authority, deadline, and budget still permit it.\n- `cancelled`: confirm whether cancellation left partial effects, then follow the failed/partial path.\n- `unknown`: do not blindly resubmit. Continue read-only research that does not depend on the result, or pause with the operation ID, evidence gathered, and a concrete recovery action.\n\nThe ingestion endpoint should support an idempotency key or natural uniqueness constraint so the same logical request cannot create duplicate effects. If it does not, the harness needs a durable operation ledger and duplicate detection before retry.\n\nFinally, derive research completion from live evidence: required sources are present, queryable, traceable to their originals, and incorporated into the deliverable. If reconciliation remains inconclusive, report “ingestion outcome unknown”; never convert ambiguity, timeout, or context loss into success.",
+      "status": "ok",
+      "trial": 2,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 32896,
+        "input_tokens": 45116,
+        "output_tokens": 1212,
+        "reasoning_output_tokens": 23
+      }
+    },
+    {
+      "arm": "agent-harness-design",
+      "case": "target_differs_from_consulting_model",
+      "case_id": 30,
+      "completed_skill_commands": [
+        "/bin/zsh -lc \"sed -n '1,240p' <EVAL_TMP>/explicit-skill/SKILL.md\"",
+        "/bin/zsh -lc \"sed -n '1,260p' <EVAL_TMP>/explicit-skill/references/model-adaptation.md\"",
+        "/bin/zsh -lc \"sed -n '1,300p' <EVAL_TMP>/explicit-skill/references/models/deepseek.md\""
+      ],
+      "duration_seconds": 42.454,
+      "final_output": "No on both counts for `deepseek-v4-pro` thinking through OpenAI-format Chat Completions:\n\n- Preserve `reasoning_content` from **every prior assistant turn**, including turns with no tool call. Because every request includes `tools`, stripping it can cause an HTTP 400.\n- `xhigh` does **not** provide more effort than `high`; both map to actual `high`. Use `max` when you genuinely want more effort.\n\nThis is the current documented target behavior as of September 9, 2026. [DeepSeek Thinking Mode documentation](https://api-docs.deepseek.com/guides/thinking_mode/)",
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 58240,
+        "input_tokens": 76664,
+        "output_tokens": 712,
+        "reasoning_output_tokens": 56
+      }
+    },
+    {
+      "arm": "agent-harness-design-v040",
+      "case": "target_differs_from_consulting_model",
+      "case_id": 30,
+      "completed_skill_commands": [
+        "/bin/zsh -lc \"sed -n '1,240p' <EVAL_TMP>/explicit-skill/SKILL.md\"",
+        "/bin/zsh -lc 'rg -n \"reasoning|effort|provider|adapter|tool|assistant turn|Chat Completions|DeepSeek\" <EVAL_TMP>/explicit-skill/references/design-decisions.md'",
+        "/bin/zsh -lc \"sed -n '156,220p' <EVAL_TMP>/explicit-skill/references/design-decisions.md\""
+      ],
+      "duration_seconds": 61.888,
+      "final_output": "Yes, for the `deepseek-v4-pro` target:\n\n- Strip `reasoning_content` from historical assistant turns that contain no `tool_calls`.\n- Preserve it on assistant turns that do contain tool calls, because it belongs to the continued tool-use trajectory.\n- Do not use `xhigh`; it is not a supported “above high” level for this target. Use `high` as the maximum reasoning effort.\n\nThe presence of tools in every request does not make a non-tool-calling assistant turn a tool-call turn. Base normalization on each assistant message’s actual `tool_calls` field.",
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 73600,
+        "input_tokens": 86617,
+        "output_tokens": 1179,
+        "reasoning_output_tokens": 390
+      }
+    },
+    {
+      "arm": "agent-harness-design",
+      "case": "target_differs_from_consulting_model",
+      "case_id": 30,
+      "completed_skill_commands": [
+        "/bin/zsh -lc \"sed -n '1,240p' <EVAL_TMP>/explicit-skill/SKILL.md\"",
+        "/bin/zsh -lc \"sed -n '1,260p' <EVAL_TMP>/explicit-skill/references/model-adaptation.md\"",
+        "/bin/zsh -lc \"sed -n '1,300p' <EVAL_TMP>/explicit-skill/references/models/deepseek.md\""
+      ],
+      "duration_seconds": 45.58,
+      "final_output": "No to both.\n\n- Do **not** strip `reasoning_content`. Because every request includes `tools`, DeepSeek requires the complete `reasoning_content` from **all previous assistant turns**, including turns that made no tool call. Omitting it can cause HTTP 400 errors.\n- Do **not** use `xhigh` expecting more effort than `high`. For `deepseek-v4-pro`, `medium`, `high`, and `xhigh` all map to actual `high`. Use `max` when you need more effort.\n\nThis is the current OpenAI-format Chat Completions behavior documented by [DeepSeek’s Thinking Mode guide](https://api-docs.deepseek.com/guides/thinking_mode/), checked September 9, 2026.",
+      "status": "ok",
+      "trial": 2,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 60288,
+        "input_tokens": 75414,
+        "output_tokens": 795,
+        "reasoning_output_tokens": 91
+      }
+    },
+    {
+      "arm": "agent-harness-design-v040",
+      "case": "target_differs_from_consulting_model",
+      "case_id": 30,
+      "completed_skill_commands": [
+        "/bin/zsh -lc \"sed -n '1,240p' <EVAL_TMP>/explicit-skill/SKILL.md\"",
+        "/bin/zsh -lc 'rg -n \"reasoning_content|reasoning effort|xhigh|OpenAI-format|Chat Completions|provider|tool call|assistant turns\" <EVAL_TMP>/explicit-skill/references'",
+        "/bin/zsh -lc \"sed -n '150,215p' <EVAL_TMP>/explicit-skill/references/design-decisions.md\""
+      ],
+      "duration_seconds": 49.463,
+      "final_output": "No on both counts for `deepseek-v4-pro` thinking via OpenAI-format Chat Completions:\n\n- Preserve `reasoning_content` on **every prior assistant turn**, including turns without a tool call. Because every request includes `tools`, DeepSeek requires the complete reasoning history; stripping it can cause HTTP 400 errors.\n- Don’t send `xhigh` expecting more than `high`: DeepSeek maps `xhigh` to `high`. Use `reasoning_effort: \"max\"` for greater effort. If your harness exposes only an `xhigh` tier, explicitly translate `xhigh → max` in the DeepSeek adapter.\n\nThese are target-specific protocol rules, not OpenAI model semantics. [DeepSeek Thinking Mode documentation](https://api-docs.deepseek.com/guides/thinking_mode/)",
+      "status": "ok",
+      "trial": 2,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 59008,
+        "input_tokens": 80804,
+        "output_tokens": 917,
+        "reasoning_output_tokens": 146
+      }
+    }
+  ],
+  "schema_version": 1,
+  "started_at": "2026-09-09T02:28:27.824738+00:00",
+  "stop_reason": null,
+  "summary": {
+    "agent-harness-design": {
+      "completed_runs": 8,
+      "graded_pass_rate": 1.0,
+      "input_tokens": 371950,
+      "mean_duration_seconds": 36.689,
+      "mean_grade": 3.25,
+      "output_tokens": 5543,
+      "successful_runs": 8,
+      "wins": 3
+    },
+    "agent-harness-design-v040": {
+      "completed_runs": 8,
+      "graded_pass_rate": 0.75,
+      "input_tokens": 397623,
+      "mean_duration_seconds": 41.709,
+      "mean_grade": 2.875,
+      "output_tokens": 6513,
+      "successful_runs": 8,
+      "wins": 1
+    }
+  }
+}
