@@ -402,9 +402,9 @@ class CodexHost(HostAdapter):
                 event.get("type") == "item.completed"
                 and item.get("type") == "command_execution"
                 and item.get("exit_code") == 0
-                and skill_path in command
+                and skill_path.replace("\\", "/") in command.replace("\\", "/")
             ):
-                reads.append(command.replace(str(root), "<EVAL_TMP>"))
+                reads.append(command.replace(str(root), "<EVAL_TMP>").replace(root.as_posix(), "<EVAL_TMP>"))
         result["completed_skill_commands"] = reads
         if completed.returncode == 0 and output_file.is_file():
             result["final_output"] = output_file.read_text(encoding="utf-8").strip()

@@ -119,7 +119,7 @@ class PackageSurfaceTests(unittest.TestCase):
             if path in visited:
                 continue
             visited.add(path)
-            for target in re.findall(r"\[[^\]]+\]\(([^)]+)\)", path.read_text()):
+            for target in re.findall(r"\[[^\]]+\]\(([^)]+)\)", path.read_text(encoding="utf-8")):
                 if "://" in target or target.startswith("#"):
                     continue
                 linked = (path.parent / target.split("#", 1)[0]).resolve()

@@ -4,7 +4,7 @@ import hashlib
 import importlib.util
 import json
 import pathlib
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 import subprocess
 import tempfile
 import unittest
@@ -160,6 +160,21 @@ class EvalRunnerTests(unittest.TestCase):
                 parsed["completed_skill_commands"],
             )
             self.assertNotIn("not retained", json.dumps(parsed))
+
+            windows_root = PureWindowsPath("C:/Eval")
+            for command, expected in (
+                ("cat 'C:\\Eval\\explicit-skill\\SKILL.md'", "cat '<EVAL_TMP>\\explicit-skill\\SKILL.md'"),
+                ("cat 'C:/Eval/explicit-skill/SKILL.md'", "cat '<EVAL_TMP>/explicit-skill/SKILL.md'"),
+                ("cat 'C:\\Eval/explicit-skill/SKILL.md'", "cat '<EVAL_TMP>/explicit-skill/SKILL.md'"),
+            ):
+                event = {"type": "item.completed", "item": {
+                    "type": "command_execution", "command": command, "exit_code": 0,
+                }}
+                parsed = run_evals.CodexHost().parse_execution(
+                    completed=subprocess.CompletedProcess([], 0, json.dumps(event), ""),
+                    root=windows_root, output_file=output,
+                )
+                self.assertEqual([expected], parsed["completed_skill_commands"])
 
     def test_zcode_config_is_referenced_by_symlink_and_never_copied(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
