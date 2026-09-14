@@ -17,7 +17,7 @@ portable Agent Skill. It does not include an MCP server, hook, daemon, model
 router, or custom agent runtime. Use it when the agent system itself is the
 subject. Ordinary coding, writing, task tracking, and delegation do not need it.
 
-Version: 0.5.0. The installer and evaluation runner use the Python standard
+Version: 0.5.1. The installer and evaluation runner use the Python standard
 library. CI tests them with Python 3.12.
 
 - [Install and start](#install-and-start)
@@ -38,7 +38,7 @@ library. CI tests them with Python 3.12.
 From GitHub:
 
 ```bash
-codex plugin marketplace add rocky2431/agent-harness-design-skill --ref v0.5.0
+codex plugin marketplace add rocky2431/agent-harness-design-skill --ref v0.5.1
 codex plugin add agent-harness-design@rocky-agent-harness-design
 ```
 
@@ -55,16 +55,25 @@ codex plugin add agent-harness-design@rocky-agent-harness-design
 Do not also install a user-scope Codex copy. Two active copies make discovery
 ambiguous without adding capability.
 
-### Other CLIs
+### Claude Code, Kimi Code, and zCode
 
-The installer copies the standard Skill into each host's native user directory:
+Use the host's native plugin manager so Skill instructions and references update
+together. Claude Code and zCode use `agent-harness-design@rocky-agent-harness-design`
+from this repository's marketplace; Kimi Code installs `plugins/agent-harness-design`.
+Back up and remove old user Skill copies before migration. The portable installer
+refuses a second copy when the selected host already has the native plugin.
+
+### Portable-only CLIs
+
+The installer defaults to Hermes and OpenCode. Other user directories below are
+legacy portable-only alternatives, selected explicitly when no plugin is installed:
 
 ```bash
 python3 scripts/install_user.py install \
-  --hosts hermes,claude,kimi,zcode,opencode
+  --hosts hermes,opencode
 
 python3 scripts/install_user.py doctor \
-  --hosts hermes,claude,kimi,zcode,opencode
+  --hosts hermes,opencode
 ```
 
 | Host | Destination |
@@ -88,7 +97,7 @@ explicit.
 
 ```bash
 python3 scripts/install_user.py uninstall \
-  --hosts hermes,claude,kimi,zcode,opencode
+  --hosts hermes,opencode
 ```
 
 Uninstall removes only copies carrying this package's managed marker.
@@ -256,6 +265,15 @@ cannot enforce one by itself. The implementation under review must provide the
 mechanism, and completion still needs evidence from the relevant environment.
 
 ## Evaluation
+
+Version 0.5.1 changes native packaging and installation, with no guidance changes
+beyond version metadata. Its final source completed two focused behavior cases and
+one positive plus one negative discovery case on Codex CLI 0.153.4 with
+`gpt-5.6-sol`, low reasoning, and one trial per case. Both discovery cases matched
+expectations. The [behavior record](eval-results/v0.5.1-behavior.json) and
+[discovery record](eval-results/v0.5.1-trigger.json) retain the source hashes and
+outputs. These are release smoke checks, without comparative grading or a claim
+of improved model performance; the broader 0.5.0 evidence remains below.
 
 The standard-library runner compares no-Skill, previous-release, and candidate
 arms in fresh temporary homes and workspaces. A host adapter owns the binary and

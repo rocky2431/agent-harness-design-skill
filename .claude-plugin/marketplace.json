@@ -1,0 +1,13 @@
+{
+  "name": "rocky-agent-harness-design",
+  "owner": {
+    "name": "rocky2431"
+  },
+  "plugins": [
+    {
+      "name": "agent-harness-design",
+      "source": "./plugins/agent-harness-design",
+      "description": "Design and review agent execution layers that preserve authorized capability while enforcing narrow authority and effect boundaries."
+    }
+  ]
+}

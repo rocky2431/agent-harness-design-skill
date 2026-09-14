@@ -19,6 +19,20 @@ SPEC.loader.exec_module(install_user)
 
 
 class UserInstallerTests(unittest.TestCase):
+    def test_native_plugin_prevents_a_duplicate_user_install(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            home = Path(temporary)
+            state = home / ".claude/plugins/installed_plugins.json"
+            state.parent.mkdir(parents=True)
+            state.write_text(json.dumps({"plugins": {"agent-harness-design@market": [{"scope": "user"}]}}))
+            before = state.read_bytes()
+            result = subprocess.run([sys.executable, str(INSTALLER), "install", "--home", str(home),
+                "--hosts", "claude"], capture_output=True, text=True)
+            self.assertEqual(result.returncode, 2, result.stderr)
+            self.assertIn("already owns", result.stderr)
+            self.assertEqual(state.read_bytes(), before)
+            self.assertFalse((home / ".claude/skills/agent-harness-design").exists())
+
     def run_installer(
         self,
         home: Path,
@@ -65,14 +79,14 @@ class UserInstallerTests(unittest.TestCase):
             remove_backup = home / "backups" / "remove"
 
             first = self.run_installer(
-                home, "install", "--backup-dir", str(first_backup)
+                home, "install", "--hosts", ",".join(install_user.SUPPORTED_HOSTS), "--backup-dir", str(first_backup)
             )
-            doctor = self.run_installer(home, "doctor", "--json")
+            doctor = self.run_installer(home, "doctor", "--hosts", ",".join(install_user.SUPPORTED_HOSTS), "--json")
             second = self.run_installer(
-                home, "install", "--backup-dir", str(second_backup)
+                home, "install", "--hosts", ",".join(install_user.SUPPORTED_HOSTS), "--backup-dir", str(second_backup)
             )
             uninstall = self.run_installer(
-                home, "uninstall", "--backup-dir", str(remove_backup)
+                home, "uninstall", "--hosts", ",".join(install_user.SUPPORTED_HOSTS), "--backup-dir", str(remove_backup)
             )
 
             self.assertEqual(0, first.returncode, first.stderr)

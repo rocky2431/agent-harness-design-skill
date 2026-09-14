@@ -12,10 +12,11 @@ from pathlib import Path
 import shutil
 import sys
 import tempfile
+import tomllib
 from typing import Any
 
 
-VERSION = "0.5.0"
+VERSION = "0.5.1"
 PACKAGE = "agent-harness-design"
 MARKER_NAME = ".agent-harness-design-managed.json"
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -43,6 +44,24 @@ def _skill_destination(home: Path, host: str) -> Path:
         "opencode": home / ".config" / "opencode" / "skills",
     }
     return roots[host] / PACKAGE
+
+
+def _check_native_plugin(home: Path, host: str) -> None:
+    paths = {
+        "claude": home / ".claude/plugins/installed_plugins.json",
+        "codex": home / ".codex/config.toml",
+        "kimi": _skill_destination(home, "kimi").parents[1] / "plugins/installed.json",
+        "zcode": home / ".zcode/cli/plugins/installed_plugins.json",
+    }
+    path = paths.get(host)
+    if path is None or not path.is_file():
+        return
+    data = (tomllib.loads(path.read_text()) if path.suffix == ".toml"
+            else json.loads(path.read_text())).get("plugins", {})
+    names = data if isinstance(data, dict) else [item.get("id", "") for item in data]
+    if any(name.split("@")[0] == "agent-harness-design" for name in names):
+        raise InstallError(f"{host} already owns agent-harness-design as a plugin; update it through "
+                           "that host's plugin manager, not a second user Skill installation.")
 
 
 def _parse_hosts(raw: str) -> list[str]:
@@ -160,6 +179,7 @@ def _preflight_install(home: Path, hosts: list[str], replace_existing: bool) -> 
     if not (SKILL_SOURCE / "SKILL.md").is_file():
         raise InstallError(f"Bundled Skill is missing from {SKILL_SOURCE}.")
     for host in hosts:
+        _check_native_plugin(home, host)
         destination = _skill_destination(home, host)
         if (
             destination.exists() or destination.is_symlink()
@@ -239,7 +259,7 @@ def _add_common(parser: argparse.ArgumentParser, *, backup: bool) -> None:
     )
     parser.add_argument(
         "--hosts",
-        default=",".join(SUPPORTED_HOSTS),
+        default="hermes,opencode",
         help="Comma-separated hosts: hermes,claude,codex,kimi,zcode,opencode",
     )
     if backup:

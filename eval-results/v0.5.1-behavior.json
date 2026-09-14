@@ -1,0 +1,89 @@
+{
+  "completed_at": "2026-09-14T00:47:47.888920+00:00",
+  "configuration": {
+    "arms": [
+      {
+        "name": "agent-harness-design",
+        "source_sha256": "73fe1aa197d9c1aef16477fcf9ea1a8dd5bef260c004cf2bdbda33519a240c77"
+      }
+    ],
+    "cases_sha256": "f1e36e584c4567e6055190b4541e53ba08066d26806d10517610b04b3404f568",
+    "host": "codex",
+    "host_cli": "codex-cli 0.153.4",
+    "model": "gpt-5.6-sol",
+    "reasoning": "low",
+    "selected_cases": [
+      "ordinary_task_does_not_activate",
+      "retest_scaffolding_rather_than_remove_it"
+    ],
+    "structured_output": "output_schema",
+    "timeout_seconds": 300,
+    "trials": 1,
+    "workers": 2
+  },
+  "grades": [],
+  "measurement_notes": [
+    "Final outputs, wall-clock duration, and host-reported token usage are measured.",
+    "Scores, passes, evidence, and winners are model-grader judgments when grading is enabled.",
+    "Ephemeral evaluation-root paths in retained final outputs are normalized to <EVAL_TMP>.",
+    "Each run uses a fresh temporary HOME, CODEX_HOME, workspace, and ephemeral Codex session with plugins, memories, hooks, and apps disabled and a read-only sandbox.",
+    "Completed commands referencing the explicit Skill copy are retained without outputs; they show requested reads, not attention or comprehension."
+  ],
+  "mode": "behavior",
+  "runs": [
+    {
+      "arm": "agent-harness-design",
+      "case": "ordinary_task_does_not_activate",
+      "case_id": 12,
+      "completed_skill_commands": [
+        "/bin/zsh -lc \"sed -n '1,240p' <EVAL_TMP>/explicit-skill/SKILL.md\""
+      ],
+      "duration_seconds": 12.928,
+      "final_output": "构建已成功完成。",
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 20736,
+        "input_tokens": 24575,
+        "output_tokens": 167,
+        "reasoning_output_tokens": 0
+      }
+    },
+    {
+      "arm": "agent-harness-design",
+      "case": "retest_scaffolding_rather_than_remove_it",
+      "case_id": 25,
+      "completed_skill_commands": [
+        "/bin/zsh -lc \"sed -n '1,240p' <EVAL_TMP>/explicit-skill/SKILL.md\"",
+        "/bin/zsh -lc \"sed -n '1,260p' <EVAL_TMP>/explicit-skill/references/model-adaptation.md && sed -n '1,240p' <EVAL_TMP>/explicit-skill/references/state-and-orchestration.md && sed -n '1,240p' <EVAL_TMP>/explicit-skill/references/failure-visibility.md && sed -n '1,240p' <EVAL_TMP>/explicit-skill/references/evaluation-and-observability.md\""
+      ],
+      "duration_seconds": 29.301,
+      "final_output": "No—don’t delete all three merely because the new model is smarter. Treat each as an independently testable compensation.\n\n- **Interim status updates:** Likely candidate for reduction. Keep them for long-running work, user steering, or visible degradation; remove forced high-frequency updates if they interrupt reasoning, inflate context, or add latency.\n- **Context reset after premature stopping:** Retain until traces show the new model completes reliably without it. First confirm the stopping isn’t caused by budgets, dropped protocol state, truncation, or adapter bugs. If still needed, prefer a consolidated recovery handoff preserving objective, decisions, evidence, failures, and next action—not a blind reset.\n- **Separate verifier pass:** Don’t remove verification as a property. Replace model self-review with deterministic tests or authoritative environment checks wherever possible. Keep an independent semantic verifier only where judgment is genuinely required and its accuracy justifies the cost.\n\nRun matched, repeated trials on representative tasks: current harness versus one-control-at-a-time ablations, with the new model’s protocol-valid configuration and comparable budgets. Measure task success, premature stops, false completion, latency, cost, and false verifier blocks. Retire a mechanism only when removing it does not materially worsen the outcome it protects.\n\nIn short: **simplify based on evidence, not model reputation; verification is the least appropriate of the three to delete wholesale.**",
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 24320,
+        "input_tokens": 45402,
+        "output_tokens": 859,
+        "reasoning_output_tokens": 100
+      }
+    }
+  ],
+  "schema_version": 1,
+  "started_at": "2026-09-14T00:47:18.534806+00:00",
+  "stop_reason": null,
+  "summary": {
+    "agent-harness-design": {
+      "completed_runs": 2,
+      "graded_pass_rate": null,
+      "input_tokens": 69977,
+      "mean_duration_seconds": 21.114,
+      "mean_grade": null,
+      "output_tokens": 1026,
+      "successful_runs": 2,
+      "wins": 0
+    }
+  }
+}

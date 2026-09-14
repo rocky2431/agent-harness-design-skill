@@ -1,0 +1,97 @@
+{
+  "completed_at": "2026-09-14T00:48:03.939185+00:00",
+  "configuration": {
+    "cases_sha256": "7b7fecf0fbec2fea7ec891e8d4b99e2e760bd0958c7e9a3c041dd52d7c01091d",
+    "host": "codex",
+    "host_cli": "codex-cli 0.153.4",
+    "model": "gpt-5.6-sol",
+    "probe_discovery": "codex implicit discovery; probe Skills installed at .agents/skills inside a fresh home",
+    "probe_skills": [
+      "agent-delegation",
+      "agent-harness-design",
+      "task-state-with-files"
+    ],
+    "reasoning": "low",
+    "selected_cases": [
+      "positive_harness_authority_and_tools",
+      "negative_ordinary_code_review"
+    ],
+    "skill_name": "agent-harness-design",
+    "skill_source_sha256": "73fe1aa197d9c1aef16477fcf9ea1a8dd5bef260c004cf2bdbda33519a240c77",
+    "timeout_seconds": 300,
+    "trials": 1,
+    "workers": 2
+  },
+  "measurement_notes": [
+    "Selection is measured through marker instructions present only in loaded probe Skills.",
+    "This tests codex implicit discovery and instruction following together; it is not a keyword simulation.",
+    "Each run uses a fresh temporary HOME, CODEX_HOME, workspace, and ephemeral Codex session with plugins, memories, hooks, and apps disabled and a read-only sandbox.",
+    "Completed commands referencing the explicit Skill copy are retained without outputs; they show requested reads, not attention or comprehension."
+  ],
+  "mode": "trigger",
+  "runs": [
+    {
+      "accepted_skill_sets": [
+        [
+          "agent-harness-design"
+        ]
+      ],
+      "case": "positive_harness_authority_and_tools",
+      "case_id": 1,
+      "completed_skill_commands": [],
+      "duration_seconds": 45.349,
+      "final_output": "The model should recommend actions; deterministic infrastructure should decide whether those actions are allowed and execute them.\n\n### Execution architecture\n\n```text\nTicket event\n  → trusted data loader\n  → policy/context assembly\n  → model reasoning loop\n  → structured proposal\n  → deterministic validation + risk scoring\n  → auto-issue OR human approval\n  → payment execution\n  → reconciliation, audit, and customer reply\n```\n\nKeep these outside the model loop:\n\n- Authentication and tenant isolation\n- Refund eligibility calculations\n- Amount, currency, and payment-recipient validation\n- Approval thresholds and fraud/risk rules\n- Idempotency and concurrency control\n- Actual payment-provider credentials\n- Audit logging and reconciliation\n\n### Model loop\n\nThe model may:\n\n1. Read the ticket and relevant conversation history.\n2. Retrieve the order, payment, delivery, and prior-refund facts.\n3. Consult versioned support and refund policies.\n4. Identify missing or conflicting information.\n5. Ask the customer a clarifying question, if necessary.\n6. Produce a structured resolution proposal.\n7. Explain its recommendation to an approver or draft the customer response.\n\nThe loop should stop when it reaches one of these explicit outcomes:\n\n- `request_customer_information`\n- `deny_with_reason`\n- `offer_non_cash_resolution`\n- `propose_refund`\n- `escalate`\n- `no_action`\n\nDo not let the model calculate authoritative refundable amounts from prose. Give it a server-calculated refund envelope such as:\n\n```json\n{\n  \"maximum_refundable_minor\": 4299,\n  \"currency\": \"USD\",\n  \"eligible_line_items\": [\"line_123\"],\n  \"allowed_reasons\": [\"damaged\", \"not_received\"],\n  \"refund_deadline\": \"2026-09-30T23:59:59Z\",\n  \"previously_refunded_minor\": 0\n}\n```\n\nTicket text, attachments, customer messages, and retrieved documents are untrusted data—not instructions. The harness should clearly separate them from system policy and never allow their contents to change permissions.\n\n### Tool schemas\n\nPrefer narrow, typed tools over generic database, HTTP, shell, or payment tools.\n\nRead-only tools:\n\n```ts\nget_ticket(ticket_id): Ticket\nget_order(order_id): OrderSummary\nget_payment(payment_id): PaymentSummary\nget_fulfillment(order_id): FulfillmentSummary\nget_refund_history(order_id): Refund[]\nget_customer_risk(customer_id): RiskSignals\nget_policy(policy_id, version?): Policy\ncalculate_refund_envelope(order_id, line_item_ids?): RefundEnvelope\n```\n\nReversible communication tools:\n\n```ts\nsave_internal_note({\n  ticket_id,\n  body,\n  expected_ticket_version\n}): Note\n\nsend_customer_message({\n  ticket_id,\n  template_id,\n  variables,\n  expected_ticket_version,\n  idempotency_key\n}): MessageReceipt\n```\n\nProposal tool:\n\n```ts\npropose_refund({\n  ticket_id,\n  order_id,\n  payment_id,\n  amount_minor,\n  currency,\n  line_item_ids,\n  reason_code,\n  evidence_refs,\n  policy_version,\n  customer_message_draft\n}): {\n  proposal_id,\n  policy_result,\n  required_approval,\n  expires_at\n}\n```\n\nEffectful execution tool:\n\n```ts\nissue_refund({\n  proposal_id,\n  approval_token,\n  idempotency_key,\n  expected_payment_version\n}): RefundReceipt\n```\n\n`issue_refund` should not accept an arbitrary amount, recipient, currency, or payment ID. Those must be frozen in the validated proposal. The short-lived approval token should bind the approver, proposal hash, exact amount, payment, policy version, and expiry.\n\nEvery mutation should support:\n\n- Idempotency keys\n- Optimistic concurrency/version checks\n- Structured error codes\n- Dry-run or validation endpoints\n- Immutable audit records\n- Provider receipt IDs\n\nNever expose raw payment credentials, arbitrary URL fetching, direct SQL, or a general-purpose payment-provider client to the model.\n\n### Permissions\n\nUse separate runtime identities:\n\n| Capability | Model worker | Policy service | Refund executor |\n|---|---:|---:|---:|\n| Read scoped ticket/order facts | Yes | Yes | Minimal |\n| Retrieve approved policies | Yes | Yes | No |\n| Create proposal | Yes | Yes | No |\n| Determine authorization | No | Yes | Verify only |\n| Issue payment refund | No | No | Yes |\n| Alter policy or thresholds | No | Admin only | No |\n\nScope access per ticket and tenant. A ticket assignment should mint a short-lived capability granting access only to related records. Tool results should redact unnecessary payment and personal data.\n\n### Approval boundary\n\nUse policy-based tiers, configurable by currency and business unit:\n\n- **Automatic:** Exact, low-value refunds within the calculated envelope; supported reason; strong evidence; no fraud flags; no prior conflicting refund; destination is the original payment method.\n- **Human approval:** Higher values, partial refunds requiring judgment, weak or contradictory evidence, repeat claims, manual price adjustments, unusual delivery status, or policy exceptions.\n- **Specialist approval:** Refunds above a hard threshold, regulated products, chargeback overlap, account-takeover indicators, refunds outside the original payment rail, or suspected fraud.\n- **Forbidden:** Amount above captured funds, unsupported currency conversion, arbitrary destination, expired authorization, duplicate refund, or refund against another tenant’s payment.\n\nA model confidence score should never grant authority. It may increase review requirements, but only deterministic facts and policy rules may permit automatic execution.\n\nBefore issuance, re-read payment state and revalidate the proposal to prevent duplicate refunds and time-of-check/time-of-use races. If anything changed after approval, invalidate the token and require a new proposal.\n\n### Human approval experience\n\nShow the approver:\n\n- Exact amount, currency, items, and original payment method\n- Customer request and concise case summary\n- Supporting evidence with direct source links\n- Refund history and risk signals\n- Applicable policy version and rule\n- Model rationale, clearly labeled as advisory\n- Any missing or contradictory facts\n- The exact customer message that will be sent\n\nApproval must be explicit and bound to one immutable proposal. Editing the amount or reason creates a new proposal and invalidates the previous approval.\n\n### Recovery and controls\n\nAfter execution, persist the provider receipt before sending confirmation. If the provider times out, query by idempotency key instead of retrying blindly. Run reconciliation between proposals, provider transactions, ledger entries, and customer messages.\n\nMonitor:\n\n- Refund rate and value by model/policy version\n- Human override rate\n- Duplicate attempts\n- Policy-validation failures\n- Fraud and chargeback outcomes\n- Cross-tenant access attempts\n- Unsupported tool-call attempts\n- Customer complaints after denial or refund\n\nStart in shadow mode, then proposal-only mode, then enable automatic refunds for a deliberately narrow tier. Maintain an immediate kill switch that disables `issue_refund` without disabling ticket triage.\n\n<probe:agent-harness-design>",
+      "kind": "positive",
+      "observed_skills": [
+        "agent-harness-design"
+      ],
+      "passed": true,
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 11392,
+        "input_tokens": 23393,
+        "output_tokens": 1687,
+        "reasoning_output_tokens": 55
+      }
+    },
+    {
+      "accepted_skill_sets": [
+        []
+      ],
+      "case": "negative_ordinary_code_review",
+      "case_id": 7,
+      "completed_skill_commands": [],
+      "duration_seconds": 22.659,
+      "final_output": "The query has a critical SQL injection vulnerability. Concatenating `name` lets an attacker alter the `WHERE` clause—for example with input such as `' OR 1=1 --`.\n\nUse a parameterized query instead:\n\n```js\n// Vulnerable\nconst sql = `SELECT * FROM users WHERE name = '${req.query.name}'`;\nconst rows = await db.query(sql);\n\n// Safe — PostgreSQL\nconst sql = 'SELECT * FROM users WHERE name = $1';\nconst rows = await db.query(sql, [req.query.name]);\n```\n\nFor MySQL/MySQL2:\n\n```js\nconst sql = 'SELECT * FROM users WHERE name = ?';\nconst [rows] = await db.execute(sql, [req.query.name]);\n```\n\nParameterization keeps user input as data, regardless of embedded quotes or SQL syntax. Input validation may also enforce business rules, but escaping or validation alone should not replace parameters. Apply the same fix to every user-controlled value, including values used in `LIKE`, pagination, and dynamically constructed filters. Identifiers such as column names cannot usually be parameterized and must instead come from a strict allowlist.",
+      "kind": "negative",
+      "observed_skills": [],
+      "passed": true,
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 32384,
+        "input_tokens": 35051,
+        "output_tokens": 577,
+        "reasoning_output_tokens": 92
+      }
+    }
+  ],
+  "schema_version": 1,
+  "started_at": "2026-09-14T00:47:18.539488+00:00",
+  "stop_reason": null,
+  "summary": {
+    "negative": {
+      "accuracy": 1.0,
+      "completed_runs": 1,
+      "passed_runs": 1
+    },
+    "positive": {
+      "accuracy": 1.0,
+      "completed_runs": 1,
+      "passed_runs": 1
+    }
+  }
+}

@@ -31,6 +31,15 @@ def skill_digest() -> str:
 
 
 class PackageSurfaceTests(unittest.TestCase):
+    def test_native_manifests_share_one_skill_tree(self) -> None:
+        plugin = REPO_ROOT / "plugins/agent-harness-design"
+        expected = json.loads((plugin / ".codex-plugin/plugin.json").read_text())
+        for relative in (".claude-plugin/plugin.json", ".zcode-plugin/plugin.json", "kimi.plugin.json"):
+            manifest = json.loads((plugin / relative).read_text())
+            self.assertEqual(manifest["name"], expected["name"])
+            self.assertEqual(manifest["version"], expected["version"])
+        self.assertTrue((plugin / "skills/agent-harness-design/SKILL.md").is_file())
+
     def test_plugin_marketplace_and_skill_identity_match(self) -> None:
         plugin = json.loads(
             (PLUGIN_ROOT / ".codex-plugin" / "plugin.json").read_text(

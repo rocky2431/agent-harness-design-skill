@@ -4,7 +4,7 @@ description: "Design, audit, or evaluate an AI agent's execution layer: model/to
 license: MIT
 metadata:
   author: rocky2431
-  version: "0.5.0"
+  version: "0.5.1"
 ---
 
 # Agent Harness Design
