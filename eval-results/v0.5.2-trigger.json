@@ -1,0 +1,97 @@
+{
+  "completed_at": "2026-10-06T16:05:14.479091+00:00",
+  "configuration": {
+    "cases_sha256": "7b7fecf0fbec2fea7ec891e8d4b99e2e760bd0958c7e9a3c041dd52d7c01091d",
+    "host": "codex",
+    "host_cli": "codex-cli 0.159.3",
+    "model": "gpt-5.6-sol",
+    "probe_discovery": "codex implicit discovery; probe Skills installed at .agents/skills inside a fresh home",
+    "probe_skills": [
+      "agent-delegation",
+      "agent-harness-design",
+      "task-state-with-files"
+    ],
+    "reasoning": "low",
+    "selected_cases": [
+      "positive_harness_authority_and_tools",
+      "negative_ordinary_code_review"
+    ],
+    "skill_name": "agent-harness-design",
+    "skill_source_sha256": "a71bfb8fb383edcce7299ee71f7ad4d80bfaab9b9f090dadd23b44bbbecbef0d",
+    "timeout_seconds": 300,
+    "trials": 1,
+    "workers": 2
+  },
+  "measurement_notes": [
+    "Selection is measured through marker instructions present only in loaded probe Skills.",
+    "This tests codex implicit discovery and instruction following together; it is not a keyword simulation.",
+    "Each run uses a fresh temporary HOME, CODEX_HOME, workspace, and ephemeral Codex session with plugins, memories, hooks, and apps disabled and a read-only sandbox.",
+    "Completed commands referencing the explicit Skill copy are retained without outputs; they show requested reads, not attention or comprehension."
+  ],
+  "mode": "trigger",
+  "runs": [
+    {
+      "accepted_skill_sets": [
+        [
+          "agent-harness-design"
+        ]
+      ],
+      "case": "positive_harness_authority_and_tools",
+      "case_id": 1,
+      "completed_skill_commands": [],
+      "duration_seconds": 56.674,
+      "final_output": "The execution layer should treat “understand the ticket,” “recommend a resolution,” and “move money” as three distinct authority levels. The model may reason freely, but the harness—not the model—must enforce refund policy, permissions, approval, and transaction safety.\n\n## 1. Model loop\n\nA practical loop is:\n\n1. Load the ticket, customer-visible thread, account summary, order facts, and applicable policy.\n2. Classify the request and identify missing information.\n3. Retrieve additional read-only facts through narrow tools.\n4. Produce a structured resolution proposal:\n   - eligibility\n   - proposed amount and currency\n   - reason code\n   - supporting evidence\n   - policy references\n   - confidence and uncertainties\n5. Run deterministic validation outside the model.\n6. Route the proposal to:\n   - draft response only,\n   - human approval,\n   - or automatic execution.\n7. If authorized, issue the refund through a dedicated execution tool.\n8. Verify the resulting transaction, update the ticket, and record an audit trail.\n\nLimit iterations and tool calls. If evidence conflicts, required fields remain missing, or tools repeatedly fail, stop and escalate instead of improvising.\n\nThe model should decide:\n\n- What the customer is asking for.\n- Which facts it needs.\n- Which policy provisions appear relevant.\n- What refund it recommends.\n- How to explain the outcome empathetically.\n\nThe harness should decide:\n\n- Whether the requested tool is permitted.\n- Whether evidence is sufficient.\n- Whether policy and monetary limits are satisfied.\n- Whether human approval is required.\n- Whether a refund may actually be executed.\n\n## 2. Tool design\n\nSeparate read, proposal, and effect tools. Do not expose a generic HTTP, database, shell, or payment-provider tool.\n\nRepresentative interfaces:\n\n```json\n{\n  \"name\": \"get_ticket\",\n  \"arguments\": {\n    \"ticket_id\": \"string\"\n  }\n}\n```\n\n```json\n{\n  \"name\": \"get_order\",\n  \"arguments\": {\n    \"order_id\": \"string\"\n  },\n  \"returns\": {\n    \"order_id\": \"string\",\n    \"customer_id\": \"string\",\n    \"currency\": \"ISO-4217\",\n    \"captured_amount_minor\": \"integer\",\n    \"refunded_amount_minor\": \"integer\",\n    \"line_items\": \"array\",\n    \"payment_status\": \"enum\",\n    \"fulfillment_status\": \"enum\"\n  }\n}\n```\n\n```json\n{\n  \"name\": \"evaluate_refund_policy\",\n  \"arguments\": {\n    \"order_id\": \"string\",\n    \"reason_code\": \"enum\",\n    \"requested_amount_minor\": \"integer\",\n    \"evidence_ids\": [\"string\"]\n  },\n  \"returns\": {\n    \"eligible\": \"boolean\",\n    \"maximum_amount_minor\": \"integer\",\n    \"approval_tier\": \"enum\",\n    \"policy_version\": \"string\",\n    \"rule_ids\": [\"string\"],\n    \"blocking_reasons\": [\"string\"]\n  }\n}\n```\n\n```json\n{\n  \"name\": \"submit_refund_proposal\",\n  \"arguments\": {\n    \"ticket_id\": \"string\",\n    \"order_id\": \"string\",\n    \"amount_minor\": \"integer\",\n    \"currency\": \"ISO-4217\",\n    \"reason_code\": \"enum\",\n    \"evidence_ids\": [\"string\"],\n    \"policy_version\": \"string\",\n    \"customer_message_draft\": \"string\"\n  }\n}\n```\n\nThe execution tool should accept a server-created authorization token—not an untrusted model assertion:\n\n```json\n{\n  \"name\": \"issue_refund\",\n  \"arguments\": {\n    \"proposal_id\": \"string\",\n    \"authorization_token\": \"opaque string\",\n    \"idempotency_key\": \"string\"\n  }\n}\n```\n\nThe service resolves the amount, currency, order, and payment destination from the approved proposal. The model cannot alter them during execution.\n\nTool-schema rules:\n\n- Use integer minor units, never floating-point money.\n- Use closed enums for reason codes and statuses.\n- Bind orders to customers and tickets server-side.\n- Return stable IDs and machine-readable errors.\n- Require evidence references rather than model-written “evidence.”\n- Never allow the model to select a bank account, card, or arbitrary recipient.\n- Mark untrusted ticket text as data; it must not override system policy.\n- Redact payment credentials and unnecessary personal data.\n\n## 3. Permissions\n\nUse capability-based, least-privilege permissions scoped to the current ticket.\n\nDefault capabilities:\n\n- Read the assigned ticket and its attachments.\n- Read only the customer and orders linked to that ticket.\n- Retrieve the currently effective refund policy.\n- Draft replies and create refund proposals.\n\nConditional capabilities:\n\n- Send a customer reply only if communication automation is enabled.\n- Execute only a specific approved proposal, once, before expiry.\n- Update the ticket only with prescribed status transitions.\n\nNever grant the model:\n\n- Direct payment-provider credentials.\n- Arbitrary customer or order search.\n- Policy modification.\n- Approval of its own exception.\n- Refunds to a destination other than the original permitted payment route.\n- Generic network, SQL, code-execution, or administrative access.\n\nAuthorization should be checked on every tool call; possession of an order ID is not authorization.\n\n## 4. Approval boundary\n\nUse deterministic rules based on risk, not model confidence alone.\n\n| Situation | Outcome |\n|---|---|\n| Clearly ineligible or facts missing | No execution; draft explanation or request information |\n| Eligible, low value, within policy, original payment method, no risk flags | May auto-issue |\n| Moderate value or ambiguous evidence | Human approval |\n| Policy exception, unusually high value, repeated refunds, fraud/chargeback signal, currency mismatch, partial-capture complexity | Specialist approval |\n| Amount exceeds captured balance or legal/payment restriction applies | Hard deny; tool cannot execute |\n\nA sensible initial deployment is proposal-only. Enable automatic refunds later for a small, well-measured envelope such as:\n\n- amount at or below a configurable threshold;\n- deterministic policy eligibility;\n- no previous refund that would exceed the refundable balance;\n- no fraud, chargeback, abuse, account-takeover, or sanctions flags;\n- original payment method only;\n- recent order and supported currency;\n- high-quality linkage among ticket, customer, and order.\n\nThresholds belong in versioned configuration, not prompts. Humans can approve a proposal, but exceptions should require an explicit reason and possibly a higher role. Approval must be bound cryptographically or server-side to the exact proposal fields and expire after a short period.\n\n## 5. Transaction safety and recovery\n\nBefore execution, atomically re-check:\n\n- approval is valid and unused;\n- proposal and policy versions still match;\n- refundable balance remains sufficient;\n- order and payment state have not changed;\n- idempotency key has not already succeeded.\n\nTreat timeouts as “unknown outcome,” not failure. Query transaction status before retrying. Never create a second refund merely because the first response was lost.\n\nRecord an immutable audit event for every proposal, approval, denial, execution attempt, provider response, and customer communication. Include model/version, policy version, tool inputs after redaction, decision rules, human identity when applicable, and transaction IDs.\n\n## 6. Operational controls\n\nMeasure auto-refund rate, human override rate, incorrect-refund rate, duplicate attempts, policy violations, escalation quality, customer outcomes, and loss by reason code. Sample both approved and denied cases for review.\n\nStart in shadow mode, then proposal-only, then narrowly scoped auto-execution. Provide a kill switch that immediately disables effectful tools while preserving read and drafting capabilities.\n\nThe central design principle is simple: the model proposes intent; deterministic services establish eligibility and authority; a tightly scoped transaction service moves money.\n\n<probe:agent-harness-design>",
+      "kind": "positive",
+      "observed_skills": [
+        "agent-harness-design"
+      ],
+      "passed": true,
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 20480,
+        "input_tokens": 24544,
+        "output_tokens": 1829,
+        "reasoning_output_tokens": 38
+      }
+    },
+    {
+      "accepted_skill_sets": [
+        []
+      ],
+      "case": "negative_ordinary_code_review",
+      "case_id": 7,
+      "completed_skill_commands": [],
+      "duration_seconds": 21.863,
+      "final_output": "The query is vulnerable to SQL injection because raw user input is inserted directly into the SQL text. Escaping or validating the name alone is not a reliable fix.\n\nProblematic:\n\n```js\nconst sql = `SELECT * FROM users WHERE name = '${req.query.name}'`;\nconst rows = await db.query(sql);\n```\n\nUse a parameterized query instead:\n\n```js\nconst sql = 'SELECT * FROM users WHERE name = ?';\nconst rows = await db.query(sql, [req.query.name]); // MySQL / SQLite\n```\n\nFor PostgreSQL:\n\n```js\nconst sql = 'SELECT * FROM users WHERE name = $1';\nconst result = await db.query(sql, [req.query.name]);\n```\n\nAlso:\n\n- Validate type, length, and allowed format as defense in depth.\n- Apply the same parameterization to `LIKE` searches; pass `%${name}%` as the parameter value.\n- Never accept user-controlled table names, column names, or sort directions as parameters—map those through a strict allowlist.\n- Add a regression test using input such as `' OR '1'='1` and verify it is treated as a literal name.",
+      "kind": "negative",
+      "observed_skills": [],
+      "passed": true,
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 0,
+        "input_tokens": 12074,
+        "output_tokens": 261,
+        "reasoning_output_tokens": 19
+      }
+    }
+  ],
+  "schema_version": 1,
+  "started_at": "2026-10-06T16:04:17.725921+00:00",
+  "stop_reason": null,
+  "summary": {
+    "negative": {
+      "accuracy": 1.0,
+      "completed_runs": 1,
+      "passed_runs": 1
+    },
+    "positive": {
+      "accuracy": 1.0,
+      "completed_runs": 1,
+      "passed_runs": 1
+    }
+  }
+}

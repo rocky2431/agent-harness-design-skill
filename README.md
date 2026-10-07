@@ -17,7 +17,7 @@ portable Agent Skill. It does not include an MCP server, hook, daemon, model
 router, or custom agent runtime. Use it when the agent system itself is the
 subject. Ordinary coding, writing, task tracking, and delegation do not need it.
 
-Version: 0.5.1. The installer and evaluation runner use the Python standard
+Version: 0.5.2. The installer and evaluation runner use the Python standard
 library. CI tests them with Python 3.12.
 
 - [Install and start](#install-and-start)
@@ -38,7 +38,7 @@ library. CI tests them with Python 3.12.
 From GitHub:
 
 ```bash
-codex plugin marketplace add rocky2431/agent-harness-design-skill --ref v0.5.1
+codex plugin marketplace add rocky2431/agent-harness-design-skill --ref v0.5.2
 codex plugin add agent-harness-design@rocky-agent-harness-design
 ```
 
@@ -265,6 +265,15 @@ cannot enforce one by itself. The implementation under review must provide the
 mechanism, and completion still needs evidence from the relevant environment.
 
 ## Evaluation
+
+Version 0.5.2 adds dated Anthropic evidence on second-model strategies (advisor and
+orchestrator) to `references/models/anthropic.md` and two vendor sources to
+`references/research-basis.md`; no other guidance changed. Its final source completed
+the two Anthropic-profile behavior cases and one positive plus one negative discovery
+case on Codex CLI 0.159.3 with `gpt-5.6-sol`, low reasoning, and one trial per case.
+Both discovery cases matched expectations. The [behavior record](eval-results/v0.5.2-behavior.json)
+and [discovery record](eval-results/v0.5.2-trigger.json) retain the source hashes and
+outputs. These are release smoke checks, not comparative grading.
 
 Version 0.5.1 changes native packaging and installation, with no guidance changes
 beyond version metadata. Its final source completed two focused behavior cases and

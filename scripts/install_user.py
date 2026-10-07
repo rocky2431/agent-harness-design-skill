@@ -16,7 +16,7 @@ import tomllib
 from typing import Any
 
 
-VERSION = "0.5.1"
+VERSION = "0.5.2"
 PACKAGE = "agent-harness-design"
 MARKER_NAME = ".agent-harness-design-managed.json"
 REPO_ROOT = Path(__file__).resolve().parents[1]

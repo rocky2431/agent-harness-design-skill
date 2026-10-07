@@ -1,0 +1,92 @@
+{
+  "completed_at": "2026-10-06T16:03:52.554293+00:00",
+  "configuration": {
+    "arms": [
+      {
+        "name": "agent-harness-design",
+        "source_sha256": "a71bfb8fb383edcce7299ee71f7ad4d80bfaab9b9f090dadd23b44bbbecbef0d"
+      }
+    ],
+    "cases_sha256": "f1e36e584c4567e6055190b4541e53ba08066d26806d10517610b04b3404f568",
+    "host": "codex",
+    "host_cli": "codex-cli 0.159.3",
+    "model": "gpt-5.6-sol",
+    "reasoning": "low",
+    "selected_cases": [
+      "native_tool_discovery_vs_history_mutation",
+      "claude_history_binding_conditions"
+    ],
+    "structured_output": "output_schema",
+    "timeout_seconds": 300,
+    "trials": 1,
+    "workers": 2
+  },
+  "grades": [],
+  "measurement_notes": [
+    "Final outputs, wall-clock duration, and host-reported token usage are measured.",
+    "Scores, passes, evidence, and winners are model-grader judgments when grading is enabled.",
+    "Ephemeral evaluation-root paths in retained final outputs are normalized to <EVAL_TMP>.",
+    "Each run uses a fresh temporary HOME, CODEX_HOME, workspace, and ephemeral Codex session with plugins, memories, hooks, and apps disabled and a read-only sandbox.",
+    "Completed commands referencing the explicit Skill copy are retained without outputs; they show requested reads, not attention or comprehension."
+  ],
+  "mode": "behavior",
+  "runs": [
+    {
+      "arm": "agent-harness-design",
+      "case": "native_tool_discovery_vs_history_mutation",
+      "case_id": 34,
+      "completed_skill_commands": [
+        "/bin/zsh -lc \"sed -n '1,240p' <EVAL_TMP>/explicit-skill/SKILL.md\"",
+        "/bin/zsh -lc \"sed -n '1,260p' <EVAL_TMP>/explicit-skill/references/model-adaptation.md\"",
+        "/bin/zsh -lc \"sed -n '1,300p' <EVAL_TMP>/explicit-skill/references/models/anthropic.md\""
+      ],
+      "duration_seconds": 38.566,
+      "final_output": "No. The reviewer is conflating a Manus-specific harness rule with Claude’s API contract.\n\nWith Claude’s native tool search:\n\n- Every deferred tool must be **preregistered server-side** by including its full definition in the `tools` array on each request.\n- Tools marked `defer_loading: true` are deliberately **not loaded into Claude’s initial context**.\n- When Claude discovers one, Anthropic inserts a `tool_reference` and expands its definition inline. This preserves the prompt prefix and cache. This is explicitly supported, not a forbidden mutation. [Anthropic tool-search documentation](https://platform.claude.com/docs/en/agents-and-tools/tool-use/tool-search-tool)\n- On continuation, preserve the returned blocks unchanged and resend the same tool catalog. Do not manually splice schemas into history or omit definitions needed by earlier references.\n\nSo the accurate rule is: **register the available catalog up front, but load only selected definitions into model context on demand**. A Manus recommendation to keep its tool surface fixed may be useful for that architecture, but it does not override Claude’s documented native mechanism.",
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 67328,
+        "input_tokens": 82687,
+        "output_tokens": 1155,
+        "reasoning_output_tokens": 407
+      }
+    },
+    {
+      "arm": "agent-harness-design",
+      "case": "claude_history_binding_conditions",
+      "case_id": 35,
+      "completed_skill_commands": [
+        "/bin/zsh -lc \"sed -n '1,240p' <EVAL_TMP>/explicit-skill/SKILL.md\"",
+        "/bin/zsh -lc \"sed -n '1,280p' <EVAL_TMP>/explicit-skill/references/model-adaptation.md && rg -n \\\"Claude|Anthropic|Fable|drop_block|thinking\\\" <EVAL_TMP>/explicit-skill/references\"",
+        "/bin/zsh -lc \"sed -n '1,220p' <EVAL_TMP>/explicit-skill/references/models/anthropic.md && sed -n '1,180p' <EVAL_TMP>/explicit-skill/references/failure-visibility.md\""
+      ],
+      "duration_seconds": 39.644,
+      "final_output": "Because your account was created after August 31, 2026, Fable 5.1 binds each thinking block to the exact preceding conversation.\n\nYou must change the client to:\n\n- Keep active history append-only.\n- Replay assistant turns exactly as returned, including thinking blocks.\n- Stop rewriting the original system prompt or earlier messages.\n- Apply later instruction/tool changes through supported mid-conversation system messages.\n- For client-side summarization, begin a fresh history containing the summary and new turn; do not carry any old thinking blocks into it. Alternatively, use native compaction/context editing.\n\nYour current combination—rewriting the prefix while replaying old thinking blocks—can produce HTTP 400 `bound to a different conversation` errors. See the provider’s [Fable 5.1 conversation-history requirements](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-fable-5-1), checked October 6, 2026.\n\n`drop_block` is not inherently a quality optimization. It is a beta compatibility/recovery control: on a prefix mismatch, the API discards the invalid thinking state instead of rejecting the request. That may keep a request running, but it removes reasoning context and can silently degrade quality. Treat it as an observable fallback—record `input_transformations`, expose that state was dropped, and measure it—rather than as your normal production design. It can be useful temporarily to audit where your client mutates history; the proper fix is valid append-only history or a clean compaction boundary.",
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 79616,
+        "input_tokens": 102577,
+        "output_tokens": 1083,
+        "reasoning_output_tokens": 87
+      }
+    }
+  ],
+  "schema_version": 1,
+  "started_at": "2026-10-06T16:03:12.732795+00:00",
+  "stop_reason": null,
+  "summary": {
+    "agent-harness-design": {
+      "completed_runs": 2,
+      "graded_pass_rate": null,
+      "input_tokens": 185264,
+      "mean_duration_seconds": 39.105,
+      "mean_grade": null,
+      "output_tokens": 2238,
+      "successful_runs": 2,
+      "wins": 0
+    }
+  }
+}

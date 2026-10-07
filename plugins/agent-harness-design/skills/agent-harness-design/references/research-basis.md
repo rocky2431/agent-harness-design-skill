@@ -339,6 +339,16 @@ all revalidated for current models by this update.
 - [Prompt Infection](https://arxiv.org/abs/2410.07283) (robust): malicious instructions
   can self-replicate across agents — a failure class single-agent systems lack by
   construction.
+- [Anthropic, Optimizing for cost and intelligence](https://platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence)
+  (vendor measurements, checked 2026-10-06): prompt caching was the largest cost lever;
+  a second model paid only as an advisor (gain tracks capability gap and consult rate)
+  or an orchestrator over genuinely independent bulk work. For a dependent chain or work
+  that fits one context, the coordinator's model alone at lower effort came out ahead in
+  every case they measured. Model-specific figures are in [anthropic.md](models/anthropic.md).
+- [Claude Code agent teams](https://code.claude.com/docs/en/agent-teams) and
+  [costs](https://code.claude.com/docs/en/costs) (vendor, checked 2026-10-06): teammates
+  are separate instances with their own context; teams use about 7x the tokens of a
+  standard session when teammates run in plan mode.
 
 ## Evaluation methodology
 
