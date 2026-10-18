@@ -1,8 +1,7 @@
 # Model Adaptation
 
-Use for a named target model, a provider/API issue, model migration, or a suspected
-model-specific compensation. General responsibilities live in
-[architecture-guide.md](architecture-guide.md); this module changes their realization.
+Use for named targets, provider/API issues, migrations or suspected model compensations.
+General responsibilities live in [architecture-guide.md](architecture-guide.md); adapt their realization here.
 
 ## Select the target configuration
 
@@ -15,16 +14,16 @@ from code, configuration, request traces and primary documentation:
 - tool surface, multimodal inputs, context/recovery method and task distribution;
 - observation date and whether the identity is pinned or a moving alias.
 
-Do not invent missing values. Give the general design now and name only the missing
-facts that block concrete parameter advice. A family match is a navigation hint, not
-verified compatibility. Treat alias resolution and current protocol requirements as
-facts to verify live before deployment. These profiles are dated snapshots, not an
-automatic model router or an exhaustive support matrix.
+Do not invent missing values. Give general guidance and name only missing facts that
+block parameter advice. A family match is a navigation hint, not verified compatibility.
+Verify aliases and current contracts live before deployment. Profiles are dated
+snapshots, not a router or exhaustive support matrix.
 
 | Profile | Documented coverage and reason to read |
 |---|---|
-| [OpenAI](models/openai.md) | GPT-6 Astra, Responses tool calls, async work, instruction calibration |
-| [Anthropic](models/anthropic.md) | Claude Fable 5.1, history binding, tool batching and effort-dependent search |
+| [OpenAI](models/openai.md) | GPT-6.1 Sol and Astra, Responses, Codex effort/fan-out and approval review |
+| [Anthropic](models/anthropic.md) | Opus/Sonnet/Haiku 5.5 and Fable 5.1, prompting, Claude Code, history and advisors |
+| [xAI](models/xai.md) | Grok 4.7, Grok Build permissions, sandbox, headless sessions and subagents |
 | [Google](models/google.md) | Gemini 3, temperature recommendation, stateful vs manual thought-state handling |
 | [DeepSeek](models/deepseek.md) | V4 Pro/Flash thinking, effective effort mapping, history with/without tools; historical R1 |
 | [Moonshot](models/moonshot.md) | K3, K2.7 Code and K2.6 differences in thinking controls and preservation |
@@ -34,33 +33,33 @@ automatic model router or an exhaustive support matrix.
 Read only the matching profile and relevant common component. If none matches, inspect
 the target's current primary documentation rather than borrowing a nearby model's rules.
 
-## Separate four kinds of statement
+## Untangle claims when needed
 
-| Kind | What it establishes | Required evidence and validation |
+| Kind | What it establishes | Useful evidence and validation |
 |---|---|---|
 | Interface contract | What a specific API accepts, requires, ignores, or maps | Current provider contract plus a targeted request/response or adapter check |
 | Behavioral recommendation | A prompt, tool format or orchestration choice that may improve a task | Named model/task conditions; compare legal baseline and candidate on real tasks |
 | Training background | Published pretraining, SFT, RL, distillation or agent-environment exposure | Original model report; distinguish disclosed facts from missing details |
 | Historical case / hypothesis | Why a mechanism was tried, retained or replaced | Dated conditions and counterevidence; no automatic current recommendation |
 
-These kinds are independent of Invariant / Default / Conditional pattern / Example.
+Use these distinctions when claims are conflated, not as an output template. They are
+independent of invariant, default, conditional pattern and example.
 A protocol requirement may be mandatory in one adapter but irrelevant elsewhere.
 A general architectural capability such as persistence may be optional for a short task.
 
-Training can suggest a hypothesis, not settle an architecture. Pretraining coverage may
-motivate a retrieval check; SFT examples may explain a message/template convention;
-agent RL may expose a model to long tool trajectories. None proves that adding a planner
-or deleting verification improves your workload. Hosting, quantization, parsers, tools,
-prompts and task selection can explain the same observation. Undisclosed recipes stay
-unknown; do not infer a brand's fixed personality from a few answers.
+Training suggests hypotheses, not scaffold benefits. Hosting, quantization, parsers,
+tools, prompts and task selection may explain results. Keep undisclosed recipes unknown.
 
 ## Record a usable recommendation
 
-Keep prose or a small table with: exact configuration, affected component, kind and rule
-strength, source and date, observed issue, proposed change, smallest check, cost/risk,
-counterevidence, and condition for retaining or retiring it. Explicitly label evidence:
-**documented**, **locally observed**, **hypothesis**, **historical**, or **unverified**.
-An official performance claim remains vendor-reported until reproduced.
+Use a short paragraph or table: **configuration, proposed change, evidence label,
+smallest check**. Include source/date for changing model claims; add cost, risk,
+counterevidence or retirement conditions only when they change the decision. Label
+evidence where it matters, rather than every sentence. Vendor performance claims remain
+vendor-reported until reproduced.
+
+Before behavioral changes, re-check the vendor prompting guide linked in the profile;
+keep contracts and dated measurements separate.
 
 Preserve opaque reasoning state as protocol material when required; do not decode it,
 rewrite it as visible text or require hidden chain-of-thought for evaluation. User-facing
@@ -78,8 +77,9 @@ state, event evidence and provider reasoning state serve different consumers.
    differences; identical parameter strings do not mean identical computation.
 4. Change a relevant behavioral choice and run representative tasks. Repeat trials for
    stochastic quality or performance claims; include costs, false blocks and recovery.
-5. Retain, adjust or retire that compensation based on the result. Re-test on upgrade;
-   do not remove on upgrade. Keep useful historical evidence outside active defaults.
+5. Re-test on upgrade, then retire compensations the new model no longer needs. Record
+   the reason in [historical-cases.md](historical-cases.md); adjust or retain those still
+   supported by the result.
 
 A missing-signature rejection followed by a valid request establishes a compatibility
 fix, not an intelligence gain. Never construct a knowingly invalid baseline to make an

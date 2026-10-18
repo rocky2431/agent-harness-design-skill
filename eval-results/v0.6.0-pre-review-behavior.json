@@ -1,0 +1,502 @@
+{
+  "completed_at": "2026-10-18T16:18:50.881520+00:00",
+  "configuration": {
+    "arms": [
+      {
+        "name": "agent-harness-design",
+        "source_sha256": "0c711e28510476f4336f931b528cd1c3e69860e7d3c9467e55e68213c3f1f48f"
+      }
+    ],
+    "cases_sha256": "1e6fddd740f0232a182686c28e13998e19fc8afe62b6b8728fb9fc91835b3c6e",
+    "host": "codex",
+    "host_cli": "codex-cli 0.159.3",
+    "model": "gpt-6.1-sol",
+    "reasoning": "low",
+    "selected_cases": [
+      "calibrate_an_overconstrained_harness",
+      "prompt_injection_is_hard_boundary",
+      "verify_real_outcome",
+      "denied_effect_does_not_cripple_reasoning",
+      "silent_capability_reduction_is_not_a_control",
+      "retire_stale_model_compensation",
+      "success_shaped_fallback_is_a_defect",
+      "compatibility_must_not_hide_capability_loss",
+      "two_tier_budget_not_a_bare_step_cap",
+      "retest_scaffolding_rather_than_remove_it",
+      "completion_must_close_on_the_environment",
+      "target_differs_from_consulting_model",
+      "two_models_same_tool_goal",
+      "native_tool_discovery_vs_history_mutation",
+      "claude_history_binding_conditions",
+      "single_component_tool_contract",
+      "opus55_effort_and_redundant_verification",
+      "codex_ultra_and_approval_review",
+      "grok_build_denial_and_os_boundary",
+      "focused_answer_without_classification_tax",
+      "claude_family_verification_is_model_specific"
+    ],
+    "structured_output": "output_schema",
+    "timeout_seconds": 300,
+    "trials": 1,
+    "workers": 2
+  },
+  "grades": [],
+  "measurement_notes": [
+    "Final outputs, wall-clock duration, and host-reported token usage are measured.",
+    "Scores, passes, evidence, and winners are model-grader judgments when grading is enabled.",
+    "Ephemeral evaluation-root paths in retained final outputs are normalized to <EVAL_TMP>.",
+    "Each run uses a fresh temporary HOME, CODEX_HOME, workspace, and ephemeral Codex session with plugins, memories, hooks, and apps disabled and a read-only sandbox.",
+    "Completed commands referencing the explicit Skill copy are retained without outputs; they show requested reads, not attention or comprehension."
+  ],
+  "mode": "behavior",
+  "runs": [
+    {
+      "arm": "agent-harness-design",
+      "case": "calibrate_an_overconstrained_harness",
+      "case_id": 1,
+      "completed_skill_commands": [
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/SKILL.md'",
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/references/design-decisions.md'",
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/references/trust-tools-and-effects.md'",
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/references/state-and-orchestration.md'",
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/references/failure-visibility.md'",
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/references/evaluation-and-observability.md'"
+      ],
+      "duration_seconds": 42.063,
+      "final_output": "The invariant is **authorized, verifiable execution with recoverable failure**. Hard semantic gates, two approvals, and twelve states are design choices—not guarantees by themselves. Based on your description, I’d relax all three selectively; implementation behavior remains untested.\n\n| Current constraint | Keep invariant | Relax |\n|---|---|---|\n| Every semantic score blocks | Enforce authoritative acceptance rules; justify each blocking evaluator against its actual errors and stakes. | Make subjective quality scores advisory or route them to review. Keep a semantic gate only with an accepted rubric, measured error tolerance, drift monitoring, and a repair or appeal path. |\n| Every external action needs two approvals | Each effect must stay within trusted authorization, enforced where execution happens. | Preauthorize bounded routine operations. Request approval for scope changes, material ambiguity, or effects reserved for humans. Retain two independent approvals where a specific threat or obligation warrants separation of duties. |\n| Twelve non-terminal states | Every pending state needs a reachable next action and a stop, error, or recovery path. | Merge states that do not change authority, execution, ownership, evidence requirements, or recovery behavior. Twelve may be justified, but the count proves nothing about safety or completeness. |\n\nThe hard core should be:\n\n- **Authority cannot originate from the model or external content.** Retrieved text, tool results, and worker messages cannot expand permissions. Credentials and privileged effects belong behind a trusted runtime boundary.\n- **Success requires relevant evidence.** Workflow position, a passing score, or an HTTP response alone may not establish the intended outcome.\n- **Failure stays visible and actionable.** Distinguish denial, execution failure, cancellation, exhaustion, and unknown effects. Reconcile uncertain mutations before retrying.\n- **Denials remain local.** Blocking a send should still allow authorized investigation, drafting, and a narrower proposal.\n- **Capability reductions remain visible.** Model substitutions, dropped context, missing tools, and reduced budgets must not silently preserve the original capability claim.\n- **Required interface contracts remain binding.** Simplifying orchestration must preserve valid tool calls, observations, and resumable state where recovery requires it.\n\nFor each gate or state, require a concrete answer: **What property does this protect, what evidence decides it, what useful work does it block, and how does recovery work?** Remove or narrow controls without convincing answers.\n\nValidate the simplified version against the current harness using ordinary authorized tasks, adversarial cases, and interrupted or ambiguous operations. Measure real completion, unauthorized effects, false blocks, approval burden, latency, and recovery success. Keep controls that earn their cost; give compensating controls explicit retirement conditions.",
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 28032,
+        "input_tokens": 51856,
+        "output_tokens": 753,
+        "reasoning_output_tokens": 0
+      }
+    },
+    {
+      "arm": "agent-harness-design",
+      "case": "prompt_injection_is_hard_boundary",
+      "case_id": 9,
+      "completed_skill_commands": [
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/SKILL.md'",
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/references/trust-tools-and-effects.md'"
+      ],
+      "duration_seconds": 26.519,
+      "final_output": "The harness should block the upload and let the authorized refund continue.\n\n- Treat the email as untrusted data. It cannot grant permission to export customer information or send it to a new destination.\n- Enforce that boundary before execution at the upload or network tool: check the data, recipient, and purpose against trusted authorization, and return `denied` for this upload. A prompt warning alone is insufficient.\n- Keep the denial local: preserve the agent’s tools and access needed to complete the refund.\n- If the upload has a legitimate business purpose, require separate, scoped authorization through a trusted channel. The email itself is insufficient.\n\nRecord the attempted transfer and denial without logging the customer’s export.",
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 39424,
+        "input_tokens": 45243,
+        "output_tokens": 309,
+        "reasoning_output_tokens": 0
+      }
+    },
+    {
+      "arm": "agent-harness-design",
+      "case": "verify_real_outcome",
+      "case_id": 10,
+      "completed_skill_commands": [
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/SKILL.md'",
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/references/failure-visibility.md'"
+      ],
+      "duration_seconds": 37.112,
+      "final_output": "No. A zero exit code shows the deploy tool completed successfully; it does not establish that production recovered. The agent’s claim adds no independent verification.\n\nKeep the incident **open, pending verification**. Run production health checks and the affected user path against the deployed version, then compare the results with the incident’s resolution criteria. The harness should permit “resolved” only when that evidence supports it.\n\nIf checks cannot run, report: **“Deployment completed; recovery unverified.”**",
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 13056,
+        "input_tokens": 45293,
+        "output_tokens": 265,
+        "reasoning_output_tokens": 0
+      }
+    },
+    {
+      "arm": "agent-harness-design",
+      "case": "denied_effect_does_not_cripple_reasoning",
+      "case_id": 13,
+      "completed_skill_commands": [
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/SKILL.md'",
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/references/trust-tools-and-effects.md <EVAL_TMP>/explicit-skill/references/failure-visibility.md'"
+      ],
+      "duration_seconds": 24.397,
+      "final_output": "No. Keep the denial local to the unauthorized email.\n\nThe harness should block sending at the trusted execution boundary and return an explicit result such as `denied: email not sent`. Keep approved dataset access and data-analysis tools available so the agent can continue authorized research and explain the restriction.\n\nReading data does not authorize transmitting it. Enforce that boundary across other outbound tools too, so the agent cannot route around the denial.\n\nTerminate the turn or remove additional capabilities only if a separate policy or concrete security condition requires it—not merely because one email was denied.",
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 39424,
+        "input_tokens": 47029,
+        "output_tokens": 332,
+        "reasoning_output_tokens": 0
+      }
+    },
+    {
+      "arm": "agent-harness-design",
+      "case": "silent_capability_reduction_is_not_a_control",
+      "case_id": 14,
+      "completed_skill_commands": [
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/SKILL.md'",
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/references/failure-visibility.md'"
+      ],
+      "duration_seconds": 31.402,
+      "final_output": "No. As described, this is **silent capability degradation**, not a valid safety or reliability control. Saving money is a resource-management objective; it does not justify concealing changes to the owner’s selected configuration.\n\nEach change matters:\n\n- **Model substitution** overrides the selected capability.\n- **Evidence removal** reduces coverage and may discard decisive or contradictory information.\n- **A smaller output cap** may prevent a complete answer.\n- **Normal completion reporting** hides those reductions and can misrepresent the outcome.\n\nA legitimate cost control should use an owner-authorized routing and budget policy, disclose reductions both to the model and in the delivered result, and record them in operational traces. It should preserve access to omitted evidence and offer recovery—such as retrying with the selected model or restoring the budget.\n\nReport a degraded result explicitly; if a limit prevents completion, report a partial or budget-limited outcome. A successful API response alone does not establish successful task completion.",
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 37760,
+        "input_tokens": 45400,
+        "output_tokens": 363,
+        "reasoning_output_tokens": 0
+      }
+    },
+    {
+      "arm": "agent-harness-design",
+      "case": "retire_stale_model_compensation",
+      "case_id": 16,
+      "completed_skill_commands": [
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/SKILL.md'",
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/references/model-adaptation.md <EVAL_TMP>/explicit-skill/references/historical-cases.md <EVAL_TMP>/explicit-skill/references/failure-visibility.md'"
+      ],
+      "duration_seconds": 23.438,
+      "final_output": "No. The reset was a workaround for an older model’s behavior, not a permanent requirement.\n\nYour repeated trials support removing it for the new model, provided they cover representative long jobs with comparable resources and valid configurations. Check that premature stopping stays resolved and completion is verified from actual results.\n\nRecord why the reset existed, which configurations needed it, and why it was retired. Preserve useful recovery state and completion checks, then re-test on future upgrades. A past best practice should yield to current evidence.",
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 39424,
+        "input_tokens": 48081,
+        "output_tokens": 377,
+        "reasoning_output_tokens": 0
+      }
+    },
+    {
+      "arm": "agent-harness-design",
+      "case": "success_shaped_fallback_is_a_defect",
+      "case_id": 20,
+      "completed_skill_commands": [
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/SKILL.md'",
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/references/failure-visibility.md'"
+      ],
+      "duration_seconds": 30.115,
+      "final_output": "No. The wrapper exposes failure as an ordinary result, hides distinct error causes, and provides no bounded recovery path. Logging alone does not let the agent adapt. The turn limit merely stops the resulting run; it does not make the error handling acceptable.\n\nThe wrapper should:\n\n- Return an explicit, structured failure with an error category, safe diagnostic detail, and whether retrying is appropriate.\n- Count failures and retries, enforce bounded retries, and tell the agent when a limit is reached.\n- Distinguish failed operations from **unknown outcomes**. If an operation may have taken effect, reconcile its state before retrying.\n- Preserve useful work and report the final stop reason accurately—such as execution failure or turn-limit exhaustion—alongside what remains incomplete.\n\nCatching exceptions at the tool boundary can be reasonable. Converting every exception into the same “please try again” result and continuing without accounting is the defect. The described behavior supports a wrapper-level diagnosis; the trace would establish exactly how it led to the turn limit.",
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 39424,
+        "input_tokens": 45425,
+        "output_tokens": 379,
+        "reasoning_output_tokens": 0
+      }
+    },
+    {
+      "arm": "agent-harness-design",
+      "case": "compatibility_must_not_hide_capability_loss",
+      "case_id": 21,
+      "completed_skill_commands": [
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/SKILL.md'",
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/references/failure-visibility.md'"
+      ],
+      "duration_seconds": 22.025,
+      "final_output": "Keeping old configs parseable is reasonable; quietly changing their capabilities is not. If the old option implies support for reasoning items, accepting it while routing through a path that cannot carry them makes the config misleading.\n\nKeep compatibility with explicit behavior:\n\n- Deprecate the old option and explain its effective behavior.\n- If reasoning items are required, reject that combination with an actionable migration message.\n- Allow the reduced path when authorized, and make the reduction visible to the model, in the delivered result, and in operator traces.\n- Test that legacy configs either preserve their promised behavior or surface the limitation.\n\nThe key distinction is backward compatibility of syntax versus backward compatibility of behavior. Preserving the former should not imply you still provide the latter.",
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 39424,
+        "input_tokens": 45395,
+        "output_tokens": 318,
+        "reasoning_output_tokens": 0
+      }
+    },
+    {
+      "arm": "agent-harness-design",
+      "case": "two_tier_budget_not_a_bare_step_cap",
+      "case_id": 22,
+      "completed_skill_commands": [
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/SKILL.md'",
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/references/design-decisions.md <EVAL_TMP>/explicit-skill/references/failure-visibility.md'"
+      ],
+      "duration_seconds": 26.073,
+      "final_output": "**Don’t make fifty steps the fix.** It gives long tasks more room, but also lets a broken tool waste fifty attempts. You need separate controls for resource use and repeated failure.\n\n- **Budget actual resources:** tokens, elapsed time, and cost. Set limits from representative task measurements within an affordable envelope; ten or fifty steps alone says little about those costs.\n- **Warn before exhaustion:** tell the agent its remaining budget early enough to finish a coherent edit, verify it, or checkpoint the current state and remaining work.\n- **Handle tool failures locally:** return actionable errors, detect repeated identical failures, and bound retries. When a tool remains broken, disable that path and let the agent use alternatives or report the blocker.\n- **Stop with an explicit outcome:** distinguish `completed`, `budget_exhausted`, and `tool_failed`. Preserve partial edits and a resumable checkpoint; claim completion only after checking the resulting state.\n\nA higher cap can be a temporary mitigation once traces confirm the cap caused the cutoffs. Test long successful tasks and a deliberately broken tool, then compare verified completion, wasted retries, cost, and recovery. **Fifty is a candidate to measure, not a justified default yet.**",
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 28032,
+        "input_tokens": 47267,
+        "output_tokens": 466,
+        "reasoning_output_tokens": 0
+      }
+    },
+    {
+      "arm": "agent-harness-design",
+      "case": "retest_scaffolding_rather_than_remove_it",
+      "case_id": 25,
+      "completed_skill_commands": [
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/SKILL.md'",
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/references/model-adaptation.md <EVAL_TMP>/explicit-skill/references/failure-visibility.md <EVAL_TMP>/explicit-skill/references/evaluation-and-observability.md'"
+      ],
+      "duration_seconds": 31.523,
+      "final_output": "No. Treat “smarter models need less scaffolding” as a hypothesis to test, not a reason to delete all three.\n\n| Component | Recommended treatment |\n|---|---|\n| Forced interim updates | Relax rigid cadence if it creates noise or interrupts work. Retain useful updates for long tasks, blockers, and material changes. |\n| Context reset for premature stopping | Diagnose the stopping first: protocol errors, hidden limits, and lost context can look like model failures. Retire the reset if it no longer helps. If retained, preserve the goal, evidence, pending actions, and recovery state through an explicit handoff. |\n| Separate verifier pass | Preserve evidence-based completion. A second model reading the answer may add little; checking tests, artifacts, or authoritative environment state can remain valuable regardless of model intelligence. Keep semantic review where measured benefits justify its cost. |\n\nFirst make the new model’s integration protocol-valid. Then compare the existing harness against variants removing one component at a time, using representative tasks, repeated trials, and comparable resources. Measure actual completion, false success, premature stops, latency, cost, and recovery failures; test interactions before removing several together.\n\nRetire compensations when evidence supports it. Preserve the properties they were protecting. Without the target model and local results, deleting all three is unjustified.",
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 39552,
+        "input_tokens": 48623,
+        "output_tokens": 534,
+        "reasoning_output_tokens": 0
+      }
+    },
+    {
+      "arm": "agent-harness-design",
+      "case": "completion_must_close_on_the_environment",
+      "case_id": 26,
+      "completed_skill_commands": [
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/SKILL.md'",
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/references/failure-visibility.md <EVAL_TMP>/explicit-skill/references/evaluation-and-observability.md'"
+      ],
+      "duration_seconds": 30.644,
+      "final_output": "No. A strong reviewer checking the summary verifies the agent’s account, not whether the records actually migrated. Both models can accept the same unsupported success claim.\n\nMake completion depend on an independent check of the destination:\n\n- Reconcile expected source records against destination records using a defined snapshot or migration cutoff.\n- Check missing and duplicate IDs, transformed values, and required constraints. Matching counts alone can hide errors.\n- Have the completion controller require a passing verification result tied to that migration run. The agent’s progress file should remain informational.\n- If verification fails or cannot finish, report **failed**, **partial**, or **unknown**, and preserve enough state to reconcile and safely resume.\n\nKeep the reviewer for interpreting discrepancies and assessing semantic correctness. Test your verification with deliberately skipped, duplicated, corrupted, and partially committed records—even when the agent writes “all records migrated successfully.”",
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 24448,
+        "input_tokens": 47071,
+        "output_tokens": 358,
+        "reasoning_output_tokens": 0
+      }
+    },
+    {
+      "arm": "agent-harness-design",
+      "case": "target_differs_from_consulting_model",
+      "case_id": 30,
+      "completed_skill_commands": [
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/SKILL.md'",
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/references/model-adaptation.md'",
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/references/models/deepseek.md'"
+      ],
+      "duration_seconds": 33.548,
+      "final_output": "No to both for `deepseek-v4-pro` thinking via DeepSeek’s OpenAI-format Chat Completions:\n\n- **Preserve `reasoning_content` on all prior assistant turns**, including turns without tool calls. The requirement depends on the request containing `tools`, which yours always does. Stripping it can cause HTTP 400 errors.\n- **`xhigh` provides no additional effort over `high`**: both map to effective `high`. Use `reasoning_effort: \"max\"` to request the higher effort level.\n\nThese are DeepSeek’s documented rules, checked October 18, 2026; I haven’t tested your adapter. Verify that it forwards both fields unchanged. [DeepSeek Thinking Mode documentation](https://api-docs.deepseek.com/guides/thinking_mode/)",
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 56064,
+        "input_tokens": 66598,
+        "output_tokens": 453,
+        "reasoning_output_tokens": 0
+      }
+    },
+    {
+      "arm": "agent-harness-design",
+      "case": "two_models_same_tool_goal",
+      "case_id": 31,
+      "completed_skill_commands": [
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/SKILL.md'",
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/references/model-adaptation.md'",
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/references/models/openai.md <EVAL_TMP>/explicit-skill/references/models/google.md <EVAL_TMP>/explicit-skill/references/architecture-guide.md <EVAL_TMP>/explicit-skill/references/failure-visibility.md'"
+      ],
+      "duration_seconds": 71.638,
+      "final_output": "No. Share the search-agent architecture, but use provider-native APIs, settings, and continuation state.\n\nThe shared loop should be:\n\n```text\nQuestion + permitted search scope\n  → model proposes search(query)\n  → runtime validates scope and executes read-only search\n  → passages + source IDs, or an explicit error\n  → model searches again or answers with supported citations\n```\n\nThe runtime enforces read-only access and holds credentials. Retrieved text remains untrusted data. A timeout must remain distinguishable from zero matches, and completion means the answer satisfies the question with evidence—not merely that a model turn ended.\n\nProvider details below were checked against official documentation on **18 October 2026**.\n\n| Concern | OpenAI `gpt-6-astra` | Gemini 3 with stateful Interactions |\n|---|---|---|\n| API | Use **Responses**. Astra supports Chat Completions for requests without tools; tool calling requires Responses. | Use the native **Interactions API**. |\n| Sampling | Omit `temperature`, `top_p`, and `top_logprobs`. Astra does not support reasoning effort `none`, so temperature `0.1` is not a valid configuration. Select a supported `reasoning.effort`. | Start with the recommended default temperature **`1.0`**. Google warns that lower temperatures can cause loops or degraded reasoning; this is behavioral guidance, not an unsupported-parameter rule. |\n| Continuation | Use native Responses state, such as `previous_response_id`, or replay structured input/output items correctly. | Supply `previous_interaction_id`; the server manages conversation history and thought signatures. |\n| Tool results | Return a `function_call_output` linked by the original `call_id`. | Return a `function_result` with the function name and `call_id` taken from the emitted function call’s `id`. |\n| Flattened transcript | Do not collapse tool events and reasoning-state items into prose. | Do not replace native state with prose. Manual history would require preserving the required thought blocks and signatures. |\n\nSources: [OpenAI GPT-6 configuration](https://developers.openai.com/api/docs/guides/latest-model?model=gpt-6-astra.), [OpenAI conversation state](https://developers.openai.com/api/docs/guides/conversation-state), and [Gemini 3 temperature, state, and tool guidance](https://ai.google.dev/gemini-api/docs/gemini-3).\n\nOne concrete Gemini detail: continuation IDs preserve history, but **`tools`, `system_instruction`, and `generation_config` are interaction-scoped**. Re-specify them on each interaction when needed. Stateful continuation also requires stored interactions; `store=false` prevents subsequent continuation through that interaction’s ID. [Interactions documentation](https://ai.google.dev/gemini-api/docs/interactions-overview)\n\nImplement one search executor and evidence format behind two adapters. Keep provider-neutral task state—goal, scope, sources, uncertainties, pending searches—separate from opaque provider continuation state. A summary can support a fresh handoff, but cannot recreate native reasoning state.\n\nBefore deployment, test one complete search/tool-result round trip and an interrupted continuation on each adapter. Then compare answer accuracy, citation support, looping, latency, and cost at comparable resources. Pin the exact Gemini model ID and SDK version; “Gemini 3” alone is insufficient for deployable configuration. These are documented recommendations; no live target-model tests were run here.",
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 126848,
+        "input_tokens": 157555,
+        "output_tokens": 1480,
+        "reasoning_output_tokens": 24
+      }
+    },
+    {
+      "arm": "agent-harness-design",
+      "case": "native_tool_discovery_vs_history_mutation",
+      "case_id": 34,
+      "completed_skill_commands": [
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/SKILL.md'",
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/references/model-adaptation.md <EVAL_TMP>/explicit-skill/references/historical-cases.md'",
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/references/models/anthropic.md'"
+      ],
+      "duration_seconds": 36.791,
+      "final_output": "No. The reviewer is conflating **registering tools with the API** and **loading their definitions into model context**.\n\nManus recommends avoiding dynamic tool changes because rewriting definitions near the prompt’s beginning breaks caching, and removing definitions can leave historical calls without their schemas. That is conditional advice from its architecture, not a universal prohibition. [Manus article](https://manus.im/blog/Context-Engineering-for-AI-Agents-Lessons-from-Building-Manus)\n\nClaude’s native tool search explicitly supports your pattern:\n\n- Send the full tool catalog in the request, marking deferred tools with `defer_loading: true`.\n- Initially, only search and non-deferred tools enter model context.\n- Search discovers preregistered tools through `tool_reference` blocks, which the API expands inline without changing the prompt prefix.\n\nThus, **registration happens up front; loading happens on demand**. Anthropic documents that every tool’s full definition must still be sent on every request, including deferred tools. [Claude tool-search documentation, checked October 18, 2026](https://platform.claude.com/docs/en/agents-and-tools/tool-use/tool-search-tool)\n\nKeep native deferred discovery, preserve valid history and references, and verify compatibility with your exact model and endpoint. There is no basis here for requiring every schema in model context on turn one; your harness implementation itself remains untested.",
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 82176,
+        "input_tokens": 101239,
+        "output_tokens": 711,
+        "reasoning_output_tokens": 0
+      }
+    },
+    {
+      "arm": "agent-harness-design",
+      "case": "claude_history_binding_conditions",
+      "case_id": 35,
+      "completed_skill_commands": [
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/SKILL.md'",
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/references/model-adaptation.md <EVAL_TMP>/explicit-skill/references/failure-visibility.md'",
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/references/models/anthropic.md'"
+      ],
+      "duration_seconds": 46.626,
+      "final_output": "Your September 1, 2026 account falls after the August 31 cutoff: **Fable 5.1 thinking blocks are bound to their exact conversation prefix.** Rewriting the system prompt or summarizing earlier turns while replaying old thinking blocks can therefore return HTTP 400. [Anthropic documentation, checked October 18, 2026](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-fable-5-1#keep-the-conversation-history-append-only).\n\nChange the client to:\n\n- Preserve returned assistant turns exactly, including thinking blocks, and append new turns.\n- Use supported mid-conversation system messages for instruction/tool updates instead of rewriting the prefix.\n- Prefer native compaction/context editing. For client compaction, start fresh with the summary plus the new user turn; carry over no old thinking blocks.\n\n**`drop_block` is a compatibility/recovery control, not a demonstrated quality optimization.** With beta header `thinking-binding-controls-2026-08-01`, setting `thinking.block_binding.prefix_mismatch_behavior: \"drop_block\"` discards mismatched thinking state instead of rejecting the request. Make that state loss explicit and inspect `input_transformations`; don’t silently treat it as intact continuation. Avoiding a 400 establishes protocol compatibility, not improved reasoning quality.\n\nVerify the fix with captured consecutive requests and a controlled prefix-mismatch test. Your integration’s behavior remains untested here.",
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 60288,
+        "input_tokens": 98010,
+        "output_tokens": 673,
+        "reasoning_output_tokens": 0
+      }
+    },
+    {
+      "arm": "agent-harness-design",
+      "case": "single_component_tool_contract",
+      "case_id": 37,
+      "completed_skill_commands": [
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/SKILL.md'",
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/references/architecture-guide.md <EVAL_TMP>/explicit-skill/references/failure-visibility.md'"
+      ],
+      "duration_seconds": 31.491,
+      "final_output": "A document-search tool should return **usable evidence: passages with clear source identities and enough context to interpret and cite them**.\n\nFor each match, include:\n\n- **Source:** stable document ID, title, and URL or retrieval handle.\n- **Location:** page, section, or line range.\n- **Passage:** actual text with enough surrounding context to preserve its meaning.\n- **Follow-up handle:** a way to fetch more of the document when needed.\n\nThe response should also distinguish **successful search with no matches** from errors, denials, and timeouts. Mark partial or truncated results explicitly and provide a way to retrieve more.\n\nReturn the observation linked to its original tool call. Treat retrieved text as untrusted source material, even if it contains instructions.\n\nThe practical test: can the model support a claim, cite its source, and fetch missing context using the returned result?",
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 39424,
+        "input_tokens": 47492,
+        "output_tokens": 399,
+        "reasoning_output_tokens": 0
+      }
+    },
+    {
+      "arm": "agent-harness-design",
+      "case": "opus55_effort_and_redundant_verification",
+      "case_id": 38,
+      "completed_skill_commands": [
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/SKILL.md'",
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/references/model-adaptation.md'",
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/references/models/anthropic.md'",
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/references/failure-visibility.md'"
+      ],
+      "duration_seconds": 52.068,
+      "final_output": "Change these four things:\n\n- **Remove the thinking-disable setting.** Opus 5.5 always has thinking enabled; API requests with `thinking: {\"type\":\"disabled\"}` are unsupported. In Claude Code, `MAX_THINKING_TOKENS=0` won’t disable it. [Migration guidance](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-opus-5-5), [Claude Code configuration](https://code.claude.com/docs/en/model-config).\n- **Stop carrying over `high` automatically.** Use `/effort medium` for normal coding. Because you previously disabled thinking, also test `low` for latency-sensitive work. Keep higher effort where your tasks show a quality gain, and check for an old `CLAUDE_CODE_EFFORT_LEVEL=high` override. [Effort configuration](https://code.claude.com/docs/en/model-config).\n- **Replace the verifier-on-every-edit rule with targeted checks.** Keep tests and evidence that the change works; reserve a separate reviewer for consequential changes or demonstrated failure patterns. Anthropic already warned that redundant verifier scaffolding could cause over-verification on Opus 5. [Verification guidance](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-opus-5).\n- **Request brevity directly.** Add: “Keep the final reply to three bullets: what changed, checks run, and unresolved issues. Omit routine narration.” Effort controls reasoning, not reply length. Avoid shrinking token limits just to shorten prose: thinking also consumes that budget. [Prompting guidance](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-opus-5-5).\n\nBefore rollout, compare representative tasks at low and medium effort, with targeted versus mandatory review. Track correctness, missed defects, latency, and cost.\n\nDocumentation checked October 18, 2026; these changes haven’t been tested on your workload.",
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 99072,
+        "input_tokens": 120340,
+        "output_tokens": 964,
+        "reasoning_output_tokens": 22
+      }
+    },
+    {
+      "arm": "agent-harness-design",
+      "case": "codex_ultra_and_approval_review",
+      "case_id": 39,
+      "completed_skill_commands": [
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/SKILL.md'",
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/references/model-adaptation.md'",
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/references/models/openai.md'"
+      ],
+      "duration_seconds": 60.706,
+      "final_output": "No—as a blanket configuration for tiny edits, it’s excessive and confuses two reviewer roles.\n\n- **Use Low or Medium for small edits.** Ultra delegates work to parallel subagents; it helps when a complex task has meaningful independent parts. It doesn’t guarantee better edits. Reserve it for larger work and compare quality, latency, and usage on your tasks. [Official model guidance, checked October 18, 2026](https://learn.chatgpt.com/docs/models).\n- **Use code review commands for code quality**, such as `codex review`. `codex-auto-review` evaluates sandbox-boundary approval requests, including whether an escalated action should run. It preserves existing sandbox limits. Select that approval workflow with `approvals_reviewer = \"auto_review\"` and an eligible interactive approval policy. [Auto-review documentation](https://learn.chatgpt.com/docs/sandboxing/auto-review), [CLI reference](https://learn.chatgpt.com/docs/cli/reference).\n\nThe relevant fan-out controls are:\n\n| Control | Purpose |\n|---|---|\n| `features.multi_agent` | Enables multi-agent collaboration tools |\n| `agents.enabled` | Enables or disables multi-agent tools |\n| `agents.max_concurrent_threads_per_session` | Caps concurrent spawned threads, excluding the primary |\n| `agents.max_threads` | Legacy alias for that cap |\n| `agents.default_subagent_model` | Sets the default child model |\n| `agents.default_subagent_reasoning_effort` | Sets the default child effort |\n\nExplicit spawn settings override the child defaults. Check effective child models and total usage when evaluating Ultra. [Configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference).",
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 132480,
+        "input_tokens": 162776,
+        "output_tokens": 974,
+        "reasoning_output_tokens": 0
+      }
+    },
+    {
+      "arm": "agent-harness-design",
+      "case": "grok_build_denial_and_os_boundary",
+      "case_id": 40,
+      "completed_skill_commands": [
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/SKILL.md'",
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/references/failure-visibility.md <EVAL_TMP>/explicit-skill/references/model-adaptation.md <EVAL_TMP>/explicit-skill/references/trust-tools-and-effects.md'",
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/references/models/xai.md'"
+      ],
+      "duration_seconds": 40.405,
+      "final_output": "No—neither conclusion follows.\n\n- **Job success:** `--permission-mode dontAsk` silently denies calls without an explicit allow rule. A finished process—even with exit code 0—doesn’t prove the needed command ran or the requested outcome occurred. Inspect tool results for denials and verify the resulting artifacts or state. [Enterprise documentation](https://docs.x.ai/build/enterprise)\n- **Child networking:** xAI documents child-network blocking under `--sandbox strict` as **Linux-only; it is a no-op on macOS**. In-process model API and web traffic are separate and also aren’t blocked by that setting. [Sandbox documentation](https://docs.x.ai/build/features/sandbox)\n\nThese docs were checked October 18, 2026; your actual run remains unverified. Treat the outcome as unverified until its required effects are confirmed, and test network enforcement on the deployed CLI version and OS.",
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 84864,
+        "input_tokens": 104576,
+        "output_tokens": 612,
+        "reasoning_output_tokens": 0
+      }
+    },
+    {
+      "arm": "agent-harness-design",
+      "case": "focused_answer_without_classification_tax",
+      "case_id": 41,
+      "completed_skill_commands": [
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/SKILL.md'",
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/references/failure-visibility.md'"
+      ],
+      "duration_seconds": 26.112,
+      "final_output": "Mark the passage as truncated in the tool result the model sees, including the document identifier, where the cut occurred, and a way to retrieve the missing text. Fetch the relevant remainder through read-only retrieval when possible; otherwise, answer only from available evidence and state the limitation. Any unresolved evidence gap should be visible in the final answer, not hidden in logs. A one-shot agent without operator monitoring does not need a new tracing service.",
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 39424,
+        "input_tokens": 45368,
+        "output_tokens": 260,
+        "reasoning_output_tokens": 0
+      }
+    },
+    {
+      "arm": "agent-harness-design",
+      "case": "claude_family_verification_is_model_specific",
+      "case_id": 42,
+      "completed_skill_commands": [
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/SKILL.md'",
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/references/model-adaptation.md <EVAL_TMP>/explicit-skill/references/failure-visibility.md'",
+        "/bin/zsh -lc 'cat <EVAL_TMP>/explicit-skill/references/models/anthropic.md'"
+      ],
+      "duration_seconds": 44.548,
+      "final_output": "No—keep a targeted verification instruction for Sonnet 5.5 and Haiku 5.5, especially given your observed skipped checks.\n\nAnthropic’s guidance, checked October 18, 2026, differs by model:\n\n- **Opus 5:** remove generic verification reminders and redundant verifier scaffolding because they can cause excessive checking. That recommendation is specific to Opus 5. [Opus guide](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-opus-5)\n- **Sonnet 5.5:** at `low` effort, it can report completion without exercising the change. The guide recommends an explicit instruction when this occurs. [Sonnet guide](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-sonnet-5-5#verification-on-coding-tasks)\n- **Haiku 5.5:** the same issue occurs at `low` and `medium`; verification prompting improved checking and performance in Anthropic’s tests, with additional token cost. [Haiku guide](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-haiku-5-5#tell-coding-agents-to-verify-their-changes)\n\nUse a concise instruction such as:\n\n> After changing runnable code, run a relevant test, build, type-check, or command that exercises the change. Syntax-only checks and commands that fail to start do not count. If verification is blocked, report what remains unchecked and why. State which check ran and its result.\n\nKeep task-specific acceptance checks and required CI across models. Before removing this instruction, compare repeated representative tasks with and without it on your exact model, Claude Code version, and effective effort. Measure actual check execution and correctness alongside cost; a confident completion message is insufficient evidence. Your configuration’s behavior remains untested here.",
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 134528,
+        "input_tokens": 159461,
+        "output_tokens": 946,
+        "reasoning_output_tokens": 0
+      }
+    }
+  ],
+  "schema_version": 1,
+  "started_at": "2026-10-18T16:12:05.026720+00:00",
+  "stop_reason": null,
+  "summary": {
+    "agent-harness-design": {
+      "completed_runs": 21,
+      "graded_pass_rate": null,
+      "input_tokens": 1580098,
+      "mean_duration_seconds": 36.631,
+      "mean_grade": null,
+      "output_tokens": 11926,
+      "successful_runs": 21,
+      "wins": 0
+    }
+  }
+}

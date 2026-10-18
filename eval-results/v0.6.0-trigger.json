@@ -1,0 +1,97 @@
+{
+  "completed_at": "2026-10-18T16:42:51.174608+00:00",
+  "configuration": {
+    "cases_sha256": "7b7fecf0fbec2fea7ec891e8d4b99e2e760bd0958c7e9a3c041dd52d7c01091d",
+    "host": "codex",
+    "host_cli": "codex-cli 0.159.3",
+    "model": "gpt-6.1-sol",
+    "probe_discovery": "codex implicit discovery; probe Skills installed at .agents/skills inside a fresh home",
+    "probe_skills": [
+      "agent-delegation",
+      "agent-harness-design",
+      "task-state-with-files"
+    ],
+    "reasoning": "low",
+    "selected_cases": [
+      "positive_harness_authority_and_tools",
+      "negative_ordinary_code_review"
+    ],
+    "skill_name": "agent-harness-design",
+    "skill_source_sha256": "7b17c6e30e3dc72643af45f9a6fa60e3f79459f204e7630dfa743bc46b47e4e9",
+    "timeout_seconds": 300,
+    "trials": 1,
+    "workers": 2
+  },
+  "measurement_notes": [
+    "Selection is measured through marker instructions present only in loaded probe Skills.",
+    "This tests codex implicit discovery and instruction following together; it is not a keyword simulation.",
+    "Each run uses a fresh temporary HOME, CODEX_HOME, workspace, and ephemeral Codex session with plugins, memories, hooks, and apps disabled and a read-only sandbox.",
+    "Completed commands referencing the explicit Skill copy are retained without outputs; they show requested reads, not attention or comprehension."
+  ],
+  "mode": "trigger",
+  "runs": [
+    {
+      "accepted_skill_sets": [
+        [
+          "agent-harness-design"
+        ]
+      ],
+      "case": "positive_harness_authority_and_tools",
+      "case_id": 1,
+      "completed_skill_commands": [],
+      "duration_seconds": 46.878,
+      "final_output": "The model should investigate tickets and recommend actions. The execution layer should independently decide whether a refund is permitted and perform it. A model tool call is a request to act, never sufficient authorization.\n\n```mermaid\nflowchart LR\n    T[Ticket and order data] --> M[Model loop]\n    M --> P[Refund proposal]\n    P --> G[Policy and permission gate]\n    G -->|Within automatic authority| E[Refund executor]\n    G -->|Requires approval| H[Human review]\n    H -->|Approved proposal| E\n    G -->|Forbidden| D[Reject with reason]\n    E --> R[Durable receipt]\n    R --> M\n```\n\n**Model loop**\n\nGive the model responsibility for understanding the customer’s request, gathering relevant evidence, identifying missing information, and producing a structured refund proposal. After execution, it can explain the confirmed result to the customer.\n\nTreat tickets, attachments, and retrieved text as untrusted evidence. Instructions inside them cannot change tools, policy, or authority. Retrieve authoritative payment and order records separately.\n\nBound each run by tool-call, time, and cost budgets. Stop for missing evidence, human review, or unresolved execution status. Persist workflow state outside the conversation so resuming a run does not depend on the model remembering what happened.\n\n**Tool schemas**\n\nSeparate reading, proposing, and executing:\n\n| Tool | Inputs and behavior |\n|---|---|\n| `read_ticket` | Authorized ticket ID; returns content and provenance. |\n| `get_order_refund_context` | Order ID; returns payment status, refundable balance, prior refunds, and record version. |\n| `propose_refund` | Ticket/order IDs, amount in integer minor units, currency, reason code, evidence references; stores an immutable proposal. |\n| `request_refund_execution` | Proposal ID; the server checks authority and either executes, creates a review request, or rejects. |\n| `get_refund_status` | Operation ID; returns authoritative execution state and receipt. |\n\nUse strict schemas and bounded fields. Resolve the customer, tenant, payment, and original refund destination on the server. Do not accept arbitrary payment destinations, credentials, policy overrides, or a model-supplied `approved: true`.\n\nReturn structured outcomes such as `needs_approval`, `policy_denied`, `stale_proposal`, `pending`, and `succeeded`. Customer-facing messages must distinguish a proposal from a completed refund.\n\n**Permissions**\n\nUse separate credentials for reads and payment execution. Keep payment credentials inside the executor, inaccessible to the model.\n\nEnforce tenant, ticket, and order scope on every call. Reading one customer’s ticket must not grant access to another customer’s orders. Separate permission to issue refunds from permission to send customer messages.\n\nAutomatic refund authority should be an explicit policy envelope, for example:\n\n- Eligible reason codes and sufficiently verified payment records.\n- Per-refund and cumulative customer/order limits.\n- Refunds only to the original payment method.\n- No disputed payments or other excluded cases.\n- An organization-wide spending budget and kill switch.\n\nThese are executable server rules. Prompt instructions can explain them but cannot enforce them.\n\n**Approval boundary**\n\nPlace the boundary immediately before the financial effect. The gate evaluates every execution request using current records and a versioned policy.\n\n| Decision | Result |\n|---|---|\n| Within automatic authority | Execute without human review. |\n| Allowed, but outside automatic authority | Require an authorized reviewer. |\n| Forbidden or evidence insufficient | Reject or request missing information; ordinary approval cannot override a prohibition. |\n\nBind approval to the exact proposal: tenant, payment, amount, currency, reason, evidence, and expiry. Record the reviewer’s identity and authority. Changing the amount or payment invalidates approval. Recheck the refundable balance and relevant conditions at execution time.\n\nShow reviewers the evidence, prior refunds, policy result, and proposed amount—not just the model’s summary.\n\n**Execution and recovery**\n\nUse a durable state machine:\n\n`proposed → awaiting_approval / authorized → executing → succeeded / failed / unknown`\n\nRecord transitions and execution intent before contacting the payment provider. Use a stable idempotency key for the operation, plus transactional checks or reservations to prevent concurrent proposals from exceeding the refundable balance.\n\nA timeout means the outcome may be unknown. Reconcile with the provider before retrying; do not generate a new refund operation blindly.\n\nKeep an audit trail linking evidence, proposal, policy decision, approval, provider request, and receipt. Test duplicate calls, concurrent refunds, stale approvals, cross-tenant access, malicious ticket instructions, and crashes around the payment call.\n\nThe key invariant is: **every financial effect must have independently verified authority, an exact authorized scope, and a recoverable execution record.**\n\n<probe:agent-harness-design>",
+      "kind": "positive",
+      "observed_skills": [
+        "agent-harness-design"
+      ],
+      "passed": true,
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 24576,
+        "input_tokens": 27106,
+        "output_tokens": 1079,
+        "reasoning_output_tokens": 0
+      }
+    },
+    {
+      "accepted_skill_sets": [
+        []
+      ],
+      "case": "negative_ordinary_code_review",
+      "case_id": 7,
+      "completed_skill_commands": [],
+      "duration_seconds": 20.806,
+      "final_output": "The query has a **SQL injection vulnerability** because raw user input becomes part of the SQL syntax.\n\nFor example, this is unsafe:\n\n```js\nconst sql = \"SELECT * FROM users WHERE name = '\" + name + \"'\";\n```\n\nUse a parameterized query so the database treats the input as data:\n\n```js\n// PostgreSQL with node-postgres\nconst result = await client.query(\n  \"SELECT * FROM users WHERE name = $1\",\n  [name]\n);\n```\n\nPlaceholder syntax depends on your database driver; some use `?` instead of `$1`. Avoid fixing this with manual escaping or string replacement. Input validation can enforce application rules, but it does not replace parameterization.",
+      "kind": "negative",
+      "observed_skills": [],
+      "passed": true,
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 0,
+        "input_tokens": 13348,
+        "output_tokens": 146,
+        "reasoning_output_tokens": 0
+      }
+    }
+  ],
+  "schema_version": 1,
+  "started_at": "2026-10-18T16:42:04.215727+00:00",
+  "stop_reason": null,
+  "summary": {
+    "negative": {
+      "accuracy": 1.0,
+      "completed_runs": 1,
+      "passed_runs": 1
+    },
+    "positive": {
+      "accuracy": 1.0,
+      "completed_runs": 1,
+      "passed_runs": 1
+    }
+  }
+}

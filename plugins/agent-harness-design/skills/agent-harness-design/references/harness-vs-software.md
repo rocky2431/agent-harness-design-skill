@@ -56,10 +56,9 @@ run. A single success does not establish that the configuration works.
 because type systems and runtimes stop it. Here a failed operation still produces
 fluent, plausible output. See [failure-visibility.md](failure-visibility.md).
 
-**Every compensating component encodes an assumption about model or host limits.**
-Those assumptions can go stale or be wrong; business authority and environment contracts
-may remain necessary independently of model capability.
-Re-test them on upgrade; remove one at a time and measure.
+**Compensations encode assumptions about model or host limits.** Re-test on upgrade;
+remove unneeded compensations one at a time and measure. Record why in
+[historical cases](historical-cases.md). Authority and environment contracts remain binding.
 
 **A control is not free.** It consumes context, latency, and authorized strategies. The
 question is never "is this control good practice" but "does this control buy more than

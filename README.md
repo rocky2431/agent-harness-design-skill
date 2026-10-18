@@ -17,7 +17,7 @@ portable Agent Skill. It does not include an MCP server, hook, daemon, model
 router, or custom agent runtime. Use it when the agent system itself is the
 subject. Ordinary coding, writing, task tracking, and delegation do not need it.
 
-Version: 0.5.2. The installer and evaluation runner use the Python standard
+Version: 0.6.0. The installer and evaluation runner use the Python standard
 library. CI tests them with Python 3.12.
 
 - [Install and start](#install-and-start)
@@ -38,7 +38,7 @@ library. CI tests them with Python 3.12.
 From GitHub:
 
 ```bash
-codex plugin marketplace add rocky2431/agent-harness-design-skill --ref v0.5.2
+codex plugin marketplace add rocky2431/agent-harness-design-skill --ref v0.6.0
 codex plugin add agent-harness-design@rocky-agent-harness-design
 ```
 
@@ -161,8 +161,8 @@ minimum necessary controls instead of the full outline.
 
 ## How the Skill makes decisions
 
-The Skill separates four kinds of guidance so that an example does not become
-a universal rule:
+When a recommendation and a requirement are being conflated, these distinctions
+help. They are optional reasoning aids, not required output labels:
 
 | Level | Meaning | Example |
 |---|---|---|
@@ -265,6 +265,24 @@ cannot enforce one by itself. The implementation under review must provide the
 mechanism, and completion still needs evidence from the relevant environment.
 
 ## Evaluation
+
+Version 0.6.0 refreshes Claude, OpenAI and xAI profiles, retires obsolete model
+compensations after upgrade checks, and makes classification and record formats
+optional. Invariants remain unchanged. Its final-source smoke checks use Codex CLI
+0.159.3, `gpt-6.1-sol`, low reasoning and one trial per case. Review round 1 restores
+mandatory compatibility wording, distinct failure kinds and measured scaffold removal;
+it covers all four Claude prefix-bound models and records conflicting xAI shell docs.
+All 21 behavior runs produced answers, and both discovery checks matched expectations.
+The answers are not blind-graded; the report records incomplete expectations in cases
+20, 25, 40 and 42. The
+[behavior record](eval-results/v0.6.0-behavior.json),
+[discovery record](eval-results/v0.6.0-trigger.json) and
+[evaluation report](reports/v0.6.0-evaluation.md) retain outputs, source hashes,
+word/character/line counts, exact commands and source-verification limits. Initial
+successful records remain in the [pre-review behavior](eval-results/v0.6.0-pre-review-behavior.json)
+and [discovery](eval-results/v0.6.0-pre-review-trigger.json) archives; initial network
+failures are also retained. These checks do not establish comparative
+performance gains or target-system runtime compatibility.
 
 Version 0.5.2 adds dated Anthropic evidence on second-model strategies (advisor and
 orchestrator) to `references/models/anthropic.md` and two vendor sources to

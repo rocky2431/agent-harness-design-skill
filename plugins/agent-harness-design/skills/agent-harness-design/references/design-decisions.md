@@ -160,21 +160,19 @@ portability through a hidden capability downgrade or a lowest-common-denominator
 
 Read [model-adaptation.md](model-adaptation.md) for target identification, protocol-valid
 baselines, model profiles and migration checks. The target system may use a different
-model from the one consulting this Skill. Re-test each compensation after an upgrade;
-stronger models do not make drift monotone or automatically retire verification.
+model from the one consulting this Skill. Re-test on upgrade, then retire compensations
+the new model no longer needs. Preserve the authority and evidence invariants.
 See [historical-cases.md](historical-cases.md) for bounded examples of changed scaffolds.
 
 ## Recommendation record
 
-For a material component, capture:
+For a material recommendation, a short paragraph or table is enough:
 
 | Field | Question |
 |---|---|
-| Level | Invariant, default, conditional pattern, or example? |
-| Consumer | What task or operator uses it? |
-| Evidence | Incident, eval, threat, regulation, scale, or host constraint? |
-| Boundary | Is this the narrowest authoritative place to enforce it? |
-| Benefit | Which observable measure should improve? |
-| Capability cost | Authorized success, tools, context, latency, coordination, false blocks? |
-| Recovery | How does the agent or operator continue after denial or failure? |
-| Exit | Which evidence or capability change removes or replaces it? |
+| Configuration | Which model, mode, endpoint, host and task? |
+| Proposed change | What changes and why? |
+| Evidence label | Documented, observed, vendor-reported or unverified? |
+| Smallest check | What would test this decision? |
+
+Add boundary, cost, recovery or retirement detail when it changes the decision.

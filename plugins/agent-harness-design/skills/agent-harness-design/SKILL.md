@@ -4,7 +4,7 @@ description: "Design, audit, or evaluate an AI agent's execution layer: model/to
 license: MIT
 metadata:
   author: rocky2431
-  version: "0.5.2"
+  version: "0.6.0"
 ---
 
 # Agent Harness Design
@@ -24,10 +24,10 @@ part of a mixed request. A short component question deserves a short component a
 
 | Request | Start here | Deliver |
 |---|---|---|
-| Design from scratch | [Architecture guide](references/architecture-guide.md): one model, one tool, then relevant components | Smallest sufficient shape, component contracts and a concrete verification path |
-| Review an existing system | Trace its actual loop; read the affected component references below | Specific defects or trade-offs, evidence, narrow fix and recovery implications |
-| Diagnose a failure | Actual request, tool result and stop events; [failure visibility](references/failure-visibility.md) | Distinguish instruction, context, protocol, resource, model and host causes before prescribing a fix |
-| Adapt or migrate a model | [Model adaptation](references/model-adaptation.md), then only the matching profile | Valid target configuration, protocol differences, conditional optimizations and unverified checks |
+| New design | [Architecture guide](references/architecture-guide.md) | Smallest sufficient shape, contracts and verification |
+| Review | Actual loop and affected components | Findings, evidence, narrow fix and recovery |
+| Diagnosis | Request, tool results, stop events; [failure visibility](references/failure-visibility.md) | Verified causes, hypotheses and a discriminating check |
+| Model migration | [Model adaptation](references/model-adaptation.md), then matching profile | Valid configuration, conditional changes and checks |
 
 Establish the outcome, evidence, environment, existing authority, task shape and material
 resource constraints from available artifacts. Ask only for missing facts that change
@@ -35,18 +35,20 @@ the answer. The model using this Skill is not necessarily the target system's mo
 Resolve the target model/version, provider endpoint, API/host, mode and task conditions
 before giving specific settings; do not silently substitute a nearby family or alias.
 
-## Keep scope and rule strength separate
+## Use distinctions when they help
 
 General component responsibilities, provider/host interface contracts, behavioral
-recommendations and historical examples answer different questions. Read
-[model-adaptation.md](references/model-adaptation.md) when those are being conflated.
+recommendations and historical examples answer different questions. Use
+[model-adaptation.md](references/model-adaptation.md) to untangle them.
 
-Independently distinguish:
+When claims are being conflated, distinguish scope from rule strength:
 
 - **Invariant**: a trust, authority or evidence property that must hold.
 - **Default**: a starting point replaceable by task evidence.
-- **Conditional pattern**: useful under named task, model, risk or host conditions.
-- **Example**: an illustration, not a mandatory architecture.
+- **Conditional pattern**: useful under named conditions.
+- **Example**: an illustration.
+
+These are thinking tools, not required answer headings or labels for every claim.
 
 General does not mean mandatory: short tasks may need no persistent store. Model-specific
 can still be required: a provider may require a particular tool/history protocol.
@@ -71,10 +73,10 @@ These are invariants unless a stronger enclosing policy supersedes them:
 - Keep a denial local to the disallowed effect: it must not remove unrelated
   capabilities, end useful reasoning, or block analysis, drafting, or a narrower proposal.
 - Do not silently downgrade the selected model, reasoning mode, authorized evidence
-  coverage, output budget, or tool surface, and never trade capability for backward
-  compatibility without a typed error naming the replacement. When a real boundary
-  forces a reduction, make it visible in band, in the artifact, and in the trace, and
-  preserve the useful work.
+  coverage, output budget, or tool surface. Compatibility must preserve truthful
+  capability claims. Make forced reductions visible in band to the model and in the
+  delivered artifact; record them in traces where operators monitor runs. Preserve
+  useful work and a clear recovery path.
 
 Read [failure-visibility.md](references/failure-visibility.md) whenever the design
 touches error handling, fallbacks, truncation, compaction, or completion claims.
@@ -88,8 +90,7 @@ Start with one model call for bounded work or a native tool loop for inspect/act
 Use durable state for recovery, a coded workflow for stable transitions, and multiple
 agents for useful decomposition, isolation or latency. None is a mandatory upgrade path.
 A preventive control is justified without an incident when a credible threat, obligation
-or task shape supports it. Name its consumer, protected property, capability tax, recovery
-path and retirement condition.
+or task shape supports it. Consider its protected property, capability tax and recovery.
 
 Use **capability-preserving determinism**: make authority, effects, evidence and recovery
 predictable while leaving room for interpretation, strategy and repair. Enforce at the
@@ -116,7 +117,7 @@ absence of completion does not by itself prove budget exhaustion.
   loading, retrieval, memory, compaction, pending work, ownership and parallelism.
 - [Failure visibility](references/failure-visibility.md): errors, unknown effects,
   truncation, fallbacks, typed stops and evidence-based completion.
-- [Model adaptation](references/model-adaptation.md): target selection and seven linked
+- [Model adaptation](references/model-adaptation.md): target selection and dated
   provider profiles. Read the matching profile, not every provider.
 - [Evaluation and observability](references/evaluation-and-observability.md): real
   outcomes, protocol checks, behavioral comparisons, costs and false blocks.
@@ -125,22 +126,20 @@ absence of completion does not by itself prove budget exhaustion.
 
 ## Verify and deliver at the requested depth
 
-For a direct question, give the decision, reason and relevant qualification. For a full
-design, explain outcome/evidence, component responsibilities and interfaces, authority,
-failure/recovery, alternatives and a verification plan. For an audit, lead with findings;
-for diagnosis, distinguish verified causes from hypotheses. Avoid forcing a full template.
+Answer at the requested depth: decision and reason for a direct question; component
+contracts, authority, recovery and verification for a design; findings for an audit;
+verified causes versus hypotheses for diagnosis. Use only the structure that helps.
 
-Separate documented protocol requirements, locally observed behavior, vendor-reported
-benefits, inference and unknowns. For specific model/API claims, cite the primary source
+Label evidence where it changes a decision: documented requirements, local observations,
+vendor claims, inference or unknowns. For specific model/API claims, cite the primary source
 and its checked date in the answer; a local profile read is not a user-visible citation.
 State when target-system behavior remains untested. Verify changing interface facts
 before adoption.
-Compare the candidate with the current or simpler legal baseline at comparable resources;
-never score an invalid protocol baseline as a behavioral improvement. Repeat stochastic
-trials, inspect outcomes and costs, and report which model-harness configuration ran.
-Skill-answer quality does not prove the target system's runtime behavior.
+Compare legal baselines at comparable resources. Never score an invalid protocol
+baseline as a behavioral improvement. Repeat stochastic trials and report outcomes,
+costs and configuration. Skill-answer quality does not prove target-system behavior.
 
-Each compensation encodes an assumption: Re-test on upgrade; do not remove on upgrade.
-Drift is not monotone: the same change may help one model and hurt another.
-Change the smallest implicated surface, test relevant regressions and retain useful
-historical evidence. No hidden chain-of-thought is required for evaluation.
+Re-test on upgrade, then retire compensations the new model no longer needs; record
+the reason in [historical cases](references/historical-cases.md). Drift is not monotone:
+the same change may help one model and hurt another. Test relevant regressions and
+retain useful evidence. No hidden chain-of-thought is required for evaluation.

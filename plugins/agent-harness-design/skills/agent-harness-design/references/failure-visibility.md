@@ -56,23 +56,19 @@ This is the most dangerous category because the justification is legitimate.
 
 **Compatibility may preserve an interface. It must not preserve a capability claim.**
 
-When a new path cannot do what the old one did, the correct move is a typed hard error
-naming the replacement, at the earliest boundary that can detect it — configuration
-parse time is better than request time, which is better than mid-run. Removing a
-transport, a protocol, or a feature outright and refusing the old value with a migration
-message is a better outcome than accepting the old value and quietly losing the
-capability behind it.
+When compatibility changes capability, explain the change and available recovery at
+the boundary that detects it. Reject an unsupported request or use an authorized,
+visible alternative; preserve useful work and truthful outcome claims.
 
 An inert legacy field is acceptable when it is documented as removed and provably does
 nothing. The defect is never that a field was kept; it is that the field still appears
 to work.
 
-Apply the same rule to serialized state and resumption: a checkpoint outside the
-supported window should refuse to resume rather than resume degraded.
+For serialized state, use a supported migration or explain why resumption is unavailable.
 
 ## What "loud" means
 
-Degradation must be visible on three surfaces. Any one alone is insufficient.
+Degradation must be visible to the model and the recipient:
 
 1. **In band, to the model.** It must appear in the transcript the model reasons over,
    so the model can adapt: re-plan, re-fetch, checkpoint, hand back, or narrow scope. A
@@ -81,7 +77,9 @@ Degradation must be visible on three surfaces. Any one alone is insufficient.
    believes is complete.
 2. **In the delivered artifact.** The person receiving the result must be able to see
    that it was produced under reduced capability, without reading logs.
-3. **In the trace.** An operator must be able to locate and count occurrences later.
+
+Where operators monitor runs, also record degradation in the trace so they can locate
+and count occurrences. A one-shot task does not need a new tracing system for this.
 
 A log line satisfies none of the first two. Logging is not loudness.
 

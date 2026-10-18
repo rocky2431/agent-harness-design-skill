@@ -99,11 +99,15 @@ class PackageSurfaceTests(unittest.TestCase):
         self.assertIn("multiple agents", " ".join(skill.split()))
         self.assertIn("without an incident", skill)
         self.assertIn("## Keep activation scoped", skill)
-        self.assertIn("backward\n  compatibility", skill)
-        self.assertIn("in band, in the artifact, and in the trace", skill)
+        self.assertIn("Compatibility must preserve truthful", skill)
+        self.assertIn("in band to the model and in the", skill)
+        self.assertIn("delivered artifact", skill)
+        self.assertIn("traces where operators monitor runs", skill)
         self.assertIn("Separate authority gates from resource governors", skill)
         self.assertIn("soft in-band tier before a hard resource ceiling", skill)
-        self.assertIn("Re-test on upgrade; do not remove on upgrade", skill)
+        self.assertIn("Re-test on upgrade, then retire compensations", skill)
+        self.assertNotIn("do not remove on upgrade", skill)
+        self.assertIn("not required answer headings", skill)
         for reference in (
             "references/harness-vs-software.md",
             "references/failure-visibility.md",

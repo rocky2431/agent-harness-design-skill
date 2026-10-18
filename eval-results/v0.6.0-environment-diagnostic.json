@@ -1,0 +1,10 @@
+{
+  "status": "error",
+  "usage": {},
+  "completed_skill_commands": [],
+  "error": "codex_process_error",
+  "returncode": 1,
+  "duration_seconds": 16.221,
+  "stdout": "{\"type\":\"thread.started\",\"thread_id\":\"01a14fc6-a5f3-7d03-8d87-9983bae01a66\"}\n{\"type\":\"turn.started\"}\n{\"type\":\"error\",\"message\":\"Reconnecting... 2/5 (workspace routing discovery failed)\"}\n{\"type\":\"error\",\"message\":\"Reconnecting... 3/5 (workspace routing discovery failed)\"}\n{\"type\":\"error\",\"message\":\"Reconnecting... 4/5 (workspace routing discovery failed)\"}\n{\"type\":\"error\",\"message\":\"Reconnecting... 5/5 (workspace routing discovery failed)\"}\n{\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"error\",\"message\":\"Falling back from WebSockets to HTTPS transport. workspace routing discovery failed\"}}\n{\"type\":\"error\",\"message\":\"Reconnecting... 1/5 (workspace routing discovery failed)\"}\n{\"type\":\"error\",\"message\":\"Reconnecting... 2/5 (workspace routing discovery failed)\"}\n{\"type\":\"error\",\"message\":\"Reconnecting... 3/5 (workspace routing discovery failed)\"}\n{\"type\":\"error\",\"message\":\"Reconnecting... 4/5 (workspace routing discovery failed)\"}\n{\"type\":\"error\",\"message\":\"Reconnecting... 5/5 (workspace routing discovery failed)\"}\n{\"type\":\"error\",\"message\":\"workspace routing discovery failed\"}\n{\"type\":\"turn.failed\",\"error\":{\"message\":\"workspace routing discovery failed\"}}\n",
+  "stderr": "Reading additional input from stdin...\n2026-10-18T16:09:44.081325Z ERROR codex_models_manager::manager: failed to refresh available models: Connection failed: error sending request\n2026-10-18T16:09:44.199704Z ERROR codex_models_manager::manager: failed to refresh available models: Connection failed: error sending request\n"
+}

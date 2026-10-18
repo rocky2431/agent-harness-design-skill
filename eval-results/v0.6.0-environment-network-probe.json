@@ -1,0 +1,13 @@
+{
+  "status": "ok",
+  "usage": {
+    "input_tokens": 13080,
+    "cached_input_tokens": 11392,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 5,
+    "reasoning_output_tokens": 0
+  },
+  "completed_skill_commands": [],
+  "final_output": "OK",
+  "duration_seconds": 10.995
+}

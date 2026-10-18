@@ -1,0 +1,85 @@
+{
+  "completed_at": "2026-10-18T16:07:32.501002+00:00",
+  "configuration": {
+    "cases_sha256": "7b7fecf0fbec2fea7ec891e8d4b99e2e760bd0958c7e9a3c041dd52d7c01091d",
+    "host": "codex",
+    "host_cli": "codex-cli 0.159.3",
+    "model": "gpt-6.1-sol",
+    "probe_discovery": "codex implicit discovery; probe Skills installed at .agents/skills inside a fresh home",
+    "probe_skills": [
+      "agent-delegation",
+      "agent-harness-design",
+      "task-state-with-files"
+    ],
+    "reasoning": "low",
+    "selected_cases": [
+      "positive_harness_authority_and_tools",
+      "negative_ordinary_code_review"
+    ],
+    "skill_name": "agent-harness-design",
+    "skill_source_sha256": "c090533fe927c43a61484104dc82aa0bb71271651cf602be432c26bb0df91cdd",
+    "timeout_seconds": 300,
+    "trials": 1,
+    "workers": 2
+  },
+  "measurement_notes": [
+    "Selection is measured through marker instructions present only in loaded probe Skills.",
+    "This tests codex implicit discovery and instruction following together; it is not a keyword simulation.",
+    "Each run uses a fresh temporary HOME, CODEX_HOME, workspace, and ephemeral Codex session with plugins, memories, hooks, and apps disabled and a read-only sandbox.",
+    "Completed commands referencing the explicit Skill copy are retained without outputs; they show requested reads, not attention or comprehension."
+  ],
+  "mode": "trigger",
+  "runs": [
+    {
+      "accepted_skill_sets": [
+        [
+          "agent-harness-design"
+        ]
+      ],
+      "case": "positive_harness_authority_and_tools",
+      "case_id": 1,
+      "completed_skill_commands": [],
+      "duration_seconds": 15.066,
+      "error": "codex_process_error",
+      "kind": "positive",
+      "observed_skills": [],
+      "passed": false,
+      "returncode": 1,
+      "status": "error",
+      "trial": 1,
+      "usage": {}
+    },
+    {
+      "accepted_skill_sets": [
+        []
+      ],
+      "case": "negative_ordinary_code_review",
+      "case_id": 7,
+      "completed_skill_commands": [],
+      "duration_seconds": 15.851,
+      "error": "codex_process_error",
+      "kind": "negative",
+      "observed_skills": [],
+      "passed": false,
+      "returncode": 1,
+      "status": "error",
+      "trial": 1,
+      "usage": {}
+    }
+  ],
+  "schema_version": 1,
+  "started_at": "2026-10-18T16:07:16.575113+00:00",
+  "stop_reason": null,
+  "summary": {
+    "negative": {
+      "accuracy": 0.0,
+      "completed_runs": 1,
+      "passed_runs": 0
+    },
+    "positive": {
+      "accuracy": 0.0,
+      "completed_runs": 1,
+      "passed_runs": 0
+    }
+  }
+}

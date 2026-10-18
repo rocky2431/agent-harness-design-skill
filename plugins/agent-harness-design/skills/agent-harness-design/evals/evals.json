@@ -124,13 +124,13 @@
       "id": 20,
       "name": "success_shaped_fallback_is_a_defect",
       "prompt": "Our tool wrapper catches every exception and returns \"An error occurred, please try again\" as an ordinary tool result. It logs the error and increments no counter. The agent kept working and eventually hit the turn limit. Is this acceptable error handling?",
-      "expected_output": "Identifies a success-shaped fallback that merges distinct failure meanings and hides a broken tool behind a turn-limit symptom; requires typed failure kinds, a failure counter with escalation, and the failure surfaced in band, in the artifact, and in the trace rather than only in a log."
+      "expected_output": "Identifies a success-shaped fallback that merges failure meanings and hides a broken tool behind a turn-limit symptom; returns distinct actionable failure kinds (denied, failed, timed out, cancelled, blocked by policy, unavailable, retryable and unknown), with distinct wording and timeout explicit. Exposes failure in band to the model and in the delivered artifact, records it in traces where operators monitor runs, and considers failure escalation appropriate to the repeated error."
     },
     {
       "id": 21,
       "name": "compatibility_must_not_hide_capability_loss",
       "prompt": "Our new provider path cannot carry reasoning items. To avoid breaking existing configs we keep accepting the old wire format option and quietly route it through the reduced path. Is preserving backward compatibility the right call here?",
-      "expected_output": "Rejects the silent fallback because compatibility may preserve an interface but not a capability claim; requires a typed error at the earliest detection point naming the replacement, and notes that an inert documented legacy field is acceptable only when it provably does nothing."
+      "expected_output": "Rejects the silent fallback: compatibility must preserve truthful capability claims. Rejects unsupported requests or uses an authorized visible alternative, explains lost capability and recovery at the detecting boundary, and preserves useful work. A typed replacement error is one implementation, not universally required."
     },
     {
       "id": 22,
@@ -154,7 +154,7 @@
       "id": 25,
       "name": "retest_scaffolding_rather_than_remove_it",
       "prompt": "We are upgrading to a newer model. Our harness has prompts that force interim status updates, a context reset for premature stopping, and a separate verifier pass. Best practice says smarter models need less scaffolding, so should we delete all three?",
-      "expected_output": "Frames each component as an assumption about what the model cannot do alone that must be re-tested rather than deleted on faith; requires removing one component at a time with measurement, warns that drift is not monotone and the same change can help one model and hurt another, and asks which regime the new model is in before keeping anti-premature-stopping scaffolding."
+      "expected_output": "Treats the upgrade as a prompt to re-test each model compensation, then retire instructions and scaffolds the new model no longer needs, recording the reason in historical cases. Removes one at a time and measures with valid matched checks rather than deleting all three on faith. Asks which regime the new model exhibits: premature stopping or excessive persistence, since controls for one may harm the other. Preserves authority and environment-evidence invariants. Drift is not monotone."
     },
     {
       "id": 26,
@@ -213,8 +213,8 @@
     {
       "id": 35,
       "name": "claude_history_binding_conditions",
-      "prompt": "For Claude Fable 5.1, our account was created September 1, 2026. Our client rewrites the system prompt and summarizes earlier turns in place, while replaying old thinking blocks. What must change? Is drop_block a quality optimization?",
-      "expected_output": "Uses applicable post-August-31 history-binding condition, preserves exact prefix or supported native updates/compaction, can fresh-start without old bound blocks; beta drop_block is explicit state discard with header/conditions, not proven quality improvement or silent fallback."
+      "prompt": "Our Claude API account was created September 1, 2026. We use Fable 5.1, Opus 5.5, Sonnet 5.5 and Haiku 5.5. Our client rewrites the system prompt and summarizes earlier turns in place, while replaying old thinking blocks. Does prefix binding apply only to Fable? What must change? Is drop_block a quality optimization?",
+      "expected_output": "Applies default prefix binding to all four named models for accounts created on/after August 31, 2026; incompatible replay returns 400 unless explicit mismatch controls drop state. Preserves exact prefix or supported native updates/compaction, can fresh-start without old bound blocks; beta drop_block is explicit state discard with header/conditions and visible input_transformations, not proven quality improvement or silent fallback."
     },
     {
       "id": 36,
@@ -227,6 +227,36 @@
       "name": "single_component_tool_contract",
       "prompt": "In an agent harness, what should a document-search tool return so the model can use it? Please keep it focused on this component.",
       "expected_output": "Gives source identifiers, relevant passage context, scope/provenance, truthful empty/error/timeout states and retrievable oversized evidence with usable next action; avoids full architecture process or irrelevant model profiles."
+    },
+    {
+      "id": 38,
+      "name": "opus55_effort_and_redundant_verification",
+      "prompt": "We are moving our Claude Code agent from Opus 5 to Opus 5.5. We disable thinking, use high effort, force a separate verifier on every edit, and want shorter replies. What should we change? Keep the recommendation practical.",
+      "expected_output": "Uses the Anthropic profile: Opus 5.5 thinking is always on, start at medium and measure; remove generic redundant verification instructions/scaffolds per the Opus guide while preserving required task checks and environment evidence. Effort controls thinking, so request concise visible replies directly. Gives official sources/date and does not claim local runtime benefit."
+    },
+    {
+      "id": 39,
+      "name": "codex_ultra_and_approval_review",
+      "prompt": "Our Codex CLI uses GPT-6.1 Sol. To improve every tiny edit we plan to set ultra and use codex-auto-review as our code reviewer. Is that a sensible configuration? Name the relevant fan-out controls.",
+      "expected_output": "Explains Ultra parallel subagents and task-dependent effort, not a guaranteed improvement; names agents.max_concurrent_threads_per_session, agents.default_subagent_model and features.multi_agent. Separates sandbox-approval auto-review from /review or codex review. If mentioning codex exec review, labels support as local Codex CLI 0.159.3 exec --help evidence rather than direct official-page documentation. Cites current official sources and qualifies untested local effects."
+    },
+    {
+      "id": 40,
+      "name": "grok_build_denial_and_os_boundary",
+      "prompt": "In Grok Build on macOS, we run Grok 4.7 headlessly with --permission-mode dontAsk and --sandbox strict. The process finished but a needed shell command had no allow rule. Does that prove the job succeeded and child networking was blocked? A teammate also says explore/plan subagents are guaranteed shell-free. Is that safe to assume?",
+      "expected_output": "Uses xAI profile: dontAsk silently denies calls lacking explicit allow rules; process finish is not success evidence. Child-network blocking is Linux-only and a no-op on macOS. Deny beats allow; permission and sandbox are separate. Records conflict between the official subagents page (no shell or edits) and Grok Build user guide (shell, no edits); treats explore/plan as possibly shell-capable with no edits, verifies deployed tools and gates shell effects. Surface limitations to model and artifact, verify actual outcome, cite both official sources, and do not claim a local runtime trial."
+    },
+    {
+      "id": 41,
+      "name": "focused_answer_without_classification_tax",
+      "prompt": "For a one-shot read-only document-search agent, what should we do when search returns a truncated passage? Please answer in one short paragraph. There is no operator monitoring service.",
+      "expected_output": "Gives focused practical guidance in one short paragraph: mark truncation in band, preserve source/full-content retrieval handle, fetch missing evidence where needed and disclose coverage limits in the delivered artifact. Does not impose a tracing system, classification headings or a long recommendation record."
+    },
+    {
+      "id": 42,
+      "name": "claude_family_verification_is_model_specific",
+      "prompt": "Opus 5 verifies without prompting, so can we remove all verification instructions for Sonnet 5.5 and Haiku 5.5 too? We use low effort in Claude Code and sometimes no real check runs.",
+      "expected_output": "Does not generalize the Opus removal recommendation to Sonnet/Haiku. Their guides identify skipped verification at low effort (Haiku also medium) and support targeted instructions when this occurs. Distinguishes Claude Code medium defaults from Sonnet API high, keeps real environment checks, and proposes a small exact-model trial without claiming local benefits."
     }
   ]
 }
