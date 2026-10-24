@@ -17,7 +17,7 @@ portable Agent Skill. It does not include an MCP server, hook, daemon, model
 router, or custom agent runtime. Use it when the agent system itself is the
 subject. Ordinary coding, writing, task tracking, and delegation do not need it.
 
-Version: 0.6.0. The installer and evaluation runner use the Python standard
+Version: 0.6.1. The installer and evaluation runner use the Python standard
 library. CI tests them with Python 3.12.
 
 - [Install and start](#install-and-start)
@@ -38,7 +38,7 @@ library. CI tests them with Python 3.12.
 From GitHub:
 
 ```bash
-codex plugin marketplace add rocky2431/agent-harness-design-skill --ref v0.6.0
+codex plugin marketplace add rocky2431/agent-harness-design-skill --ref v0.6.1
 codex plugin add agent-harness-design@rocky-agent-harness-design
 ```
 
@@ -265,6 +265,17 @@ cannot enforce one by itself. The implementation under review must provide the
 mechanism, and completion still needs evidence from the relevant environment.
 
 ## Evaluation
+
+Version 0.6.1 adds working-record guidance: a short current-state view apart from
+append-only history, recovery of that view plus a path within dated host hook caps, and
+observers that report and keep recoverable copies instead of write gates, with the
+2026-10-23 incident recorded in historical cases. The same 0.6.0 smoke configuration
+answered all 21 behavior cases and both discovery checks; none of those cases exercises
+the new rule, so its effect on answers is unmeasured. See the
+[behavior record](eval-results/v0.6.1-behavior.json),
+[discovery record](eval-results/v0.6.1-trigger.json) and
+[evaluation report](reports/v0.6.1-evaluation.md); a run on a source with stale
+metadata is retained as `eval-results/v0.6.1-pre-metadata-*.json`.
 
 Version 0.6.0 refreshes Claude, OpenAI and xAI profiles, retires obsolete model
 compensations after upgrade checks, and makes classification and record formats

@@ -4,7 +4,7 @@ description: "Design, audit, or evaluate an AI agent's execution layer: model/to
 license: MIT
 metadata:
   author: rocky2431
-  version: "0.6.0"
+  version: "0.6.1"
 ---
 
 # Agent Harness Design
@@ -96,7 +96,10 @@ Use **capability-preserving determinism**: make authority, effects, evidence and
 predictable while leaving room for interpretation, strategy and repair. Enforce at the
 narrowest trusted boundary. Broad sandboxed tools and parallel isolated writes can be
 appropriate; serialize real dependencies. A validated semantic evaluator can advise,
-route or gate according to its errors, stakes and repair path.
+route or gate according to its errors, stakes and repair path. For durable working
+state, keep a short current-state view apart from append-only history, deliver that
+view plus a path at recovery within host output caps, and protect agent-written records
+with observers that report and keep recoverable copies rather than write gates.
 
 Separate authority gates from resource governors and semantic prescriptions. Default to
 a soft in-band tier before a hard resource ceiling when the runtime can provide warning;

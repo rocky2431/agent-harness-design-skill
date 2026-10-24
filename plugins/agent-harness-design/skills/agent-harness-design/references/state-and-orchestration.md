@@ -89,6 +89,22 @@ Distinguish:
 Store exact values that must survive. Summaries should preserve uncertainty and point
 to canonical artifacts rather than silently rewriting facts.
 
+An agent-written working record works best as two parts: a short current-state view
+holding only what is true now, rewritten in place, and append-only history explaining
+why it changed. History then reads as past events rather than standing rules; a
+historical note read as a standing prohibition after re-authorization is reported in
+[claude-code#71525](https://github.com/anthropics/claude-code/issues/71525) (2026-06-26,
+user report). Let the agent keep editing the record with its ordinary tools, and protect
+it with an observer that reports broken structure or rewritten history after edits and
+keeps recoverable copies; a mandatory write tool narrows a general capability, and a
+gate that blocks edits invites working around it. Observed 2026-10-23 (Claude Code,
+Opus 5.5, auto mode): an agent rewrote a free-form record eight times with generated
+string replacements without re-reading it; stale and duplicated statements accumulated
+and an empty-string replace inserted one paragraph 7,577 times, unnoticed for two hours
+with no copy to restore. A heuristic count over that user's sessions found generated
+scripts (~261) outnumbering exact-match edits (~226) on task records. Local evidence,
+not a general rate.
+
 ## Compaction and recovery
 
 Compact when context pressure or cost justifies it. Preserve the objective, authority
@@ -99,6 +115,20 @@ written intent may be stale and never authorizes automatic continuation.
 Prefer host-native lifecycle support when it reliably reaches the next model request.
 A custom recovery adapter is justified when a real lifecycle gap exists and the
 adapter can remain bounded, inspectable, and non-blocking.
+
+Deliver a bounded current-state view plus the path to the full record, not a whole
+growing document: hosts degrade oversized hook output silently. Checked 2026-10-23:
+Claude Code caps a hook context string at 10,000 characters and otherwise passes a
+path with a 2,000-character preview without asking the model to read it
+([hooks](https://code.claude.com/docs/en/hooks)); Codex defaults to about 2,500 tokens
+per hook output, configurable per handler ([hooks](https://learn.chatgpt.com/docs/hooks));
+Grok clips at 10,000 characters and accepts context only from tool and stop hooks. A
+pointer alone is weaker than delivered content: in one vendor eval, documentation
+available only on demand went unused in 56% of cases while an always-loaded index
+passed every case ([Vercel, 2026-01-27](https://vercel.com/blog/agents-md-outperforms-skills-in-our-agent-evals);
+one Next.js suite, transfer by analogy). Recovery text should navigate, not instruct: a
+re-injected resume instruction kept one harness looping for about 25 hours (Ultra
+Builder Pro V027 incident, local report).
 
 Native continuation, provider compaction and a fresh consolidated handoff have different
 state contracts. Preserve provider reasoning state only in a valid history; a summary

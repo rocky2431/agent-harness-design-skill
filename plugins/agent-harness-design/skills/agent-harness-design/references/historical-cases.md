@@ -50,6 +50,25 @@ helped untangle claims but became a formatting tax. Use distinctions on demand a
 The former universal three-surface rule now requires model/recipient visibility plus traces where
 operators monitor runs. Typed replacement errors remain one honest compatibility path, not the only one.
 
+## Working-record design, 2026-10-23
+
+- **Case:** a free-form task record kept by a Claude Code agent (Opus 5.5, auto mode)
+  through generated string-replacement scripts accumulated stale and duplicated state,
+  then was corrupted by an empty-string replace; no check or copy existed.
+- **Replaced:** whole-record recovery injection up to 8,000 characters, and three
+  free-form sections edited "locally". Task State 0.7.0 uses a current-state block plus
+  append-only history, a post-edit observer that reports once and keeps three passing
+  copies, and block-only recovery.
+- **Rejected on the owner's principle that mechanical enforcement hinders model
+  capability:** a mandatory record-write command, size rejection, version tokens and
+  fixed entry types. The Ultra Builder Pro rule "Sensors not Blockers" (a gate that can
+  be escaped by damaging the work is worse than no gate) applied directly.
+- **Evidence limits:** one user's sessions; replay of the incident and two independent
+  reviews; live Claude Code checks on 2026-10-24 (startup and compaction delivery, one
+  post-edit report, silence on a normal edit). Codex, zCode, Grok and Kimi delivery of
+  the post-edit report is unverified. Staleness of a statement remains a semantic
+  judgment no observer makes.
+
 ## Maintain guidance
 
 When a release, protocol change, real failure or credible study changes an assumption:

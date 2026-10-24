@@ -1,0 +1,97 @@
+{
+  "completed_at": "2026-10-24T07:16:10.477716+00:00",
+  "configuration": {
+    "cases_sha256": "7b7fecf0fbec2fea7ec891e8d4b99e2e760bd0958c7e9a3c041dd52d7c01091d",
+    "host": "codex",
+    "host_cli": "codex-cli 0.159.3",
+    "model": "gpt-6.1-sol",
+    "probe_discovery": "codex implicit discovery; probe Skills installed at .agents/skills inside a fresh home",
+    "probe_skills": [
+      "agent-delegation",
+      "agent-harness-design",
+      "task-state-with-files"
+    ],
+    "reasoning": "low",
+    "selected_cases": [
+      "positive_harness_authority_and_tools",
+      "negative_ordinary_code_review"
+    ],
+    "skill_name": "agent-harness-design",
+    "skill_source_sha256": "f78fe9f898584085bd84e0138989f2077df2754bfee88db72bdb67a1443b5b2d",
+    "timeout_seconds": 300,
+    "trials": 1,
+    "workers": 2
+  },
+  "measurement_notes": [
+    "Selection is measured through marker instructions present only in loaded probe Skills.",
+    "This tests codex implicit discovery and instruction following together; it is not a keyword simulation.",
+    "Each run uses a fresh temporary HOME, CODEX_HOME, workspace, and ephemeral Codex session with plugins, memories, hooks, and apps disabled and a read-only sandbox.",
+    "Completed commands referencing the explicit Skill copy are retained without outputs; they show requested reads, not attention or comprehension."
+  ],
+  "mode": "trigger",
+  "runs": [
+    {
+      "accepted_skill_sets": [
+        [
+          "agent-harness-design"
+        ]
+      ],
+      "case": "positive_harness_authority_and_tools",
+      "case_id": 1,
+      "completed_skill_commands": [],
+      "duration_seconds": 40.233,
+      "final_output": "Let the model investigate tickets and recommend refunds. Let the execution layer decide whether a refund is authorized and enforce the actual payment operation.\n\n```text\nTicket → Model investigation → Refund proposal → Policy gate\n                                                  ├─ Eligible for automatic issue\n                                                  ├─ Requires human approval\n                                                  └─ Denied\n                                                           ↓\n                                               Refund execution service\n                                                           ↓\n                                                Receipt → Ticket update\n```\n\n**Model loop**\n\nThe model reads the ticket, retrieves relevant order and payment records, consults the applicable refund policy, and produces a structured proposal. It can ask for missing information and explain its recommendation.\n\nTicket text and attachments are untrusted evidence: instructions inside them cannot change permissions, policy, or approval requirements. Limit tool calls, retries, and elapsed time; escalate when evidence is missing or contradictory.\n\n**Tool schemas**\n\nExpose narrow operations with explicit inputs and structured results:\n\n| Tool | Purpose and constraints |\n|---|---|\n| `get_ticket(ticket_id)` | Read an authorized ticket; return a version identifier. |\n| `get_order(order_id)` | Return ownership, charges, currency, and refundable balance. |\n| `get_refund_policy(order_id)` | Retrieve the trusted policy and its version. |\n| `propose_refund(order_id, amount_minor, currency, reason_code, evidence_refs)` | Store an immutable proposal; moves no money. |\n| `evaluate_refund(proposal_id)` | Return `auto_authorized`, `requires_approval`, or `denied`, with policy reasons. |\n| `execute_refund(proposal_id, authorization_id)` | Execute precisely the authorized proposal; return a durable status and receipt. |\n\nUse integer minor currency units, validated identifiers, enumerated reason codes, and size limits. Resolve tenant identity and user permissions from authenticated execution context. Do not accept model-supplied claims such as `approved: true`, arbitrary payment destinations, or replacement policy text.\n\n**Permissions**\n\nSeparate read access, proposal creation, approval, and payment execution.\n\n- The agent can read only tickets and records within its assigned scope.\n- The model can create proposals but cannot grant itself refund authority.\n- A deterministic policy service grants automatic authorization within configured limits.\n- Human approvers have scoped roles and approval limits.\n- Only the execution service holds payment credentials.\n\nCheck customer–order relationships, remaining refundable balance, previous refunds, and cumulative limits on the server. A series of small refunds must not bypass a larger-refund approval requirement.\n\n**Approval boundary**\n\nPlace the gate immediately before the financial side effect. Automatic refunds require an explicit business policy—for example, eligible refund reasons, sufficient evidence, a configured amount ceiling, and no conflicting prior refund.\n\nHuman approval should display the customer, order, amount, currency, evidence, policy result, and exceptions. Bind approval to an immutable proposal containing those details, plus an expiry and policy version. Changing the amount or order requires a new authorization.\n\nAt execution, recheck permissions, authorization validity, and current refundable balance atomically where possible. Treat a customer notification as a separate effect with its own authorization; refund approval need not authorize arbitrary outbound messages.\n\n**Recovery and audit**\n\nPersist workflow state outside the model’s conversation:\n\n`investigating → proposed → awaiting_approval / authorized / denied → executing → succeeded / failed / unknown`\n\nUse a stable idempotency key for each authorized refund. If a payment request times out, query or reconcile its status before attempting another operation. Never infer failure from a timeout or success from the model’s text.\n\nRecord evidence references, proposal contents, policy decisions, approver identity, execution attempts, and provider receipts. Resume from this durable state after a crash, and report a refund as completed only after confirmed execution.\n\nThe central invariant is: **every money-moving operation must match a valid authorization for that exact refund, enforced independently of the model.**\n\n<probe:agent-harness-design>",
+      "kind": "positive",
+      "observed_skills": [
+        "agent-harness-design"
+      ],
+      "passed": true,
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 13184,
+        "input_tokens": 26986,
+        "output_tokens": 897,
+        "reasoning_output_tokens": 0
+      }
+    },
+    {
+      "accepted_skill_sets": [
+        []
+      ],
+      "case": "negative_ordinary_code_review",
+      "case_id": 7,
+      "completed_skill_commands": [],
+      "duration_seconds": 17.434,
+      "final_output": "Concatenating raw user input into a SQL `WHERE name` clause creates a **SQL injection vulnerability**. An attacker can supply text that changes the query’s meaning, potentially exposing or modifying data.\n\nVulnerable:\n```js\nconst sql = \"SELECT * FROM users WHERE name = '\" + name + \"'\";\n```\n\nUse a parameterized query so input is treated as data. For example, with PostgreSQL’s `pg` driver:\n\n```js\nconst result = await client.query(\n  'SELECT * FROM users WHERE name = $1',\n  [name]\n);\n```\n\nPlaceholder syntax depends on the database driver; some use `?`. Input validation can enforce application rules, but it does not replace parameterization.",
+      "kind": "negative",
+      "observed_skills": [],
+      "passed": true,
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 0,
+        "input_tokens": 13321,
+        "output_tokens": 150,
+        "reasoning_output_tokens": 0
+      }
+    }
+  ],
+  "schema_version": 1,
+  "started_at": "2026-10-24T07:15:30.087717+00:00",
+  "stop_reason": null,
+  "summary": {
+    "negative": {
+      "accuracy": 1.0,
+      "completed_runs": 1,
+      "passed_runs": 1
+    },
+    "positive": {
+      "accuracy": 1.0,
+      "completed_runs": 1,
+      "passed_runs": 1
+    }
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "completed_at": "2026-10-24T07:07:02.817757+00:00",
+  "configuration": {
+    "cases_sha256": "7b7fecf0fbec2fea7ec891e8d4b99e2e760bd0958c7e9a3c041dd52d7c01091d",
+    "host": "codex",
+    "host_cli": "codex-cli 0.159.3",
+    "model": "gpt-6.1-sol",
+    "probe_discovery": "codex implicit discovery; probe Skills installed at .agents/skills inside a fresh home",
+    "probe_skills": [
+      "agent-delegation",
+      "agent-harness-design",
+      "task-state-with-files"
+    ],
+    "reasoning": "low",
+    "selected_cases": [
+      "positive_harness_authority_and_tools",
+      "negative_ordinary_code_review"
+    ],
+    "skill_name": "agent-harness-design",
+    "skill_source_sha256": "f3ab2ae103adff32788ef08217c82b379725fa85def990cb33553ce30ae282c5",
+    "timeout_seconds": 300,
+    "trials": 1,
+    "workers": 2
+  },
+  "measurement_notes": [
+    "Selection is measured through marker instructions present only in loaded probe Skills.",
+    "This tests codex implicit discovery and instruction following together; it is not a keyword simulation.",
+    "Each run uses a fresh temporary HOME, CODEX_HOME, workspace, and ephemeral Codex session with plugins, memories, hooks, and apps disabled and a read-only sandbox.",
+    "Completed commands referencing the explicit Skill copy are retained without outputs; they show requested reads, not attention or comprehension."
+  ],
+  "mode": "trigger",
+  "runs": [
+    {
+      "accepted_skill_sets": [
+        [
+          "agent-harness-design"
+        ]
+      ],
+      "case": "positive_harness_authority_and_tools",
+      "case_id": 1,
+      "completed_skill_commands": [],
+      "duration_seconds": 44.807,
+      "final_output": "Use the model to interpret the ticket and propose a resolution. Let the execution layer decide whether that resolution is authorized and carry it out.\n\n### Model loop\n\nThe model should:\n\n1. Read the ticket and retrieve relevant order, payment, and refund history.\n2. Identify the customer’s request and missing evidence.\n3. Propose a refund with an amount, reason, and references to supporting records.\n4. Receive the policy decision: execute automatically, request human approval, or decline.\n5. Explain the verified outcome to the customer.\n\nTreat ticket text and attachments as untrusted data. They cannot grant permissions, change refund policy, or count as approval. Bound the loop by tool-call, time, and cost budgets; escalate unresolved cases.\n\n### Tool schemas\n\nExpose narrow business operations rather than arbitrary HTTP, SQL, or payment-provider access.\n\n| Tool | Purpose and constraints |\n|---|---|\n| `get_ticket(ticket_id)` | Returns ticket content within the assigned tenant and queue. |\n| `get_refund_context(ticket_id)` | Resolves the linked order, captured payment, prior refunds, and relevant policy facts server-side. |\n| `propose_refund(ticket_id, amount_minor, currency, reason_code, evidence_refs)` | Creates an immutable proposal; returns its ID, policy decision, and required approval. No money moves. |\n| `request_refund_approval(proposal_id)` | Creates a review item through the authorized approval service. |\n| `execute_refund(proposal_id)` | Executes only an eligible, current proposal with valid authorization. Accepts no replacement amount or destination. |\n| `get_refund_status(proposal_id)` | Reconciles pending or uncertain outcomes. |\n\nValidate inputs in code. Use integer minor units, enumerated reason codes, and server-resolved payment destinations. Tool results should return structured statuses and typed errors, including whether a retry is safe.\n\n### Permissions\n\nGive the model no payment credentials. A separate refund service holds narrowly scoped credentials and enforces:\n\n- Tenant, ticket, order, and payment ownership.\n- Refund eligibility and remaining refundable balance.\n- Per-refund, cumulative customer/order, and aggregate spending limits.\n- Refunds to the original payment method.\n- Current policy version and any required approval.\n\nSeparate read, propose, approve, and execute capabilities. The model cannot approve its own proposal or supply a trusted `approved: true` field. Human approval comes from an authenticated reviewer with the appropriate scope.\n\n### Approval boundary\n\nPlace the boundary immediately before the financial effect, enforced by the refund service on **every** execution path.\n\nAutomatically execute only when deterministic policy checks establish eligibility, evidence is sufficient, and all limits pass. Require human approval for exceptions, ambiguous evidence, larger amounts, or flagged cases. Model confidence alone never authorizes spending.\n\nReviewers should see the exact amount, currency, order, original payment destination, reason, evidence, prior refunds, and policy exceptions. Approval binds to the immutable proposal and expires. Changing material terms requires a new proposal and approval.\n\nAt execution, recheck current balances, limits, eligibility, and authorization atomically to prevent concurrent refunds from exceeding the allowed amount.\n\n### Durable execution and recovery\n\nPersist a state machine outside the model:\n\n`proposed → awaiting_approval / authorized / rejected → executing → succeeded / failed / unknown`\n\nUse a server-generated idempotency key for each proposal and reuse it across retries. After a timeout, reconcile with the payment provider before attempting another refund. Never tell the customer a refund succeeded until the provider confirms it.\n\nKeep an audit trail of proposals, evidence references, policy decisions, approvals, execution attempts, and provider receipts. Provide an operational kill switch that disables execution while preserving ticket reading and proposal creation.\n\nThe central invariant: **every refund must match a persisted proposal and valid authorization, regardless of what the model says or how execution is retried.**\n\n<probe:agent-harness-design>",
+      "kind": "positive",
+      "observed_skills": [
+        "agent-harness-design"
+      ],
+      "passed": true,
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 24448,
+        "input_tokens": 26994,
+        "output_tokens": 902,
+        "reasoning_output_tokens": 0
+      }
+    },
+    {
+      "accepted_skill_sets": [
+        []
+      ],
+      "case": "negative_ordinary_code_review",
+      "case_id": 7,
+      "completed_skill_commands": [],
+      "duration_seconds": 25.184,
+      "final_output": "Concatenating raw user input into a `WHERE name` clause creates a **SQL injection vulnerability**. An attacker could alter the query’s logic or access data they should not see.\n\n```js\n// Vulnerable\nconst sql = \"SELECT * FROM users WHERE name = '\" + name + \"'\";\n```\n\nUse a parameterized query so the database treats input as data:\n\n```js\n// PostgreSQL with node-postgres\nconst result = await client.query(\n  \"SELECT * FROM users WHERE name = $1\",\n  [name]\n);\n```\n\nPlaceholder syntax depends on the database driver; some use `?` instead of `$1`. Input validation can enforce application rules, but it does not replace parameterization.",
+      "kind": "negative",
+      "observed_skills": [],
+      "passed": true,
+      "status": "ok",
+      "trial": 1,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 6144,
+        "input_tokens": 13317,
+        "output_tokens": 149,
+        "reasoning_output_tokens": 0
+      }
+    }
+  ],
+  "schema_version": 1,
+  "started_at": "2026-10-24T07:06:17.916931+00:00",
+  "stop_reason": null,
+  "summary": {
+    "negative": {
+      "accuracy": 1.0,
+      "completed_runs": 1,
+      "passed_runs": 1
+    },
+    "positive": {
+      "accuracy": 1.0,
+      "completed_runs": 1,
+      "passed_runs": 1
+    }
+  }
+}
